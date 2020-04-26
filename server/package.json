@@ -7,9 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon -r esm index.js",
     "knex": "node -r esm node_modules/.bin/knex",
-    "migrate": "knex migrate:latest",
-    "rollback": "knex migrate:rollback",
-    "seed": "knex seed:run"
+    "migrate": "knex migrate:latest --esm",
+    "rollback": "knex migrate:rollback --esm",
+    "seed": "knex seed:run --esm"
   },
   "author": "Kendy Nguyen",
   "license": "ISC",
