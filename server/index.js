@@ -2,12 +2,18 @@
 import express from "express";
 import cors from "cors";
 import pool from "./db";
-
+import db from "./data/db";
 const app = express();
 
 // middleware
 app.use(cors());
 app.use(express.json());
+
+// testing
+app.get("/", async (req, res) => {
+  const todos = await db("perntodo");
+  res.json({ todos });
+});
 
 // USER ROUTES ---------------------------------------------------------------------
 // create a user
@@ -206,4 +212,4 @@ app.delete(
   }
 );
 
-app.listen(5000, () => console.log(`Example app listening on port 5000!`));
+app.listen(5000, () => console.log(`Server running on port 5000!`));
