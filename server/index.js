@@ -4,16 +4,19 @@ import cors from "cors";
 import pool from "./db";
 import db from "./data/db";
 import { usersControllers } from "./routes/users";
+import { todolistsControllers } from "./routes/todolists";
 
 const app = express();
 
 const { usersRoutes, createOneUser } = usersControllers;
+const { todolistsRoutes } = todolistsControllers;
 
 // middleware
 app.use(cors());
 app.use(express.json());
 app.use("/register", createOneUser);
 app.use("/users", usersRoutes);
+app.use("/todolists", todolistsRoutes);
 
 //
 

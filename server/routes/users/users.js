@@ -1,7 +1,8 @@
 import express from "express";
+import { resError } from "../resError";
 import { usersRoutes } from "../../data/db/util/users";
 
-const { getOne, getAll } = usersRoutes;
+const { getOne, getAll, updateOne } = usersRoutes;
 
 const router = express.Router();
 
@@ -23,20 +24,35 @@ router.get("/", (_req, res) => {
 router.get("/:id", (req, res) => {
   const { id } = req.params;
   if (id) {
-    return getOne(id).then((user) => {
-      if (user) {
-        delete user.password;
-        return res.json(user);
-      }
-      return resError(res, 404, "User Not Found");
-    });
+    return getOne(id)
+      .then((user) => {
+        if (user) {
+          delete user.password;
+          return res.json(user);
+        }
+        return resError(res, 404, "User Not Found");
+      })
+      .catch((err) => console.error(err));
   }
   return resError(res, 500, "Invalid ID");
 });
 
-function resError(res, statusCode, message) {
-  res.status(statusCode);
-  res.json({ message });
-}
+// Update user info
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { firstName, lastName, email, password } = req.body;
+
+  if (id) {
+    return updateOne(id, firstName, lastName, email, password)
+      .then((user) => {
+        if (user) {
+          return res.json("Updated user info");
+        }
+        return resError(res, 404, "User Not Found");
+      })
+      .catch((err) => console.error(err));
+  }
+  return resError(res, 500, "Invalid ID");
+});
 
 export default router;
