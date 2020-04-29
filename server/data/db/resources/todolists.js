@@ -2,14 +2,23 @@
 import knex from "../index";
 
 // Get one todolist by todolist ID
-const getOne = (todolistId) => {
-  return knex("todolists").where("id", todolistId).first();
+const getOne = (userId, todolistId) => {
+  return knex("todolists")
+    .where("todolists.user_id", userId)
+    .where("id", todolistId)
+    .first();
 };
 
 // Get all todolists by a user by user ID
 const getAll = (userId) => {
   return knex
-    .select("first_name", "last_name", "todolists.id", "title")
+    .select(
+      "first_name",
+      "last_name",
+      "todolists.user_id",
+      "todolists.id",
+      "title"
+    )
     .from("users")
     .leftJoin("todolists", "users.id", "=", "todolists.user_id")
     .where("users.id", userId);

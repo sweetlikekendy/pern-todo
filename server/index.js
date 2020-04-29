@@ -18,9 +18,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/register", createOneUser);
-app.use("/api/users", usersRoutes);
-app.use("/api/users", todolistsRoutes);
-app.use("/api/users", todosRoutes);
+app.use("/api/users", usersRoutes, todolistsRoutes, todosRoutes);
+// app.use("/api/users", todolistsRoutes);
+// app.use("/api/users", todosRoutes);
 
 // // USER ROUTES ---------------------------------------------------------------------
 // // create a user

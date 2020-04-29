@@ -7,7 +7,7 @@ const getOne = (todoId) => {
 };
 
 // Get all todos in a todolist by todolist ID
-const getAll = (userId) => {
+const getAll = (userId, todolistId) => {
   return knex
     .select(
       "first_name",
@@ -20,7 +20,8 @@ const getAll = (userId) => {
     .from("users")
     .leftJoin("todolists", "users.id", "=", "todolists.user_id")
     .leftJoin("todos", "todolists.id", "=", "todos.todolist_id")
-    .where("users.id", userId);
+    .where("todolists.user_id", userId)
+    .where("todolists.id", todolistId);
 };
 
 // Delete a todo by the todo ID

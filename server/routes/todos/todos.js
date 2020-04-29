@@ -1,6 +1,6 @@
 import express from "express";
 import { resError } from "../resError";
-import { todosRoutes } from "../../data/db/util/todos";
+import { todosRoutes } from "../../data/db/resources/todos";
 
 const { getOne, getAll, updateOne, createOne, deleteOne } = todosRoutes;
 
@@ -10,20 +10,22 @@ const router = express.Router();
 router.get("/:user_id/todolists/:todolist_id/todos", (req, res) => {
   const { user_id, todolist_id } = req.params;
 
-  if (isNaN(user_id) || isNaN(todolist_id)) {
-    return resError(res, 500, "Invalid User ID or Invalid Todolist ID.");
-  }
-
-  if (user_id) {
-    return getAll(user_id)
-      .then((todolists) => {
-        if (todolists) {
-          return res.json(todolists);
+  if (todolist_id) {
+    return getAll(user_id, todolist_id)
+      .then((todos) => {
+        console.log(todos);
+        if (todos.length > 0) {
+          let numOfTodos = 0;
+          if (todos[0].todolist_id !== null) {
+            numOfTodos = todos.length;
+          }
+          return res.json({ todos: todos, numOfTodos });
         }
-        return resError(res, 404, "User not found");
+        return resError(res, 404, "Todos not found");
       })
       .catch((err) => console.error(err));
   }
+  return resError(res, 500, "Invalid User ID or Invalid Todolist ID.");
 });
 
 // Get one todo

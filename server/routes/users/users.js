@@ -1,6 +1,6 @@
 import express from "express";
 import { resError } from "../resError";
-import { usersRoutes } from "../../data/db/util/users";
+import { usersRoutes } from "../../data/db/resources/users";
 
 const { getOne, getAll, updateOne } = usersRoutes;
 
@@ -15,7 +15,7 @@ router.get("/", (_req, res) => {
         delete user.password;
         usersNoPass.push(user);
       });
-      return res.json(usersNoPass);
+      return res.json({ users: usersNoPass, numOfUsers: usersNoPass.length });
     })
     .catch((err) => console.error(err));
 });
@@ -23,7 +23,7 @@ router.get("/", (_req, res) => {
 // Get one user
 router.get("/:id", (req, res) => {
   const { id } = req.params;
-  if (id) {
+  if (!isNaN(id)) {
     return getOne(id)
       .then((user) => {
         if (user) {
@@ -42,7 +42,7 @@ router.put("/:id", (req, res) => {
   const { id } = req.params;
   const { firstName, lastName, email, password } = req.body;
 
-  if (id) {
+  if (!isNaN(id)) {
     return updateOne(id, firstName, lastName, email, password)
       .then((user) => {
         if (user) {

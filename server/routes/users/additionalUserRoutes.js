@@ -1,6 +1,6 @@
 import express from "express";
 import { resError } from "../resError";
-import { usersRoutes } from "../../data/db/util/users";
+import { usersRoutes } from "../../data/db/resources/users";
 
 const { createOne } = usersRoutes;
 
