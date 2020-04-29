@@ -1,22 +1,26 @@
 // Helper functions to query data from postgres with knex
 import knex from "../index";
 
-const getOne = (id) => {
-  return knex("todolists").where("id", id).first();
+// Get one todolist by todolist ID
+const getOne = (todolistId) => {
+  return knex("todolists").where("id", todolistId).first();
 };
 
-const getAll = (id) => {
+// Get all todolists by a user by user ID
+const getAll = (userId) => {
   return knex
     .select("first_name", "last_name", "todolists.id", "title")
     .from("users")
     .leftJoin("todolists", "users.id", "=", "todolists.user_id")
-    .where("users.id", id);
+    .where("users.id", userId);
 };
 
-const deleteOne = (id) => {
-  return knex("todolists").where("id", id).first().del();
+// Delete a todolist by the todolist ID
+const deleteOne = (todolistId) => {
+  return knex("todolists").where("id", todolistId).first().del();
 };
 
+// Create a todolist for a user by user ID
 const createOne = (title, createdAt, userId) => {
   return knex("todolists").insert([
     {
@@ -27,8 +31,9 @@ const createOne = (title, createdAt, userId) => {
   ]);
 };
 
-const updateOne = (id, title) => {
-  return knex("todolists").where("id", id).first().update({
+// Update a todolist by the todolist id
+const updateOne = (todolistId, title) => {
+  return knex("todolists").where("id", todolistId).first().update({
     title,
   });
 };

@@ -5,11 +5,13 @@ import pool from "./db";
 import db from "./data/db";
 import { usersControllers } from "./routes/users";
 import { todolistsControllers } from "./routes/todolists";
+import { todosControllers } from "./routes/todos";
 
 const app = express();
 
 const { usersRoutes, createOneUser } = usersControllers;
 const { todolistsRoutes } = todolistsControllers;
+const { todosRoutes } = todosControllers;
 
 // middleware
 app.use(cors());
@@ -18,8 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/register", createOneUser);
 app.use("/api/users", usersRoutes);
 app.use("/api/users", todolistsRoutes);
-
-//
+app.use("/api/users", todosRoutes);
 
 // // USER ROUTES ---------------------------------------------------------------------
 // // create a user
