@@ -5,8 +5,12 @@ const getOne = (id) => {
   return knex("todolists").where("id", id).first();
 };
 
-const getAll = () => {
-  return knex("todolists");
+const getAll = (id) => {
+  return knex
+    .select("first_name", "last_name", "todolists.id", "title")
+    .from("users")
+    .leftJoin("todolists", "users.id", "=", "todolists.user_id")
+    .where("users.id", id);
 };
 
 const deleteOne = (id) => {
@@ -23,8 +27,8 @@ const createOne = (title, createdAt, userId) => {
   ]);
 };
 
-const updateOne = (todolistId, title) => {
-  return knex("todolists").where("id", todolistId).first().update({
+const updateOne = (id, title) => {
+  return knex("todolists").where("id", id).first().update({
     title,
   });
 };
