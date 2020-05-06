@@ -7,18 +7,22 @@ exports.up = function (knex) {
       table.string("email");
       table.string("password");
       table.datetime("created_at");
+      table.unique("id");
+      table.unique("email");
     }),
     knex.schema.createTable("todolists", (table) => {
       table.increments("id").primary();
       table.string("title");
       table.datetime("created_at");
       table.integer("user_id").unsigned().references("users.id");
+      table.unique("id");
     }),
     knex.schema.createTable("todos", (table) => {
       table.increments("id").primary();
       table.string("description");
       table.datetime("created_at");
       table.integer("todolist_id").unsigned().references("todolists.id");
+      table.unique("id");
     }),
   ]);
 };

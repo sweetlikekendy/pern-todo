@@ -1,8 +1,6 @@
 // file server.js
 import express from "express";
 import cors from "cors";
-import pool from "./db";
-import db from "./data/db";
 import { usersControllers } from "./routes/users";
 import { todolistsControllers } from "./routes/todolists";
 import { todosControllers } from "./routes/todos";

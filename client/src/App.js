@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Router, Link } from "@reach/router";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
-function App() {
+const App = () => {
+  const [isLoggedIn, setLogin] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <nav>
+          <Link to="/">Home</Link>
+          {isLoggedIn ? (
+            <Link to="/logout">Log Out</Link>
+          ) : (
+            <Link to="/login">Log In</Link>
+          )}
+        </nav>
       </header>
+      <Router>
+        <Home path="/" />
+        <Login isLoggedIn={isLoggedIn} path="/login" />
+        <Register
+          path="register"
+          firstName={firstName}
+          lastName={lastName}
+          email={email}
+          password={password}
+          setFirstName={setFirstName}
+          setLastName={setLastName}
+          setEmail={setEmail}
+          setPassword={setPassword}
+        />
+      </Router>
     </div>
   );
-}
+};
 
 export default App;

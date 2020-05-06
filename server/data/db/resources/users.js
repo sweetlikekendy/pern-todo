@@ -11,17 +11,31 @@ const getAll = () => {
   return knex("users");
 };
 
-// Create a user
-const createOne = (firstName, lastName, email, password, createdAt) => {
-  return knex("users").insert([
-    {
-      first_name: firstName,
-      last_name: lastName,
-      email,
-      password,
-      created_at: createdAt,
-    },
-  ]);
+// create a user
+const createOne = (first_name, last_name, email, password, created_at) => {
+  return knex("users")
+    .select()
+    .where("email", email)
+    .then((rows) => {
+      if (rows.length === 0) {
+        // no matching records found
+        return knex("users").insert([
+          {
+            first_name,
+            last_name,
+            email,
+            password,
+            created_at,
+          },
+        ]);
+      } else {
+        // return or throw - duplicate name found
+        return { message: "Duplicate user", duplicateEmail: true };
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 };
 
 // Update a user by user ID

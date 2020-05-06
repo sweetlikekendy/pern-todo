@@ -12,11 +12,20 @@ router.post("/", (req, res) => {
   const createdAt = new Date();
 
   if (firstName && lastName && email && password && createdAt) {
-    return createOne(firstName, lastName, email, password, createdAt).then(
-      res.json({
-        successMessage: "Successfully created a user",
+    return createOne(firstName, lastName, email, password, createdAt)
+      .then((user) => {
+        if (user.command === "INSERT") {
+          return res.json({
+            message: "Successfully created a user",
+          });
+        }
+        if (user.duplicateEmail) {
+          return res.json({
+            message: "An account already exists with your email",
+          });
+        }
       })
-    );
+      .catch((err) => console.error(err));
   }
   return resError(
     res,
