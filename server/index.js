@@ -7,7 +7,7 @@ import { todosControllers } from "./routes/todos";
 
 const app = express();
 
-const { usersRoutes, createOneUser } = usersControllers;
+const { usersRoutes, register, login } = usersControllers;
 const { todolistsRoutes } = todolistsControllers;
 const { todosRoutes } = todosControllers;
 
@@ -17,7 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routes
-app.use("/register", createOneUser);
+app.use("/register", register);
+app.use("/login", login);
 app.use("/api/users", usersRoutes, todolistsRoutes, todosRoutes);
 
 app.listen(5000, () => console.log(`Server running on port 5000!`));

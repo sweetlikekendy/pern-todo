@@ -5,9 +5,11 @@
 // import "/users" routes
 import usersRoutes from "./users";
 // import "/register" route
-import additionalUsersRoutes from "./additionalUserRoutes";
+import register from "./register";
+import login from "./login";
 
 export const usersControllers = {
   usersRoutes,
-  createOneUser: additionalUsersRoutes,
+  register: register,
+  login,
 };

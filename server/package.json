@@ -14,12 +14,15 @@
   "author": "Kendy Nguyen",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "bcrypt": "^4.0.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "joi-password-complexity": "^4.1.0",
     "knex": "^0.21.0",
     "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
     "pg": "^8.0.2"
   },
   "devDependencies": {
