@@ -1,7 +1,5 @@
 // Helper functions to query data from postgres with knex
 import knex from "../index";
-import bcrypt from "bcrypt";
-import crypto from "crypto";
 
 // Get a user by the user ID
 const getOne = (userId) => {
