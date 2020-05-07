@@ -12,7 +12,7 @@ router.get("/", (_req, res) => {
     .then((users) => {
       const usersNoPass = [];
       users.map((user) => {
-        delete user.password;
+        // delete user.password;
         usersNoPass.push(user);
       });
       return res.json({ users: usersNoPass, numOfUsers: usersNoPass.length });

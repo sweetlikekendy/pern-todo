@@ -1,5 +1,7 @@
 // Helper functions to query data from postgres with knex
 import knex from "../index";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 // Get a user by the user ID
 const getOne = (userId) => {
@@ -19,7 +21,7 @@ const createOne = (first_name, last_name, email, password, created_at) => {
     .then((rows) => {
       if (rows.length === 0) {
         // no matching records found
-        return knex("users").insert([
+        return knex("users").returning("id").insert([
           {
             first_name,
             last_name,
@@ -29,8 +31,11 @@ const createOne = (first_name, last_name, email, password, created_at) => {
           },
         ]);
       } else {
-        // return or throw - duplicate name found
-        return { message: "Duplicate user", duplicateEmail: true };
+        // duplicate email found
+        return {
+          message: "An account already exists with this email",
+          duplicateEmail: true,
+        };
       }
     })
     .catch((err) => {
