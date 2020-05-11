@@ -2,8 +2,13 @@
 import knex from "../index";
 
 // Get a user by the user ID
-const getOne = (userId) => {
+const getOneById = (userId) => {
   return knex("users").where("id", userId).first();
+};
+
+// Get a user by email
+const getOneByEmail = (userEmail) => {
+  return knex("users").where("email", userEmail).first();
 };
 
 // Get all users
@@ -52,7 +57,8 @@ const updateOne = (userId, firstName, lastName, email, password) => {
 };
 
 export const usersRoutes = {
-  getOne,
+  getOneById,
+  getOneByEmail,
   getAll,
   createOne,
   updateOne,

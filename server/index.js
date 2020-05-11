@@ -11,14 +11,26 @@ const { usersRoutes, register, login } = usersControllers;
 const { todolistsRoutes } = todolistsControllers;
 const { todosRoutes } = todosControllers;
 
+const PORT = process.env.PORT || 5000;
+
 // middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static assets if in production
+if (process.env.NODE_ENV === "production") {
+  // Set static folder
+  app.use(express.static(path.resolve(__dirname, "../client/build")));
+
+  app.get("*", (_req, res) => {
+    res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+  });
+}
+
 // routes
-app.use("/register", register);
-app.use("/login", login);
+app.use("/api/register", register);
+app.use("/api/login", login);
 app.use("/api/users", usersRoutes, todolistsRoutes, todosRoutes);
 
-app.listen(5000, () => console.log(`Server running on port 5000!`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}!`));

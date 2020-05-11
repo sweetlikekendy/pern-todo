@@ -11,10 +11,16 @@ const router = express.Router();
 dotenv.config({ path: `../../../.env` });
 
 // Create a user
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   const createdAt = new Date();
   const { error } = validateRegistration(req.body); // validate user registration fields from req.body
+
+  // if there is an error with user registration fields
+  if (error) {
+    const errorMessage = error.details[0].message;
+    return resError(res, 500, errorMessage);
+  }
 
   // if there are no errors
   if (!error) {
@@ -40,9 +46,6 @@ router.post("/", (req, res) => {
           .catch((err) => console.error(err))
       )
       .catch((err) => console.error(err));
-  } else {
-    const errorMessage = error.details[0].message;
-    return resError(res, 500, errorMessage);
   }
 });
 

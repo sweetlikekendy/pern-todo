@@ -2,7 +2,7 @@ import express from "express";
 import { resError } from "../resError";
 import { usersRoutes } from "../../data/db/resources/users";
 
-const { getOne, getAll, updateOne } = usersRoutes;
+const { getOneById, getAll, updateOne } = usersRoutes;
 
 const router = express.Router();
 
@@ -20,11 +20,11 @@ router.get("/", (_req, res) => {
     .catch((err) => console.error(err));
 });
 
-// Get one user
+// Get one user by id
 router.get("/:id", (req, res) => {
   const { id } = req.params;
   if (!isNaN(id)) {
-    return getOne(id)
+    return getOneById(id)
       .then((user) => {
         if (user) {
           delete user.password;

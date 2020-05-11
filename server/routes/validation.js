@@ -30,4 +30,25 @@ const validateLogin = (data) => {
   return schema.validate(data);
 };
 
-export { validateRegistration, validateLogin };
+const validateTodolistTitle = (data) => {
+  const schema = Joi.object({
+    title: Joi.string().required(),
+  });
+
+  return schema.validate(data);
+};
+
+const validateTodoDescription = (data) => {
+  const schema = Joi.object({
+    description: Joi.string().required(),
+  });
+
+  return schema.validate(data);
+};
+
+export {
+  validateRegistration,
+  validateLogin,
+  validateTodolistTitle,
+  validateTodoDescription,
+};
