@@ -1,6 +1,6 @@
 import express from "express";
-import { resError } from "../resError";
-import { todosRoutes } from "../../data/db/resources/todos";
+import { resStatusPayload } from "../../util";
+import { todosRoutes } from "../../data/db/controllers/todos";
 
 const { getOne, getAll, updateOne, createOne, deleteOne } = todosRoutes;
 
@@ -21,11 +21,11 @@ router.get("/:user_id/todolists/:todolist_id/todos", (req, res) => {
           }
           return res.json({ todos: todos, numOfTodos });
         }
-        return resError(res, 404, "Todos not found");
+        return resStatusPayload(res, 404, "Todos not found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid User ID or Invalid Todolist ID.");
+  return resStatusPayload(res, 500, "Invalid User ID or Invalid Todolist ID.");
 });
 
 // Get one todo
@@ -38,11 +38,11 @@ router.get("/:user_id/todolists/:todolist_id/todos/:todo_id", (req, res) => {
         if (todo) {
           return res.json(todo);
         }
-        return resError(res, 404, "Todo Not Found");
+        return resStatusPayload(res, 404, "Todo Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid Todo ID");
+  return resStatusPayload(res, 500, "Invalid Todo ID");
 });
 
 // Create a todo for a todolist
@@ -58,7 +58,7 @@ router.post("/:user_id/todolists/:todolist_id/todos", (req, res) => {
       })
     );
   }
-  return resError(res, 500, "Invalid Todolist ID");
+  return resStatusPayload(res, 500, "Invalid Todolist ID");
 });
 
 // Update todo description for a todolist
@@ -72,11 +72,11 @@ router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", (req, res) => {
         if (todo) {
           return res.json("Updated todo info");
         }
-        return resError(res, 404, "Todo Not Found");
+        return resStatusPayload(res, 404, "Todo Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid Todo ID");
+  return resStatusPayload(res, 500, "Invalid Todo ID");
 });
 
 // Delete a todo in a todolist
@@ -89,11 +89,11 @@ router.delete("/:user_id/todolists/:todolist_id/todos/:todo_id", (req, res) => {
         if (todo) {
           return res.json({ successMessage: "Successfully deleted todo" });
         }
-        return resError(res, 404, "Todo Not Found");
+        return resStatusPayload(res, 404, "Todo Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid Todo ID");
+  return resStatusPayload(res, 500, "Invalid Todo ID");
 });
 
 export default router;

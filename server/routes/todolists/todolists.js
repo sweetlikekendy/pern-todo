@@ -1,6 +1,6 @@
 import express from "express";
-import { resError } from "../resError";
-import { todolistsRoutes } from "../../data/db/resources/todolists";
+import { resStatusPayload } from "../../util";
+import { todolistsRoutes } from "../../data/db/controllers/todolists";
 
 const { getOne, getAll, updateOne, createOne, deleteOne } = todolistsRoutes;
 
@@ -23,11 +23,11 @@ router.get("/:user_id/todolists", (req, res) => {
             numOfTodolists,
           });
         }
-        return resError(res, 404, "Todolists not found");
+        return resStatusPayload(res, 404, "Todolists not found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid User ID");
+  return resStatusPayload(res, 500, "Invalid User ID");
 });
 
 // Get one todolist
@@ -40,11 +40,11 @@ router.get("/:user_id/todolists/:todolist_id", (req, res) => {
         if (todolist) {
           return res.json(todolist);
         }
-        return resError(res, 404, "Todolist Not Found");
+        return resStatusPayload(res, 404, "Todolist Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid Todolist ID");
+  return resStatusPayload(res, 500, "Invalid Todolist ID");
 });
 
 // Create a todolist
@@ -73,11 +73,11 @@ router.put("/:user_id/todolists/:todolist_id", (req, res) => {
         if (todolist) {
           return res.json("Updated todolist info");
         }
-        return resError(res, 404, "Todolist Not Found");
+        return resStatusPayload(res, 404, "Todolist Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid Todolist ID");
+  return resStatusPayload(res, 500, "Invalid Todolist ID");
 });
 
 // Delete a todolist
@@ -90,11 +90,11 @@ router.delete("/:user_id/todolists/:todolist_id", (req, res) => {
         if (todolist) {
           return res.json({ successMessage: "Successfully deleted todolist" });
         }
-        return resError(res, 404, "Todolist Not Found");
+        return resStatusPayload(res, 404, "Todolist Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid Todolist ID");
+  return resStatusPayload(res, 500, "Invalid Todolist ID");
 });
 
 export default router;

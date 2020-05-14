@@ -1,15 +1,12 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
 
-import { resError } from "../resError";
-import { validateLogin } from "../validation";
-import { usersRoutes } from "../../data/db/resources/users";
+import { resStatusPayload, validateLogin, issueJwt } from "../../util";
+import { usersRoutes } from "../../data/db/controllers/users";
 
 const { getOneByEmail } = usersRoutes;
 
 const router = express.Router();
-dotenv.config({ path: `../../../.env` });
 
 // Create a user
 router.post("/", async (req, res) => {
@@ -19,7 +16,7 @@ router.post("/", async (req, res) => {
   // if there is an error with user login credentials
   if (error) {
     const errorMessage = error.details[0].message;
-    return resError(res, 500, errorMessage);
+    return resStatusPayload(res, 500, errorMessage);
   }
 
   // if there are no errors
@@ -28,14 +25,31 @@ router.post("/", async (req, res) => {
 
     // if user does not exist in db
     if (!user) {
-      return res.json({ message: `No account with ${email} found` });
+      return resStatusPayload(res, `401`, {
+        loggedIn: false,
+        message: `No account with ${email} found`,
+      });
     }
 
     // if user does exist in db
     if (user) {
       const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) return res.json({ message: `Invalid password` });
-      if (validPassword) return res.json({ message: `Logging in` });
+      if (!validPassword)
+        return res.json({
+          loggedIn: false,
+
+          message: `Invalid password`,
+        });
+
+      if (validPassword) {
+        const tokenObject = issueJwt(user);
+        return resStatusPayload(res, "200", {
+          loggedIn: true,
+          user,
+          token: tokenObject.token,
+          message: "Logging In",
+        });
+      }
     }
   }
 });

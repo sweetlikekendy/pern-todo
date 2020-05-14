@@ -1,6 +1,6 @@
 import express from "express";
-import { resError } from "../resError";
-import { usersRoutes } from "../../data/db/resources/users";
+import { resStatusPayload } from "../../util";
+import { usersRoutes } from "../../data/db/controllers/users";
 
 const { getOneById, getAll, updateOne } = usersRoutes;
 
@@ -30,11 +30,11 @@ router.get("/:id", (req, res) => {
           delete user.password;
           return res.json(user);
         }
-        return resError(res, 404, "User Not Found");
+        return resStatusPayload(res, 404, "User Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid ID");
+  return resStatusPayload(res, 500, "Invalid ID");
 });
 
 // Update user info
@@ -48,11 +48,11 @@ router.put("/:id", (req, res) => {
         if (user) {
           return res.json("Updated user info");
         }
-        return resError(res, 404, "User Not Found");
+        return resStatusPayload(res, 404, "User Not Found");
       })
       .catch((err) => console.error(err));
   }
-  return resError(res, 500, "Invalid ID");
+  return resStatusPayload(res, 500, "Invalid ID");
 });
 
 export default router;

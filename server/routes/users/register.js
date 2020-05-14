@@ -2,9 +2,9 @@ import express from "express";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
-import { resError } from "../resError";
-import { validateRegistration } from "../validation";
-import { usersRoutes } from "../../data/db/resources/users";
+import { resStatusPayload } from "../../util";
+import { validateRegistration } from "../../util";
+import { usersRoutes } from "../../data/db/controllers/users";
 const { createOne } = usersRoutes;
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
   // if there is an error with user registration fields
   if (error) {
     const errorMessage = error.details[0].message;
-    return resError(res, 500, errorMessage);
+    return resStatusPayload(res, 500, errorMessage);
   }
 
   // if there are no errors

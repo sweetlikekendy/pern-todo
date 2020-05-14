@@ -5,15 +5,14 @@ import { usersControllers } from "./routes/users";
 import { todolistsControllers } from "./routes/todolists";
 import { todosControllers } from "./routes/todos";
 
-const app = express();
-
 const { usersRoutes, register, login } = usersControllers;
 const { todolistsRoutes } = todolistsControllers;
 const { todosRoutes } = todosControllers;
 
 const PORT = process.env.PORT || 5000;
 
-// middleware
+// create express application
+const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
