@@ -12,10 +12,13 @@ router.get("/", (_req, res) => {
     .then((users) => {
       const usersNoPass = [];
       users.map((user) => {
-        // delete user.password;
+        delete user.password;
         usersNoPass.push(user);
       });
-      return res.json({ users: usersNoPass, numOfUsers: usersNoPass.length });
+      return resStatusPayload(res, 200, {
+        users: usersNoPass,
+        numOfUsers: usersNoPass.length,
+      });
     })
     .catch((err) => console.error(err));
 });
@@ -28,7 +31,7 @@ router.get("/:id", (req, res) => {
       .then((user) => {
         if (user) {
           delete user.password;
-          return res.json(user);
+          return resStatusPayload(res, 200, { user });
         }
         return resStatusPayload(res, 404, "User Not Found");
       })

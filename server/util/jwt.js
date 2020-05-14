@@ -12,9 +12,14 @@ const tokenSecret = process.env.JWT_SECRET_KEY;
  * @param {*} next - Next function used in express to call the next middleware
  *
  * This function is to verify the jwt token in the req header object
+ * To ensure authorization, JWT user id must match user id in API's URI
  */
+
 const authorizeJwt = (req, res, next) => {
-  // find auth-token key in request header
+  const { user_id } = req.params;
+  const intUserId = parseInt(user_id);
+
+  // find Authorize key in request header
   const accessToken = req.header("Authorization");
 
   // if no access token return status 401
@@ -25,13 +30,22 @@ const authorizeJwt = (req, res, next) => {
     });
 
   try {
-    const verified = jwt.verify(accessToken, accessTokenSecret);
-    req.user = verified;
-    next();
+    // Verify incoming accessToken
+    const verified = jwt.verify(accessToken, tokenSecret);
+
+    // Check JWT for user id and see if it matches the API's user id
+    const isMatchingId = verified.id === intUserId;
+
+    if (!isMatchingId)
+      return resStatusPayload(res, "401", { message: "Access Denied" });
+
+    if (isMatchingId) {
+      next();
+    }
   } catch (err) {
     resStatusPayload(res, "400", {
       verifyToken: false,
-      message: "Invalid Token",
+      message: err.message,
     });
   }
 };
@@ -49,11 +63,10 @@ const issueJwt = (user) => {
   const expiresIn = "1w";
 
   const payload = {
-    sub: _id,
+    id: _id,
     iat: Date.now(),
   };
 
-  console.log(tokenSecret);
   const signedToken = jwt.sign(payload, tokenSecret, { expiresIn });
 
   return {

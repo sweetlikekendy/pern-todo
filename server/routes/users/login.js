@@ -37,7 +37,6 @@ router.post("/", async (req, res) => {
       if (!validPassword)
         return res.json({
           loggedIn: false,
-
           message: `Invalid password`,
         });
 

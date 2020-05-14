@@ -2,8 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
-import { resStatusPayload } from "../../util";
-import { validateRegistration } from "../../util";
+import { resStatusPayload, validateRegistration } from "../../util";
 import { usersRoutes } from "../../data/db/controllers/users";
 const { createOne } = usersRoutes;
 
@@ -24,21 +23,23 @@ router.post("/", async (req, res) => {
 
   // if there are no errors
   if (!error) {
-    return bcrypt
+    return await bcrypt
       .hash(password, parseInt(process.env.HASH_SALT))
       .then((hashedPassword) =>
         createOne(firstName, lastName, email, hashedPassword, createdAt)
           .then((user) => {
             // if a user is created, knex will return an id
             if (!isNaN(user)) {
-              return res.json({
+              return resStatusPayload(res, 200, {
+                isCreated: true,
                 message: "Successfully created a user",
               });
             }
 
             // if there is a duplicate
             if (user.duplicateEmail) {
-              return res.json({
+              return resStatusPayload(res, 400, {
+                isCreated: false,
                 message: user.message,
               });
             }
