@@ -4,6 +4,7 @@ import cors from "cors";
 import { usersControllers } from "./routes/users";
 import { todolistsControllers } from "./routes/todolists";
 import { todosControllers } from "./routes/todos";
+import { resStatusPayload } from "./util/";
 
 const { usersRoutes, register, login } = usersControllers;
 const { todolistsRoutes } = todolistsControllers;
@@ -27,9 +28,13 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+const jsonErrorHandler = async (err, req, res, next) => {
+  res.status(500).send({ error: err });
+};
+
 // routes
+// app.use("/", jsonErrorHandler);
 app.use("/api/register", register);
 app.use("/api/login", login);
 app.use("/api/users", usersRoutes, todolistsRoutes, todosRoutes);
-
 app.listen(PORT, () => console.log(`Server running on port ${PORT}!`));

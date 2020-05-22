@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
   // if there is an error with user login credentials
   if (error) {
     const errorMessage = error.details[0].message;
-    return resStatusPayload(res, 500, errorMessage);
+    resStatusPayload(res, 202, { loggedIn: false, message: errorMessage });
   }
 
   // if there are no errors
@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
 
     // if user does not exist in db
     if (!user) {
-      return resStatusPayload(res, `401`, {
+      return resStatusPayload(res, 202, {
         loggedIn: false,
         message: `No account with ${email} found`,
       });
@@ -35,17 +35,20 @@ router.post("/", async (req, res) => {
     if (user) {
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword)
-        return res.json({
+        return resStatusPayload(res, 202, {
           loggedIn: false,
           message: `Invalid password`,
         });
 
       if (validPassword) {
         const tokenObject = issueJwt(user);
-        return resStatusPayload(res, "200", {
+        const redirect = `/`;
+        return resStatusPayload(res, 200, {
           loggedIn: true,
           user,
           token: tokenObject.token,
+          expiresIn: tokenObject.expiresIn,
+          redirect,
           message: "Logging In",
         });
       }

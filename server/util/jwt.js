@@ -58,20 +58,21 @@ const authorizeJwt = (req, res, next) => {
  */
 
 const issueJwt = (user) => {
-  const _id = user.id;
-
+  const { id, first_name, last_name } = user;
   const expiresIn = "1w";
 
   const payload = {
-    id: _id,
+    id,
+    first_name,
+    last_name,
     iat: Date.now(),
   };
 
   const signedToken = jwt.sign(payload, tokenSecret, { expiresIn });
 
   return {
-    token: signedToken,
-    expires: expiresIn,
+    token: `Bearer ${signedToken}`,
+    expiresIn,
   };
 };
 

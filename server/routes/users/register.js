@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
   // if there is an error with user registration fields
   if (error) {
     const errorMessage = error.details[0].message;
-    return resStatusPayload(res, 500, errorMessage);
+    resStatusPayload(res, 202, { isCreated: false, message: errorMessage });
   }
 
   // if there are no errors
@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
           .then((user) => {
             // if a user is created, knex will return an id
             if (!isNaN(user)) {
-              return resStatusPayload(res, 200, {
+              return resStatusPayload(res, 201, {
                 isCreated: true,
                 message: "Successfully created a user",
               });
@@ -38,7 +38,7 @@ router.post("/", async (req, res) => {
 
             // if there is a duplicate
             if (user.duplicateEmail) {
-              return resStatusPayload(res, 400, {
+              return resStatusPayload(res, 202, {
                 isCreated: false,
                 message: user.message,
               });

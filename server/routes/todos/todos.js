@@ -65,7 +65,7 @@ router.post(
 
     if (description && !isNaN(todolist_id)) {
       return await createOne(description, createdAt, todolist_id).then(
-        resStatusPayload(res, 200, {
+        resStatusPayload(res, 201, {
           isCreated: true,
           message: "Successfully created a todo",
         })

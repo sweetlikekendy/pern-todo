@@ -6,76 +6,105 @@ import { Link } from "@reach/router";
 // todo change production uri
 const REGISTER_URI =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:5000/register"
+    ? "http://localhost:5000/api/register"
     : "something else";
 
 const Register = ({
-  firstName,
-  lastName,
-  email,
-  password,
+  userEmail,
+  userFirstName,
+  userLastName,
+  userPassword,
+  isLoggedIn,
+  setEmail,
   setFirstName,
   setLastName,
-  setEmail,
   setPassword,
+  setLoggedIn,
 }) => {
+  const [formFirstName, setFormFirstName] = useState("");
+  const [formLastName, setFormLastName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formPassword, setFormPassword] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
   const clearInputs = () => {
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setPassword("");
+    setFormFirstName("");
+    setFormLastName("");
+    setFormEmail("");
+    setFormPassword("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post(REGISTER_URI, { firstName, lastName, email, password })
+      .post(REGISTER_URI, {
+        firstName: formFirstName,
+        lastName: formLastName,
+        email: formEmail,
+        password: formPassword,
+      })
       .then((res) => {
+        const { isCreated, message } = res.data;
         console.log(res.data);
-        clearInputs();
+        if (isCreated) {
+          setStatusMessage(message);
+          clearInputs();
+        } else {
+          setStatusMessage(message);
+        }
       })
       .catch((err) => console.error(err));
   };
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        First Name
-        <input
-          type="text"
-          name="firstName"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-      </label>
-      <label>
-        Last Name
-        <input
-          type="text"
-          name="lastName"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-      </label>
-      <label>
-        email
-        <input
-          type="text"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </label>
-      <label>
-        password
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </label>
-      <input type="submit" value="Register" />
-    </form>
+    <div>
+      {!isLoggedIn ? (
+        <div>
+          <p>Status: {statusMessage} </p>
+          <form onSubmit={handleSubmit}>
+            <label>
+              First Name
+              <input
+                type="text"
+                name="firstName"
+                value={formFirstName}
+                onChange={(e) => setFormFirstName(e.target.value)}
+              />
+            </label>
+            <label>
+              Last Name
+              <input
+                type="text"
+                name="lastName"
+                value={formLastName}
+                onChange={(e) => setFormLastName(e.target.value)}
+              />
+            </label>
+            <label>
+              email
+              <input
+                type="text"
+                name="email"
+                value={formEmail}
+                onChange={(e) => setFormEmail(e.target.value)}
+              />
+            </label>
+            <label>
+              password
+              <input
+                type="password"
+                name="password"
+                value={formPassword}
+                onChange={(e) => setFormPassword(e.target.value)}
+              />
+            </label>
+            <input type="submit" value="Register" />
+          </form>
+        </div>
+      ) : (
+        <div>
+          <div>Hello, {userFirstName}! You're logged in!</div>
+        </div>
+      )}
+    </div>
   );
 };
 
