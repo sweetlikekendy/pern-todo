@@ -2,30 +2,36 @@ import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
 const Logout = ({
-  userEmail,
-  userFirstName,
-  userLastName,
-  userPassword,
   isLoggedIn,
   setEmail,
   setFirstName,
   setLastName,
-  setPassword,
   setLoggedIn,
+  setJwt,
+  setNumOfTodolists,
+  setNumOfTodos,
+  setTodolists,
+  setTodos,
 }) => {
-  const reset = () => {
+  const logout = () => {
     setLoggedIn(false);
-    setFirstName(userFirstName);
-    setLastName(userLastName);
-    setEmail(userEmail);
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setJwt("");
+    setNumOfTodolists(0);
+    setNumOfTodos(0);
+    setTodolists("");
+    setTodos("");
   };
+
   useEffect(() => {
-    reset();
-    return () => {
-      reset();
-    };
-  }, []);
-  return <div>Logging Out</div>;
+    logout();
+  }, [isLoggedIn]);
+
+  return (
+    <div>{isLoggedIn ? <p>Logging Out</p> : <p>You're not logged in</p>}</div>
+  );
 };
 
 Logout.propTypes = {};

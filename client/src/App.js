@@ -4,13 +4,28 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Logout from "./components/Logout";
+import usePersistedState from "./components/usePersistedState";
 
 const App = () => {
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // const [isLoggedIn, setLoggedIn] = useState(false);
+  // const [firstName, setFirstName] = useState("");
+  // const [lastName, setLastName] = useState("");
+  // const [email, setEmail] = useState("");
+  const [isLoggedIn, setLoggedIn] = usePersistedState(`isLoggedIn`, false);
+  const [firstName, setFirstName] = usePersistedState(`firstName`, "");
+  const [lastName, setLastName] = usePersistedState(`lastName`, "");
+  const [email, setEmail] = usePersistedState(`email`, "");
+  const [todolists, setTodolists] = usePersistedState(`todolists`, "");
+  const [todos, setTodos] = usePersistedState(`todos`, "");
+  const [numOfTodolists, setNumOfTodolists] = usePersistedState(
+    `numOfTodolists`,
+    todolists.length
+  );
+  const [numOfTodos, setNumOfTodos] = usePersistedState(
+    `numOfTodos`,
+    todos.length
+  );
+  const [jwt, setJwt] = usePersistedState(`Authorization`, "");
 
   return (
     <div className="App">
@@ -25,18 +40,31 @@ const App = () => {
         </nav>
       </header>
       <Router>
-        <Home path="/" firstName={firstName} />
+        <Home
+          path="/"
+          firstName={firstName}
+          isLoggedIn={isLoggedIn}
+          jwt={jwt}
+          numOfTodolists={numOfTodolists}
+          numOfTodos={numOfTodos}
+          todolists={todolists}
+          todos={todos}
+          setTodolists={setTodolists}
+          setTodos={setTodos}
+          setNumOfTodolists={setNumOfTodolists}
+          setNumOfTodos={setNumOfTodos}
+        />
         <Login
           userFirstName={firstName}
           userLastName={lastName}
           userEmail={email}
-          userPassword={password}
+          jwt={jwt}
           isLoggedIn={isLoggedIn}
           setFirstName={setFirstName}
           setLastName={setLastName}
           setEmail={setEmail}
-          setPassword={setPassword}
           setLoggedIn={setLoggedIn}
+          setJwt={setJwt}
           path="/login"
         />
         <Redirect from="/login" to="/" />
@@ -44,14 +72,18 @@ const App = () => {
           userFirstName={firstName}
           userLastName={lastName}
           userEmail={email}
-          userPassword={password}
+          jwt={jwt}
           isLoggedIn={isLoggedIn}
           setFirstName={setFirstName}
           setLastName={setLastName}
           setEmail={setEmail}
-          setPassword={setPassword}
           setLoggedIn={setLoggedIn}
-          path="/login"
+          setJwt={setJwt}
+          setNumOfTodolists={setNumOfTodolists}
+          setNumOfTodos={setNumOfTodos}
+          setTodolists={setTodolists}
+          setTodos={setTodos}
+          path="/logout"
         />
         <Register
           path="register"
@@ -59,11 +91,9 @@ const App = () => {
           firstName={firstName}
           lastName={lastName}
           email={email}
-          password={password}
           setFirstName={setFirstName}
           setLastName={setLastName}
           setEmail={setEmail}
-          setPassword={setPassword}
         />
       </Router>
     </div>

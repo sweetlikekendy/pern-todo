@@ -56,7 +56,11 @@ const Register = ({
   };
   return (
     <div>
-      {!isLoggedIn ? (
+      {isLoggedIn ? (
+        <div>
+          <div>Hello, {userFirstName}! You're logged in!</div>
+        </div>
+      ) : (
         <div>
           <p>Status: {statusMessage} </p>
           <form onSubmit={handleSubmit}>
@@ -98,10 +102,6 @@ const Register = ({
             </label>
             <input type="submit" value="Register" />
           </form>
-        </div>
-      ) : (
-        <div>
-          <div>Hello, {userFirstName}! You're logged in!</div>
         </div>
       )}
     </div>

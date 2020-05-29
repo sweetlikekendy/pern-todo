@@ -7,13 +7,13 @@ const Login = ({
   userEmail,
   userFirstName,
   userLastName,
-  userPassword,
+  jwt,
   isLoggedIn,
   setEmail,
   setFirstName,
   setLastName,
-  setPassword,
   setLoggedIn,
+  setJwt,
 }) => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
@@ -31,14 +31,14 @@ const Login = ({
         email: formEmail,
         password: formPassword,
       })
-      .then((res) => {
-        console.log(res.data);
-        const { loggedIn, message, redirect, token, user } = res.data;
+      .then((response) => {
+        console.log(response.data);
+        const { loggedIn, message, redirect, token, user } = response.data;
         // console.log(loggedIn);
         if (loggedIn) {
           const { first_name, last_name, email } = user;
           setLoggedIn(loggedIn);
-          localStorage.setItem(`Authorization`, token);
+          setJwt(token);
           setStatusMessage(message);
           setFirstName(first_name);
           setLastName(last_name);
@@ -48,12 +48,14 @@ const Login = ({
           setStatusMessage(message);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((error) => console.error(error));
   };
 
   return (
     <div>
-      {!isLoggedIn ? (
+      {isLoggedIn ? (
+        <div>Hello, {userFirstName}! You're logged in!</div>
+      ) : (
         <div>
           <p>Status: {statusMessage} </p>
           <form onSubmit={handleSubmit}>
@@ -84,8 +86,6 @@ const Login = ({
           <p>Don't have an account? Register now</p>
           <Link to="/register">Register</Link>
         </div>
-      ) : (
-        <div>Hello, {userFirstName}! You're logged in!</div>
       )}
     </div>
   );

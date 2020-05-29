@@ -71,7 +71,7 @@ const issueJwt = (user) => {
   const signedToken = jwt.sign(payload, tokenSecret, { expiresIn });
 
   return {
-    token: `Bearer ${signedToken}`,
+    token: signedToken,
     expiresIn,
   };
 };
