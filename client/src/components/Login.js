@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "@reach/router";
+import { Link, navigate, redirectTo, Redirect } from "@reach/router";
 import axios from "axios";
 
 const Login = ({
@@ -18,7 +18,6 @@ const Login = ({
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
-  const [redirectUri, setRedirectUri] = useState("");
   const LOGIN_URI =
     process.env.NODE_ENV === `production`
       ? `some production uri`
@@ -43,7 +42,7 @@ const Login = ({
           setFirstName(first_name);
           setLastName(last_name);
           setEmail(email);
-          setRedirectUri(redirect);
+          navigate(redirect);
         } else {
           setStatusMessage(message);
         }
@@ -54,7 +53,7 @@ const Login = ({
   return (
     <div>
       {isLoggedIn ? (
-        <div>Hello, {userFirstName}! You're logged in!</div>
+        <Redirect from="login" to="/" />
       ) : (
         <div>
           <p>Status: {statusMessage} </p>
@@ -74,7 +73,7 @@ const Login = ({
               password
               <input
                 type="text"
-                name="passw ord"
+                name="password"
                 value={formPassword}
                 onChange={(e) => {
                   setFormPassword(e.target.value);
