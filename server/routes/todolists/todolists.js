@@ -40,7 +40,7 @@ router.get(
       return await getOne(user_id, todolist_id)
         .then((todolist) => {
           if (todolist) {
-            return res.json(todolist);
+            return resStatusPayload(res, 200, todolist);
           }
           return resStatusPayload(res, 404, "Todolist Not Found");
         })
