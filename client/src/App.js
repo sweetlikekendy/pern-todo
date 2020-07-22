@@ -15,16 +15,17 @@ const App = () => {
   const [firstName, setFirstName] = usePersistedState(`firstName`, "");
   const [lastName, setLastName] = usePersistedState(`lastName`, "");
   const [email, setEmail] = usePersistedState(`email`, "");
-  const [todolists, setTodolists] = usePersistedState(`todolists`, "");
-  const [todos, setTodos] = usePersistedState(`todos`, "");
+  const [userId, setUserId] = usePersistedState(`userId`, 0);
+  const [todolists, setTodolists] = usePersistedState(`todolists`, []);
+  // const [todos, setTodos] = usePersistedState(`todos`, "");
   const [numOfTodolists, setNumOfTodolists] = usePersistedState(
     `numOfTodolists`,
-    todolists.length
+    0
   );
-  const [numOfTodos, setNumOfTodos] = usePersistedState(
-    `numOfTodos`,
-    todos.length
-  );
+  // const [numOfTodos, setNumOfTodos] = usePersistedState(
+  //   `numOfTodos`,
+  //   todos.length
+  // );
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
 
   return (
@@ -43,26 +44,25 @@ const App = () => {
         <Home
           path="/"
           firstName={firstName}
+          userId={userId}
           isLoggedIn={isLoggedIn}
           jwt={jwt}
           numOfTodolists={numOfTodolists}
-          numOfTodos={numOfTodos}
+          // numOfTodos={numOfTodos}
           todolists={todolists}
-          todos={todos}
+          // todos={todos}
           setTodolists={setTodolists}
-          setTodos={setTodos}
+          // setTodos={setTodos}
           setNumOfTodolists={setNumOfTodolists}
-          setNumOfTodos={setNumOfTodos}
+          // setNumOfTodos={setNumOfTodos}
         />
         <Login
-          userFirstName={firstName}
-          userLastName={lastName}
-          userEmail={email}
-          jwt={jwt}
+          userId={userId}
           isLoggedIn={isLoggedIn}
           setFirstName={setFirstName}
           setLastName={setLastName}
           setEmail={setEmail}
+          setUserId={setUserId}
           setLoggedIn={setLoggedIn}
           setJwt={setJwt}
           path="/login"
@@ -79,10 +79,11 @@ const App = () => {
           setEmail={setEmail}
           setLoggedIn={setLoggedIn}
           setJwt={setJwt}
+          setUserId={setUserId}
           setNumOfTodolists={setNumOfTodolists}
-          setNumOfTodos={setNumOfTodos}
+          // setNumOfTodos={setNumOfTodos}
           setTodolists={setTodolists}
-          setTodos={setTodos}
+          // setTodos={setTodos}
           path="/logout"
         />
         <Register

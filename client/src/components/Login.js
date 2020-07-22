@@ -4,14 +4,12 @@ import { Link } from "@reach/router";
 import axios from "axios";
 
 const Login = ({
-  userEmail,
   userFirstName,
-  userLastName,
-  jwt,
   isLoggedIn,
   setEmail,
   setFirstName,
   setLastName,
+  setUserId,
   setLoggedIn,
   setJwt,
 }) => {
@@ -34,14 +32,15 @@ const Login = ({
       .then((response) => {
         console.log(response.data);
         const { loggedIn, message, redirect, token, user } = response.data;
-        // console.log(loggedIn);
+
         if (loggedIn) {
-          const { first_name, last_name, email } = user;
+          const { first_name, last_name, email, id } = user;
           setLoggedIn(loggedIn);
           setJwt(token);
           setStatusMessage(message);
           setFirstName(first_name);
           setLastName(last_name);
+          setUserId(id);
           setEmail(email);
           setRedirectUri(redirect);
         } else {
@@ -74,7 +73,7 @@ const Login = ({
               password
               <input
                 type="text"
-                name="passw ord"
+                name="password"
                 value={formPassword}
                 onChange={(e) => {
                   setFormPassword(e.target.value);
