@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, navigate, redirectTo, Redirect } from "@reach/router";
 import axios from "axios";
@@ -26,16 +26,6 @@ const Login = ({
     process.env.NODE_ENV === `production`
       ? `some production uri`
       : `http://localhost:5000/api/login`;
-
-  const GET_ALL_TODOLISTS_URI = (userId) =>
-    process.env.NODE_ENV === `production`
-      ? `some production uri`
-      : `http://localhost:5000/api/users/${userId}/todolists`;
-
-  const GET_ALL_TODOS_URI = (userId, todolistId) =>
-    process.env.NODE_ENV === `production`
-      ? `some production uri`
-      : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos`;
 
   const handleSubmit = (e) => {
     e.preventDefault();

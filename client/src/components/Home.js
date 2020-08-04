@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link, navigate } from "@reach/router";
 import axios from "axios";
@@ -17,10 +17,6 @@ const Home = ({
   setNumOfTodolists,
   setNumOfTodos,
 }) => {
-  // const user_id = 1;
-  // const todolist_id = 2;
-  // const todo_id = 5;
-  const [testingTodolists, setTestingTodolists] = useState([]);
   const GET_ALL_TODOLISTS_URI = (userId) =>
     process.env.NODE_ENV === `production`
       ? `some production uri`
@@ -37,117 +33,61 @@ const Home = ({
   //   process.env.NODE_ENV === `production`
   //     ? `some production uri`
   //     : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;
-  // useEffect(() => {
-  //   axios
-  //     .get(GET_ALL_TODOLISTS_URI(userId), {
-  //       headers: {
-  //         Authorization: jwt,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       let todolistsWithTodos = [];
-  //       const { data } = response;
-  //       const { todolists } = data;
+  useEffect(() => {
+    axios
+      .get(GET_ALL_TODOLISTS_URI(userId), {
+        headers: {
+          Authorization: jwt,
+        },
+      })
+      .then((response) => {
+        const { data } = response;
+        const { todolists } = data;
+        let todolistsWithTodos = [];
+        let promises = [];
 
-  //       todolists.map((todolist, i) => {
-  //         axios
-  //           .get(GET_ALL_TODOS_URI(userId, todolist.id), {
-  //             headers: {
-  //               Authorization: jwt,
-  //             },
-  //           })
-  //           .then((response) => {
-  //             // console.log(`all todos`, response.data);
-  //             const { data } = response;
-  //             const { todos, numOfTodos } = data;
+        for (let i = 0; i < todolists.length; i++) {
+          promises.push(
+            axios
+              .get(GET_ALL_TODOS_URI(userId, todolists[i].id), {
+                headers: {
+                  Authorization: jwt,
+                },
+              })
+              .then((response) => {
+                const { data } = response;
+                const { todos, numOfTodos } = data;
 
-  //             // if there are no todos, save the todos as a property as an empty array in a new object
-  //             if (numOfTodos === 0) {
-  //               let todolistNoTodos = {
-  //                 todolist,
-  //                 todos: [],
-  //                 numOfTodos,
-  //               };
-  //               todolistsWithTodos.push(todolistNoTodos);
-  //               // setTodolists(todolistsWithTodos);
-  //             } else {
-  //               // if there are todos, save the todos as a property as an array in a new object
-  //               let todolistWithTodos = {
-  //                 todolist,
-  //                 todos,
-  //                 numOfTodos,
-  //               };
-  //               todolistsWithTodos.push(todolistWithTodos);
-  //               // setTodolists(todolistsWithTodos);
-  //             }
-  //             console.log("inside todolists map ", todolistsWithTodos);
-  //           })
-  //           .catch((error) => console.error(error));
-  //       });
-  //       // setNumOfTodolists(todolistsWithTodos.length);
-  //       // setTestingTodolists(todolistsWithTodos);
-  //       // setTodolists(todolistsWithTodos);
-  //     })
-  //     .catch((error) => console.error(error));
-
-  //   // setTodolists(testingTodolists);
-  //   // console.log("todolistsWithTodos", todolistsWithTodos);
-  //   setNumOfTodolists(todolists.length);
-  //   console.log("useEffect todolists", todolists);
-
-  //   // axios
-  //   //   .get(GET_SINGLE_TODOLIST_URI, {
-  //   //     headers: {
-  //   //       Authorization: jwt,
-  //   //     },
-  //   //   })
-  //   //   .then((response) => {
-  //   //     console.log(`single todolist`, response.data);
-  //   //   })
-  //   //   .catch((error) => console.error(error));
-
-  //   // let todolistsWithTodos = [];
-  //   // todolists.map((todolist) => {
-  //   //   axios
-  //   //     .get(GET_ALL_TODOS_URI(userId, todolist.id), {
-  //   //       headers: {
-  //   //         Authorization: jwt,
-  //   //       },
-  //   //     })
-  //   //     .then((response) => {
-  //   //       console.log(`all todos`, response.data);
-  //   //       const { data } = response;
-  //   //       const { todos, numOfTodos } = data;
-
-  //   //       if (numOfTodos !== 0) {
-  //   //         let todolistWithTodos = {
-  //   //           todolist,
-  //   //           todos,
-  //   //           numOfTodos,
-  //   //         };
-  //   //         todolistsWithTodos.push(todolistWithTodos);
-  //   //       } else {
-  //   //         let todolistNoTodos = {
-  //   //           todolist,
-  //   //           numOfTodos,
-  //   //         };
-  //   //         todolistsWithTodos.push(todolistNoTodos);
-  //   //       }
-  //   //       console.log(todolistsWithTodos);
-  //   //     })
-  //   //     .catch((error) => console.error(error));
-  //   // });
-  //   // setTodolists(todolistsWithTodos);
-
-  //   // axios
-  //   //   .get(GET_SINGLE_TODO_URI, {
-  //   //     headers: {
-  //   //       Authorization: jwt,
-  //   //     },
-  //   //   })
-  //   //   .then((response) => console.log(`single todo`, response.data))
-  //   //   .catch((error) => console.error(error));
-  // }, []);
+                // if there are no todos, save the todos as a property as an empty array in a new object
+                if (numOfTodos === 0) {
+                  let todolistNoTodos = {
+                    todolist: todolists[i],
+                    todos: [],
+                    numOfTodos,
+                  };
+                  todolistsWithTodos.push(todolistNoTodos);
+                } else {
+                  // if there are todos, save the todos as a property as an array in a new object
+                  let todolistWithTodos = {
+                    todolist: todolists[i],
+                    todos,
+                    numOfTodos,
+                  };
+                  todolistsWithTodos.push(todolistWithTodos);
+                }
+              })
+              .catch((err) => console.error(err))
+          );
+        }
+        Promise.all(promises)
+          .then(() => {
+            setTodolists(todolistsWithTodos);
+            setNumOfTodolists(todolists.length);
+          })
+          .catch((err) => console.error(err));
+      })
+      .catch((error) => console.error(error));
+  }, []);
 
   return isLoggedIn ? (
     <div>
