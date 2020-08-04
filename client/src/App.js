@@ -58,13 +58,18 @@ const App = () => {
         />
         <Login
           userId={userId}
+          jwt={jwt}
+          todolists={todolists}
           isLoggedIn={isLoggedIn}
+          userFirstName={firstName}
           setFirstName={setFirstName}
           setLastName={setLastName}
           setEmail={setEmail}
           setUserId={setUserId}
           setLoggedIn={setLoggedIn}
           setJwt={setJwt}
+          setTodolists={setTodolists}
+          setNumOfTodolists={setNumOfTodolists}
           path="/login"
         />
         <Redirect from="/login" to="/" />

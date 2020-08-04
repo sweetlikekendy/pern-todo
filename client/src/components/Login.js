@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import PropTypes from "prop-types";
 import { Link, navigate, redirectTo, Redirect } from "@reach/router";
 import axios from "axios";
 
 const Login = ({
+  userId,
+  jwt,
+  todolists,
   userFirstName,
   isLoggedIn,
   setEmail,
@@ -12,14 +15,27 @@ const Login = ({
   setUserId,
   setLoggedIn,
   setJwt,
+  setTodolists,
+  setNumOfTodolists,
 }) => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+
   const LOGIN_URI =
     process.env.NODE_ENV === `production`
       ? `some production uri`
       : `http://localhost:5000/api/login`;
+
+  const GET_ALL_TODOLISTS_URI = (userId) =>
+    process.env.NODE_ENV === `production`
+      ? `some production uri`
+      : `http://localhost:5000/api/users/${userId}/todolists`;
+
+  const GET_ALL_TODOS_URI = (userId, todolistId) =>
+    process.env.NODE_ENV === `production`
+      ? `some production uri`
+      : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos`;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,8 +45,7 @@ const Login = ({
         password: formPassword,
       })
       .then((response) => {
-        console.log(response.data);
-        const { loggedIn, message, redirect, token, user } = response.data;
+        const { loggedIn, message, token, user } = response.data;
 
         if (loggedIn) {
           const { first_name, last_name, email, id } = user;
@@ -41,7 +56,6 @@ const Login = ({
           setLastName(last_name);
           setUserId(id);
           setEmail(email);
-          navigate(redirect);
         } else {
           setStatusMessage(message);
         }
@@ -52,7 +66,7 @@ const Login = ({
   return (
     <div>
       {isLoggedIn ? (
-        <Redirect from="login" to="/" />
+        <div>Hello, {userFirstName}! You're logged in!</div>
       ) : (
         <div>
           <p>Status: {statusMessage} </p>
