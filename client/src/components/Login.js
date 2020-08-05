@@ -4,9 +4,6 @@ import { Link, navigate, redirectTo, Redirect } from "@reach/router";
 import axios from "axios";
 
 const Login = ({
-  userId,
-  jwt,
-  todolists,
   userFirstName,
   isLoggedIn,
   setEmail,
@@ -15,8 +12,6 @@ const Login = ({
   setUserId,
   setLoggedIn,
   setJwt,
-  setTodolists,
-  setNumOfTodolists,
 }) => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");

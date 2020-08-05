@@ -57,9 +57,6 @@ const App = () => {
           // setNumOfTodos={setNumOfTodos}
         />
         <Login
-          userId={userId}
-          jwt={jwt}
-          todolists={todolists}
           isLoggedIn={isLoggedIn}
           userFirstName={firstName}
           setFirstName={setFirstName}
@@ -68,8 +65,6 @@ const App = () => {
           setUserId={setUserId}
           setLoggedIn={setLoggedIn}
           setJwt={setJwt}
-          setTodolists={setTodolists}
-          setNumOfTodolists={setNumOfTodolists}
           path="/login"
         />
         <Redirect from="/login" to="/" />

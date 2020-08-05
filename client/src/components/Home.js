@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link, navigate } from "@reach/router";
 import axios from "axios";
+
+import { Todolist } from "./Todolist";
 
 const Home = ({
   numOfTodolists,
@@ -17,25 +19,26 @@ const Home = ({
   setNumOfTodolists,
   setNumOfTodos,
 }) => {
-  const GET_ALL_TODOLISTS_URI = (userId) =>
+  const [inputTitle, setInputTitle] = useState("");
+  const TODOLISTS_URI = (userId) =>
     process.env.NODE_ENV === `production`
       ? `some production uri`
       : `http://localhost:5000/api/users/${userId}/todolists`;
-  // const GET_SINGLE_TODOLIST_URI = (userId, todolistId) =>
+  // const SINGLE_TODOLIST_URI = (userId, todolistId) =>
   //   process.env.NODE_ENV === `production`
   //     ? `some production uri`
   //     : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}`;
-  const GET_ALL_TODOS_URI = (userId, todolistId) =>
+  const TODOS_URI = (userId, todolistId) =>
     process.env.NODE_ENV === `production`
       ? `some production uri`
       : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos`;
-  // const GET_SINGLE_TODO_URI = (userId, todolistId, todoId) =>
+  // const SINGLE_TODO_URI = (userId, todolistId, todoId) =>
   //   process.env.NODE_ENV === `production`
   //     ? `some production uri`
   //     : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;
   useEffect(() => {
     axios
-      .get(GET_ALL_TODOLISTS_URI(userId), {
+      .get(TODOLISTS_URI(userId), {
         headers: {
           Authorization: jwt,
         },
@@ -49,7 +52,7 @@ const Home = ({
         for (let i = 0; i < todolists.length; i++) {
           promises.push(
             axios
-              .get(GET_ALL_TODOS_URI(userId, todolists[i].id), {
+              .get(TODOS_URI(userId, todolists[i].id), {
                 headers: {
                   Authorization: jwt,
                 },
@@ -76,7 +79,7 @@ const Home = ({
                   todolistsWithTodos.push(todolistWithTodos);
                 }
               })
-              .catch((err) => console.error(err))
+              .catch((error) => console.error(error))
           );
         }
         Promise.all(promises)
@@ -84,10 +87,29 @@ const Home = ({
             setTodolists(todolistsWithTodos);
             setNumOfTodolists(todolists.length);
           })
-          .catch((err) => console.error(err));
+          .catch((error) => console.error(error));
       })
       .catch((error) => console.error(error));
   }, []);
+
+  const addTodolist = (event) => {
+    event.preventDefault();
+    axios
+      .post(
+        TODOLISTS_URI(userId),
+        { title: inputTitle },
+        {
+          headers: {
+            Authorization: jwt,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        setInputTitle("");
+      })
+      .catch((error) => console.error(error));
+  };
 
   return isLoggedIn ? (
     <div>
@@ -101,28 +123,28 @@ const Home = ({
             <span> todolists</span>
           )}
         </p>
-        {/* <label>
-          title
+        <label>
           <input
             type="text"
             name="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            value={inputTitle}
+            placeholder="Enter todolist title here"
+            onChange={(e) => setInputTitle(e.target.value)}
           />
-        </label> */}
-        {/* <button onClick={() => addTodolist(user_id)}>Add new todolist</button> */}
+        </label>
+        <button onClick={(e) => addTodolist(e)}>Add new todolist</button>
       </div>
       <div>
         <ul>
           {todolists.map(({ todolist, todos }) => (
-            <li key={todolist.id}>
-              {todolist.title} | {todos.length} todos
-              <ul>
-                {todos.map((todo) => (
-                  <li key={todo.id}>{todo.description}</li>
-                ))}
-              </ul>
-            </li>
+            <Todolist
+              todolist={todolist}
+              todos={todos}
+              todosUri={TODOS_URI}
+              jwt={jwt}
+              userId={userId}
+              key={todolist.id}
+            />
           ))}
         </ul>
       </div>
