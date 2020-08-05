@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { Link, navigate } from "@reach/router";
 import axios from "axios";
 
-import { Todolist } from "./Todolist";
+import { Todolist, addTodolist } from "./Todolist";
+import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
 
 const Home = ({
   numOfTodolists,
@@ -20,22 +21,7 @@ const Home = ({
   setNumOfTodos,
 }) => {
   const [inputTitle, setInputTitle] = useState("");
-  const TODOLISTS_URI = (userId) =>
-    process.env.NODE_ENV === `production`
-      ? `some production uri`
-      : `http://localhost:5000/api/users/${userId}/todolists`;
-  // const SINGLE_TODOLIST_URI = (userId, todolistId) =>
-  //   process.env.NODE_ENV === `production`
-  //     ? `some production uri`
-  //     : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}`;
-  const TODOS_URI = (userId, todolistId) =>
-    process.env.NODE_ENV === `production`
-      ? `some production uri`
-      : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos`;
-  // const SINGLE_TODO_URI = (userId, todolistId, todoId) =>
-  //   process.env.NODE_ENV === `production`
-  //     ? `some production uri`
-  //     : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;
+
   useEffect(() => {
     axios
       .get(TODOLISTS_URI(userId), {
@@ -92,25 +78,6 @@ const Home = ({
       .catch((error) => console.error(error));
   }, []);
 
-  const addTodolist = (event) => {
-    event.preventDefault();
-    axios
-      .post(
-        TODOLISTS_URI(userId),
-        { title: inputTitle },
-        {
-          headers: {
-            Authorization: jwt,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        setInputTitle("");
-      })
-      .catch((error) => console.error(error));
-  };
-
   return isLoggedIn ? (
     <div>
       <div>
@@ -132,7 +99,13 @@ const Home = ({
             onChange={(e) => setInputTitle(e.target.value)}
           />
         </label>
-        <button onClick={(e) => addTodolist(e)}>Add new todolist</button>
+        <button
+          onClick={(e) =>
+            addTodolist(e, jwt, userId, inputTitle, setInputTitle)
+          }
+        >
+          Add new todolist
+        </button>
       </div>
       <div>
         <ul>
@@ -140,9 +113,10 @@ const Home = ({
             <Todolist
               todolist={todolist}
               todos={todos}
-              todosUri={TODOS_URI}
               jwt={jwt}
               userId={userId}
+              todolistId={todolist.id}
+              todolistTitle={todolist.title}
               key={todolist.id}
             />
           ))}
