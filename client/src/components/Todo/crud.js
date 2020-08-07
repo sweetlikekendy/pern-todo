@@ -1,10 +1,10 @@
 import axios from "axios";
+import { navigate } from "@reach/router";
 import { TODOS_URI, SINGLE_TODO_URI } from "../../endpoints";
 
 /**
  * Add a todo
  *
- * @param {object} event
  * @param {string} jwt JWT to authorize request
  * @param {number} userId User's ID
  * @param {number} todolistId Todolist's ID
@@ -12,8 +12,7 @@ import { TODOS_URI, SINGLE_TODO_URI } from "../../endpoints";
  * @param {method} setTodo The react hook to set the new todo
  * @return {object} The response of the axios post request
  */
-export const addTodo = (event, jwt, userId, todolistId, todo, setTodo) => {
-  event.preventDefault();
+export const addTodo = (jwt, userId, todolistId, todo, setTodo) => {
   axios
     .post(
       TODOS_URI(userId, todolistId),
@@ -27,6 +26,7 @@ export const addTodo = (event, jwt, userId, todolistId, todo, setTodo) => {
     .then((response) => {
       console.log(response);
       setTodo("");
+      navigate("/");
     })
     .catch((error) => console.error(error));
 };
@@ -34,15 +34,13 @@ export const addTodo = (event, jwt, userId, todolistId, todo, setTodo) => {
 /**
  * Delete a todo
  *
- * @param {object} event
  * @param {string} jwt JWT to authorize request
  * @param {number} userId User's ID
  * @param {number} todolistId Todolist's ID
  * @param {number} todoId Todo's ID
  * @return {object} The response of the axios delete request
  */
-export const deleteTodo = (event, jwt, userId, todolistId, todoId) => {
-  event.preventDefault();
+export const deleteTodo = (jwt, userId, todolistId, todoId) => {
   console.log(todoId);
   return axios
     .delete(SINGLE_TODO_URI(userId, todolistId, todoId), {
@@ -59,7 +57,6 @@ export const deleteTodo = (event, jwt, userId, todolistId, todoId) => {
 /**
  * Edit a todo
  *
- * @param {object} event The number to raise.
  * @param {string} jwt JWT to authorize request
  * @param {number} userId User's ID
  * @param {number} todolistId Todolist's ID
@@ -69,7 +66,6 @@ export const deleteTodo = (event, jwt, userId, todolistId, todoId) => {
  * @return {object} The response of the axios put request
  */
 export const editTodo = (
-  event,
   jwt,
   userId,
   todolistId,
@@ -78,8 +74,6 @@ export const editTodo = (
   setTodo,
   setShowInput
 ) => {
-  event.preventDefault();
-
   return axios
     .put(
       SINGLE_TODO_URI(userId, todolistId, todoId),

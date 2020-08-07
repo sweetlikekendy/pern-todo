@@ -4,16 +4,14 @@ import { TODOLISTS_URI, SINGLE_TODOLIST_URI } from "../../endpoints";
 /**
  * Add a todolist
  *
- * @param {object} event
  * @param {string} jwt JWT to authorize request
  * @param {number} userId User's ID
  * @param {string} todolist New todolist
  * @param {method} setTodolist The react hook to set the new todolist
  * @return {object} The response of the axios post request
  */
-export const addTodolist = (event, jwt, userId, todolist, setTodolist) => {
-  event.preventDefault();
-  return axios
+export const addTodolist = async (jwt, userId, todolist, setTodolist) => {
+  const data = await axios
     .post(
       TODOLISTS_URI(userId),
       { title: todolist },
@@ -28,19 +26,19 @@ export const addTodolist = (event, jwt, userId, todolist, setTodolist) => {
       console.log(response);
     })
     .catch((error) => console.error(error));
+
+  return data;
 };
 
 /**
  * Delete a todolist
  *
- * @param {object} event
  * @param {string} jwt JWT to authorize request
  * @param {number} userId User's ID
  * @param {number} todolistId Todolist's ID
  * @return {object} The response of the axios delete request
  */
-export const deleteTodolist = (event, jwt, userId, todolistId) => {
-  event.preventDefault();
+export const deleteTodolist = (jwt, userId, todolistId) => {
   return axios
     .delete(SINGLE_TODOLIST_URI(userId, todolistId), {
       headers: {
@@ -56,7 +54,6 @@ export const deleteTodolist = (event, jwt, userId, todolistId) => {
 /**
  * Edit a todolist
  *
- * @param {object} event The number to raise.
  * @param {string} jwt JWT to authorize request
  * @param {number} userId User's ID
  * @param {number} todolistId Todolist's ID
@@ -67,7 +64,6 @@ export const deleteTodolist = (event, jwt, userId, todolistId) => {
  * @return {object} The response of the axios put request
  */
 export const editTodolist = (
-  event,
   jwt,
   userId,
   todolistId,
@@ -75,7 +71,6 @@ export const editTodolist = (
   setTodolist,
   setShowInput
 ) => {
-  event.preventDefault();
   return axios
     .put(
       SINGLE_TODOLIST_URI(userId, todolistId),

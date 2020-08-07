@@ -13,7 +13,7 @@ const Todo = ({ jwt, userId, todolistId, todoId, description }) => {
 
   return (
     <li>
-      <button onClick={(e) => deleteTodo(e, jwt, userId, todolistId, todoId)}>
+      <button onClick={() => deleteTodo(jwt, userId, todolistId, todoId)}>
         X
       </button>
       {description}
@@ -31,9 +31,8 @@ const Todo = ({ jwt, userId, todolistId, todoId, description }) => {
       )}
       {showInput ? (
         <button
-          onClick={(e) =>
+          onClick={() =>
             editTodo(
-              e,
               jwt,
               userId,
               todolistId,
@@ -47,7 +46,7 @@ const Todo = ({ jwt, userId, todolistId, todoId, description }) => {
           Submit
         </button>
       ) : (
-        <button onClick={(e) => showEditTodo(e, todolistId)}>Edit Title</button>
+        <button onClick={() => showEditTodo(todolistId)}>Edit Title</button>
       )}{" "}
     </li>
   );

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
+import { Redirect } from "@reach/router";
 
 import { Todo } from "../Todo";
 import {
@@ -10,6 +11,7 @@ import {
 } from "../../endpoints";
 
 import { deleteTodolist, editTodolist } from "./crud";
+import { addTodo } from "../Todo";
 
 const Todolist = ({
   todolist,
@@ -18,40 +20,28 @@ const Todolist = ({
   userId,
   todolistId,
   todolistTitle,
+  navigate,
 }) => {
   const [inputTodo, setInputTodo] = useState("");
   const [newTodolist, setNewTodolist] = useState(todolistTitle);
   const [showInput, setShowInput] = useState(false);
-
-  const addTodo = (event, todolistId) => {
-    event.preventDefault();
-    axios
-      .post(
-        TODOS_URI(userId, todolistId),
-        { description: inputTodo },
-        {
-          headers: {
-            Authorization: jwt,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        setInputTodo("");
-      })
-      .catch((error) => console.error(error));
-  };
+  const [isIdle, setIsIdle] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isFailure, setIsFailure] = useState(false);
 
   const showEditTodolist = (event) => {
     event.preventDefault();
     setShowInput(true);
   };
 
+  if (isSuccess) {
+    return <Redirect to="/" noThrow />;
+  }
+
   return (
     <li>
-      <button onClick={(e) => deleteTodolist(e, jwt, userId, todolistId)}>
-        X
-      </button>
+      <button onClick={() => deleteTodolist(jwt, userId, todolistId)}>X</button>
       {todolist.title}{" "}
       {showInput ? (
         <label>
@@ -82,11 +72,10 @@ const Todolist = ({
           Submit
         </button>
       ) : (
-        <button onClick={(e) => showEditTodolist(e, todolistId)}>
-          Edit Title
-        </button>
+        <button onClick={() => showEditTodolist(todolistId)}>Edit Title</button>
       )}{" "}
-      | {todos.length} todos |{" "}
+      | {todos.length} todos
+      <br />
       <label>
         <input
           type="text"
@@ -96,7 +85,13 @@ const Todolist = ({
           onChange={(e) => setInputTodo(e.target.value)}
         />
       </label>
-      <button onClick={(e) => addTodo(e, todolistId)}>Add new todo</button>
+      <button
+        onClick={() => {
+          addTodo(jwt, userId, todolistId, inputTodo, setInputTodo);
+        }}
+      >
+        Add new todo
+      </button>
       <ul>
         {todos.map((todo, i) => {
           return (

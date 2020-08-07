@@ -1,3 +1,16 @@
+// TODO Add later
+const productionUri = `some production uri`;
+export const ROOT_URI =
+  process.env.NODE_ENV === `production`
+    ? productionUri
+    : `http://localhost:5000`;
+
+// Login URI
+export const LOGIN_URI =
+  process.env.NODE_ENV === `production`
+    ? `${ROOT_URI}`
+    : `${ROOT_URI}/api/login`;
+
 /**
  * Todolists URI
  *
@@ -6,8 +19,8 @@
  */
 export const TODOLISTS_URI = (userId) =>
   process.env.NODE_ENV === `production`
-    ? `some production uri`
-    : `http://localhost:5000/api/users/${userId}/todolists`;
+    ? `${ROOT_URI}`
+    : `${ROOT_URI}/api/users/${userId}/todolists`;
 
 /**
  * Single todolist URI
@@ -18,8 +31,8 @@ export const TODOLISTS_URI = (userId) =>
  */
 export const SINGLE_TODOLIST_URI = (userId, todolistId) =>
   process.env.NODE_ENV === `production`
-    ? `some production uri`
-    : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}`;
+    ? `${ROOT_URI}`
+    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}`;
 
 /**
  * Todos URI
@@ -30,8 +43,8 @@ export const SINGLE_TODOLIST_URI = (userId, todolistId) =>
  */
 export const TODOS_URI = (userId, todolistId) =>
   process.env.NODE_ENV === `production`
-    ? `some production uri`
-    : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos`;
+    ? `${ROOT_URI}`
+    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/todos`;
 
 /**
  * Single todo URI
@@ -43,5 +56,5 @@ export const TODOS_URI = (userId, todolistId) =>
  */
 export const SINGLE_TODO_URI = (userId, todolistId, todoId) =>
   process.env.NODE_ENV === `production`
-    ? `some production uri`
-    : `http://localhost:5000/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;
+    ? `${ROOT_URI}`
+    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;

@@ -8,28 +8,26 @@ import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
 
 const Home = ({
   numOfTodolists,
-  numOfTodos,
   firstName,
   userId,
   isLoggedIn,
   jwt,
   todolists,
-  todos,
   setTodolists,
-  setTodos,
   setNumOfTodolists,
-  setNumOfTodos,
+  navigate,
 }) => {
-  const [inputTitle, setInputTitle] = useState("");
+  const [newTodolist, setNewTodolist] = useState("");
+  const [requestCompleted, setRequestCompleted] = useState(false);
 
-  useEffect(() => {
-    axios
+  const fetchData = async () => {
+    const data = await axios
       .get(TODOLISTS_URI(userId), {
         headers: {
           Authorization: jwt,
         },
       })
-      .then((response) => {
+      .then(async (response) => {
         const { data } = response;
         const { todolists } = data;
         let todolistsWithTodos = [];
@@ -68,7 +66,7 @@ const Home = ({
               .catch((error) => console.error(error))
           );
         }
-        Promise.all(promises)
+        await Promise.all(promises)
           .then(() => {
             setTodolists(todolistsWithTodos);
             setNumOfTodolists(todolists.length);
@@ -76,7 +74,13 @@ const Home = ({
           .catch((error) => console.error(error));
       })
       .catch((error) => console.error(error));
-  }, []);
+
+    return data;
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [requestCompleted]);
 
   return isLoggedIn ? (
     <div>
@@ -94,15 +98,15 @@ const Home = ({
           <input
             type="text"
             name="title"
-            value={inputTitle}
+            value={newTodolist}
             placeholder="Enter todolist title here"
-            onChange={(e) => setInputTitle(e.target.value)}
+            onChange={(e) => setNewTodolist(e.target.value)}
           />
         </label>
         <button
-          onClick={(e) =>
-            addTodolist(e, jwt, userId, inputTitle, setInputTitle)
-          }
+          onClick={() => {
+            addTodolist(jwt, userId, newTodolist, setNewTodolist);
+          }}
         >
           Add new todolist
         </button>
@@ -117,6 +121,7 @@ const Home = ({
               userId={userId}
               todolistId={todolist.id}
               todolistTitle={todolist.title}
+              navigate={navigate}
               key={todolist.id}
             />
           ))}

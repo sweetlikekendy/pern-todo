@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Router, Link, Redirect } from "@reach/router";
+import { Router, Link, Redirect, navigate } from "@reach/router";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -7,25 +7,16 @@ import Logout from "./components/Logout";
 import usePersistedState from "./components/usePersistedState";
 
 const App = () => {
-  // const [isLoggedIn, setLoggedIn] = useState(false);
-  // const [firstName, setFirstName] = useState("");
-  // const [lastName, setLastName] = useState("");
-  // const [email, setEmail] = useState("");
   const [isLoggedIn, setLoggedIn] = usePersistedState(`isLoggedIn`, false);
   const [firstName, setFirstName] = usePersistedState(`firstName`, "");
   const [lastName, setLastName] = usePersistedState(`lastName`, "");
   const [email, setEmail] = usePersistedState(`email`, "");
   const [userId, setUserId] = usePersistedState(`userId`, 0);
   const [todolists, setTodolists] = usePersistedState(`todolists`, []);
-  // const [todos, setTodos] = usePersistedState(`todos`, "");
   const [numOfTodolists, setNumOfTodolists] = usePersistedState(
     `numOfTodolists`,
     0
   );
-  // const [numOfTodos, setNumOfTodos] = usePersistedState(
-  //   `numOfTodos`,
-  //   todos.length
-  // );
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
 
   return (
@@ -48,13 +39,9 @@ const App = () => {
           isLoggedIn={isLoggedIn}
           jwt={jwt}
           numOfTodolists={numOfTodolists}
-          // numOfTodos={numOfTodos}
           todolists={todolists}
-          // todos={todos}
           setTodolists={setTodolists}
-          // setTodos={setTodos}
           setNumOfTodolists={setNumOfTodolists}
-          // setNumOfTodos={setNumOfTodos}
         />
         <Login
           isLoggedIn={isLoggedIn}
@@ -81,9 +68,7 @@ const App = () => {
           setJwt={setJwt}
           setUserId={setUserId}
           setNumOfTodolists={setNumOfTodolists}
-          // setNumOfTodos={setNumOfTodos}
           setTodolists={setTodolists}
-          // setTodos={setTodos}
           path="/logout"
         />
         <Register

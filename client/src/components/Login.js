@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Link, navigate, redirectTo, Redirect } from "@reach/router";
+import { Link, navigate, Redirect } from "@reach/router";
 import axios from "axios";
+
+import { ROOT_URI, LOGIN_URI } from "../endpoints";
 
 const Login = ({
   userFirstName,
@@ -12,15 +14,11 @@ const Login = ({
   setUserId,
   setLoggedIn,
   setJwt,
+  navigate,
 }) => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
-
-  const LOGIN_URI =
-    process.env.NODE_ENV === `production`
-      ? `some production uri`
-      : `http://localhost:5000/api/login`;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,6 +39,7 @@ const Login = ({
           setLastName(last_name);
           setUserId(id);
           setEmail(email);
+          navigate("/");
         } else {
           setStatusMessage(message);
         }
@@ -51,7 +50,7 @@ const Login = ({
   return (
     <div>
       {isLoggedIn ? (
-        <div>Hello, {userFirstName}! You're logged in!</div>
+        <Redirect to="/" noThrow />
       ) : (
         <div>
           <p>Status: {statusMessage} </p>
