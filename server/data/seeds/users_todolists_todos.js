@@ -49,6 +49,7 @@ const createTodolist = (knex, todolist, firstName) => {
       return knex("todolists").insert({
         title: todolist.title,
         created_at: todolist.created_at,
+        updated_at: todolist.updated_at,
         user_id: userRecord.id,
       });
     })
@@ -64,6 +65,7 @@ const createTodo = (knex, todo, title) => {
       return knex("todos").insert({
         description: todo.description,
         created_at: todo.created_at,
+        updated_at: todo.updated_at,
         todolist_id: todolistRecord.id,
       });
     })

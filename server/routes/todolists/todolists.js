@@ -80,14 +80,16 @@ router.put(
   async (req, res) => {
     const { todolist_id } = req.params;
     const { title } = req.body;
+    const updatedAt = new Date();
 
     if (todolist_id) {
-      return await updateOne(todolist_id, title)
+      return await updateOne(todolist_id, title, updatedAt)
         .then((todolist) => {
           if (todolist) {
             return resStatusPayload(res, 200, {
               isUpdated: true,
               message: "Todolist Updated",
+              updatedAt,
             });
           }
           return resStatusPayload(res, 404, {

@@ -7,6 +7,7 @@ exports.up = function (knex) {
       table.string("email");
       table.string("password");
       table.datetime("created_at");
+      table.datetime("updated_at");
       table.unique("id");
       table.unique("email");
     }),
@@ -14,6 +15,7 @@ exports.up = function (knex) {
       table.increments("id").primary();
       table.string("title");
       table.datetime("created_at");
+      table.datetime("updated_at");
       table.integer("user_id").unsigned();
       table.unique("id");
     }),
@@ -21,6 +23,7 @@ exports.up = function (knex) {
       table.increments("id").primary();
       table.string("description");
       table.datetime("created_at");
+      table.datetime("updated_at");
       table.integer("todolist_id").unsigned();
       table.unique("id");
     }),
