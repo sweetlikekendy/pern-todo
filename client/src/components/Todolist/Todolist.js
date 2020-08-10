@@ -20,28 +20,26 @@ const Todolist = ({
   userId,
   todolistId,
   todolistTitle,
-  navigate,
+  setFetching,
 }) => {
-  const [inputTodo, setInputTodo] = useState("");
+  const [newTodo, setNewTodo] = useState("");
   const [newTodolist, setNewTodolist] = useState(todolistTitle);
   const [showInput, setShowInput] = useState(false);
-  const [isIdle, setIsIdle] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isFailure, setIsFailure] = useState(false);
 
-  const showEditTodolist = (event) => {
-    event.preventDefault();
+  const showEditTodolist = () => {
     setShowInput(true);
   };
 
-  if (isSuccess) {
-    return <Redirect to="/" noThrow />;
-  }
-
   return (
     <li>
-      <button onClick={() => deleteTodolist(jwt, userId, todolistId)}>X</button>
+      <button
+        onClick={() => {
+          setFetching(true);
+          deleteTodolist(jwt, userId, todolistId);
+        }}
+      >
+        X
+      </button>
       {todolist.title}{" "}
       {showInput ? (
         <label>
@@ -49,7 +47,12 @@ const Todolist = ({
             type="text"
             name="todo"
             value={newTodolist}
-            onChange={(e) => setNewTodolist(e.target.value)}
+            onChange={(e) => {
+              if (newTodolist) {
+                setFetching(true);
+                setNewTodolist(e.target.value);
+              }
+            }}
           />
         </label>
       ) : (
@@ -57,22 +60,22 @@ const Todolist = ({
       )}
       {showInput ? (
         <button
-          onClick={(e) =>
+          onClick={() => {
+            setFetching(true);
             editTodolist(
-              e,
               jwt,
               userId,
               todolistId,
               newTodolist,
               setNewTodolist,
               setShowInput
-            )
-          }
+            );
+          }}
         >
           Submit
         </button>
       ) : (
-        <button onClick={() => showEditTodolist(todolistId)}>Edit Title</button>
+        <button onClick={() => showEditTodolist()}>Edit Title</button>
       )}{" "}
       | {todos.length} todos
       <br />
@@ -80,14 +83,17 @@ const Todolist = ({
         <input
           type="text"
           name="todo"
-          value={inputTodo}
+          value={newTodo}
           placeholder="Enter todo here"
-          onChange={(e) => setInputTodo(e.target.value)}
+          onChange={(e) => setNewTodo(e.target.value)}
         />
       </label>
       <button
         onClick={() => {
-          addTodo(jwt, userId, todolistId, inputTodo, setInputTodo);
+          if (newTodo) {
+            setFetching(true);
+            addTodo(jwt, userId, todolistId, newTodo, setNewTodo);
+          }
         }}
       >
         Add new todo
@@ -102,6 +108,7 @@ const Todolist = ({
                 todolistId={todolistId}
                 todoId={todo.id}
                 description={todo.description}
+                setFetching={setFetching}
                 key={todo.id}
               />
             )

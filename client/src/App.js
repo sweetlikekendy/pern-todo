@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Router, Link, Redirect, navigate } from "@reach/router";
+import { Router, Link, Redirect } from "@reach/router";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -18,6 +18,7 @@ const App = () => {
     0
   );
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
+  const [fetching, setFetching] = useState(false);
 
   return (
     <div className="App">
@@ -42,15 +43,17 @@ const App = () => {
           todolists={todolists}
           setTodolists={setTodolists}
           setNumOfTodolists={setNumOfTodolists}
+          fetching={fetching}
+          setFetching={setFetching}
         />
         <Login
           isLoggedIn={isLoggedIn}
-          userFirstName={firstName}
           setFirstName={setFirstName}
           setLastName={setLastName}
           setEmail={setEmail}
           setUserId={setUserId}
           setLoggedIn={setLoggedIn}
+          setFetching={setFetching}
           setJwt={setJwt}
           path="/login"
         />

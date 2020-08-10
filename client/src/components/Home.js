@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Link, navigate } from "@reach/router";
+import { Link } from "@reach/router";
 import axios from "axios";
 
 import { Todolist, addTodolist } from "./Todolist";
@@ -15,72 +15,75 @@ const Home = ({
   todolists,
   setTodolists,
   setNumOfTodolists,
-  navigate,
+  fetching,
+  setFetching,
 }) => {
   const [newTodolist, setNewTodolist] = useState("");
-  const [requestCompleted, setRequestCompleted] = useState(false);
 
   const fetchData = async () => {
-    const data = await axios
-      .get(TODOLISTS_URI(userId), {
-        headers: {
-          Authorization: jwt,
-        },
-      })
-      .then(async (response) => {
-        const { data } = response;
-        const { todolists } = data;
-        let todolistsWithTodos = [];
-        let promises = [];
+    if (fetching) {
+      const data = await axios
+        .get(TODOLISTS_URI(userId), {
+          headers: {
+            Authorization: jwt,
+          },
+        })
+        .then(async (response) => {
+          const { data } = response;
+          const { todolists } = data;
+          let todolistsWithTodos = [];
+          let promises = [];
 
-        for (let i = 0; i < todolists.length; i++) {
-          promises.push(
-            axios
-              .get(TODOS_URI(userId, todolists[i].id), {
-                headers: {
-                  Authorization: jwt,
-                },
-              })
-              .then((response) => {
-                const { data } = response;
-                const { todos, numOfTodos } = data;
+          for (let i = 0; i < todolists.length; i++) {
+            promises.push(
+              axios
+                .get(TODOS_URI(userId, todolists[i].id), {
+                  headers: {
+                    Authorization: jwt,
+                  },
+                })
+                .then((response) => {
+                  const { data } = response;
+                  const { todos, numOfTodos } = data;
 
-                // if there are no todos, save the todos as a property as an empty array in a new object
-                if (numOfTodos === 0) {
-                  let todolistNoTodos = {
-                    todolist: todolists[i],
-                    todos: [],
-                    numOfTodos,
-                  };
-                  todolistsWithTodos.push(todolistNoTodos);
-                } else {
-                  // if there are todos, save the todos as a property as an array in a new object
-                  let todolistWithTodos = {
-                    todolist: todolists[i],
-                    todos,
-                    numOfTodos,
-                  };
-                  todolistsWithTodos.push(todolistWithTodos);
-                }
-              })
-              .catch((error) => console.error(error))
-          );
-        }
-        await Promise.all(promises)
-          .then(() => {
-            setTodolists(todolistsWithTodos);
-            setNumOfTodolists(todolists.length);
-          })
-          .catch((error) => console.error(error));
-      })
-      .catch((error) => console.error(error));
+                  // if there are no todos, save the todos as a property as an empty array in a new object
+                  if (numOfTodos === 0) {
+                    let todolistNoTodos = {
+                      todolist: todolists[i],
+                      todos: [],
+                      numOfTodos,
+                    };
+                    todolistsWithTodos.push(todolistNoTodos);
+                  } else {
+                    // if there are todos, save the todos as a property as an array in a new object
+                    let todolistWithTodos = {
+                      todolist: todolists[i],
+                      todos,
+                      numOfTodos,
+                    };
+                    todolistsWithTodos.push(todolistWithTodos);
+                  }
+                })
+                .catch((error) => console.error(error))
+            );
+          }
+          await Promise.all(promises)
+            .then(() => {
+              setTodolists(todolistsWithTodos);
+              setNumOfTodolists(todolists.length);
+            })
+            .catch((error) => console.error(error));
+        })
+        .catch((error) => console.error(error));
 
-    return data;
+      setFetching(false);
+      return data;
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, [requestCompleted]);
+  }, [fetching]);
 
   return isLoggedIn ? (
     <div>
@@ -105,7 +108,10 @@ const Home = ({
         </label>
         <button
           onClick={() => {
-            addTodolist(jwt, userId, newTodolist, setNewTodolist);
+            if (newTodolist) {
+              setFetching(true);
+              addTodolist(jwt, userId, newTodolist, setNewTodolist);
+            }
           }}
         >
           Add new todolist
@@ -121,7 +127,7 @@ const Home = ({
               userId={userId}
               todolistId={todolist.id}
               todolistTitle={todolist.title}
-              navigate={navigate}
+              setFetching={setFetching}
               key={todolist.id}
             />
           ))}

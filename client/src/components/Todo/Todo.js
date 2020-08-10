@@ -2,18 +2,29 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { deleteTodo, editTodo } from "./";
 
-const Todo = ({ jwt, userId, todolistId, todoId, description }) => {
+const Todo = ({
+  jwt,
+  userId,
+  todolistId,
+  todoId,
+  description,
+  setFetching,
+}) => {
   const [newTodo, setNewTodo] = useState(description);
   const [showInput, setShowInput] = useState(false);
 
   const showEditTodo = (event) => {
-    event.preventDefault();
     setShowInput(true);
   };
 
   return (
     <li>
-      <button onClick={() => deleteTodo(jwt, userId, todolistId, todoId)}>
+      <button
+        onClick={() => {
+          setFetching(true);
+          deleteTodo(jwt, userId, todolistId, todoId);
+        }}
+      >
         X
       </button>
       {description}
@@ -31,22 +42,32 @@ const Todo = ({ jwt, userId, todolistId, todoId, description }) => {
       )}
       {showInput ? (
         <button
-          onClick={() =>
-            editTodo(
-              jwt,
-              userId,
-              todolistId,
-              todoId,
-              newTodo,
-              setNewTodo,
-              setShowInput
-            )
-          }
+          onClick={() => {
+            if (newTodo) {
+              setFetching(true);
+              editTodo(
+                jwt,
+                userId,
+                todolistId,
+                todoId,
+                newTodo,
+                setNewTodo,
+                setShowInput
+              );
+            }
+          }}
         >
           Submit
         </button>
       ) : (
-        <button onClick={() => showEditTodo(todolistId)}>Edit Title</button>
+        <button
+          onClick={() => {
+            setFetching(true);
+            showEditTodo(todolistId);
+          }}
+        >
+          Edit Title
+        </button>
       )}{" "}
     </li>
   );

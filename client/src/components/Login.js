@@ -6,7 +6,6 @@ import axios from "axios";
 import { ROOT_URI, LOGIN_URI } from "../endpoints";
 
 const Login = ({
-  userFirstName,
   isLoggedIn,
   setEmail,
   setFirstName,
@@ -14,6 +13,7 @@ const Login = ({
   setUserId,
   setLoggedIn,
   setJwt,
+  setFetching,
   navigate,
 }) => {
   const [formEmail, setFormEmail] = useState("");
@@ -39,6 +39,7 @@ const Login = ({
           setLastName(last_name);
           setUserId(id);
           setEmail(email);
+          setFetching(true);
           navigate("/");
         } else {
           setStatusMessage(message);
