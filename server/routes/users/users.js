@@ -44,12 +44,17 @@ router.get("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
   const { id } = req.params;
   const { firstName, lastName, email, password } = req.body;
+  const updatedAt = new Date();
 
   if (!isNaN(id)) {
-    return updateOne(id, firstName, lastName, email, password)
+    return updateOne(id, firstName, lastName, email, password, updatedAt)
       .then((user) => {
         if (user) {
-          return res.json("Updated user info");
+          return resStatusPayload(res, 200, {
+            isUpdated: true,
+            message: "Updated user info",
+            updatedAt,
+          });
         }
         return resStatusPayload(res, 404, "User Not Found");
       })
