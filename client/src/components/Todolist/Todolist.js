@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
-import { Redirect } from "@reach/router";
-
 import { Todo } from "../Todo";
 import {
   SINGLE_TODOLIST_URI,
@@ -14,6 +11,7 @@ import { deleteTodolist, editTodolist } from "./crud";
 import { addTodo } from "../Todo";
 
 const Todolist = ({
+  index,
   todolist,
   todos,
   jwt,
@@ -21,10 +19,13 @@ const Todolist = ({
   todolistId,
   todolistTitle,
   setFetching,
+  moveItemUp,
+  moveItemDown,
 }) => {
   const [newTodo, setNewTodo] = useState("");
   const [newTodolist, setNewTodolist] = useState(todolistTitle);
   const [showInput, setShowInput] = useState(false);
+  const buttonStyle = { padding: "8px", margin: "8px" };
 
   const showEditTodolist = () => {
     setShowInput(true);
@@ -33,6 +34,23 @@ const Todolist = ({
   return (
     <li>
       <button
+        style={buttonStyle}
+        onClick={() => {
+          moveItemUp(index);
+        }}
+      >
+        Up
+      </button>
+      <button
+        style={buttonStyle}
+        onClick={() => {
+          moveItemDown(index);
+        }}
+      >
+        Down
+      </button>
+      <button
+        style={buttonStyle}
         onClick={() => {
           setFetching(true);
           deleteTodolist(jwt, userId, todolistId);
@@ -60,6 +78,7 @@ const Todolist = ({
       )}
       {showInput ? (
         <button
+          style={buttonStyle}
           onClick={() => {
             setFetching(true);
             editTodolist(
@@ -75,7 +94,9 @@ const Todolist = ({
           Submit
         </button>
       ) : (
-        <button onClick={() => showEditTodolist()}>Edit Title</button>
+        <button style={buttonStyle} onClick={() => showEditTodolist()}>
+          Edit Title
+        </button>
       )}{" "}
       | {todos.length} todos
       <br />
@@ -89,6 +110,7 @@ const Todolist = ({
         />
       </label>
       <button
+        style={buttonStyle}
         onClick={() => {
           if (newTodo) {
             setFetching(true);

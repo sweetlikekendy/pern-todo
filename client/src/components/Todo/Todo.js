@@ -12,7 +12,7 @@ const Todo = ({
 }) => {
   const [newTodo, setNewTodo] = useState(description);
   const [showInput, setShowInput] = useState(false);
-
+  const buttonStyle = { padding: "8px", margin: "8px" };
   const showEditTodo = (event) => {
     setShowInput(true);
   };
@@ -20,6 +20,7 @@ const Todo = ({
   return (
     <li>
       <button
+        style={buttonStyle}
         onClick={() => {
           setFetching(true);
           deleteTodo(jwt, userId, todolistId, todoId);
@@ -42,6 +43,7 @@ const Todo = ({
       )}
       {showInput ? (
         <button
+          style={buttonStyle}
           onClick={() => {
             if (newTodo) {
               setFetching(true);
@@ -61,6 +63,7 @@ const Todo = ({
         </button>
       ) : (
         <button
+          style={buttonStyle}
           onClick={() => {
             setFetching(true);
             showEditTodo(todolistId);

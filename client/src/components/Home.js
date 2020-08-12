@@ -12,11 +12,21 @@ const Home = ({
   userId,
   isLoggedIn,
   jwt,
+  persistedTodolists,
+  setPersistedTodolists,
   todolists,
   setTodolists,
   setNumOfTodolists,
   fetching,
   setFetching,
+  moveItemUp,
+  moveItemDown,
+  reordering,
+  setReordering,
+  moveUp,
+  setMoveUp,
+  moveDown,
+  setMoveDown,
 }) => {
   const [newTodolist, setNewTodolist] = useState("");
 
@@ -77,10 +87,27 @@ const Home = ({
     }
   };
 
+  const reorderData = async () => {
+    if (reordering) {
+      if (moveUp) {
+        setMoveUp(false);
+      }
+      if (moveDown) {
+        setMoveDown(false);
+      }
+    }
+  };
+
   useEffect(() => {
-    fetchData();
-    setFetching(false);
-  }, [fetching]);
+    if (fetching) {
+      fetchData();
+      setFetching(false);
+    }
+    if (reordering) {
+      reorderData();
+      setReordering(false);
+    }
+  }, [fetching, reordering]);
 
   return isLoggedIn ? (
     <div>
@@ -116,8 +143,9 @@ const Home = ({
       </div>
       <div>
         <ul>
-          {todolists.map(({ todolist, todos }) => (
+          {todolists.map(({ todolist, todos }, i) => (
             <Todolist
+              index={i}
               todolist={todolist}
               todos={todos}
               jwt={jwt}
@@ -126,6 +154,8 @@ const Home = ({
               todolistTitle={todolist.title}
               setFetching={setFetching}
               key={todolist.id}
+              moveItemUp={moveItemUp}
+              moveItemDown={moveItemDown}
             />
           ))}
         </ul>
