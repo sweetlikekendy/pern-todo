@@ -19,7 +19,6 @@ const App = () => {
   );
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
   const [fetching, setFetching] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const pageRefresh = () => {
     if (window.performance) {
@@ -60,8 +59,6 @@ const App = () => {
           setNumOfTodolists={setNumOfTodolists}
           fetching={fetching}
           setFetching={setFetching}
-          loading={loading}
-          setLoading={setLoading}
         />
         <Login
           isLoggedIn={isLoggedIn}
