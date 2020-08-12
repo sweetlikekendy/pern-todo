@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Router, Link, Redirect } from "@reach/router";
 import Home from "./components/Home";
 import Login from "./components/Login";
@@ -19,6 +19,21 @@ const App = () => {
   );
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
   const [fetching, setFetching] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const pageRefresh = () => {
+    if (window.performance) {
+      if (performance.navigation.type) {
+        setFetching(true);
+      } else {
+        setFetching(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    pageRefresh();
+  }, []);
 
   return (
     <div className="App">
@@ -45,6 +60,8 @@ const App = () => {
           setNumOfTodolists={setNumOfTodolists}
           fetching={fetching}
           setFetching={setFetching}
+          loading={loading}
+          setLoading={setLoading}
         />
         <Login
           isLoggedIn={isLoggedIn}

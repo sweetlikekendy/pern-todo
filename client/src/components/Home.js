@@ -31,44 +31,41 @@ const Home = ({
         .then(async (response) => {
           const { data } = response;
           const { todolists } = data;
-          let todolistsWithTodos = [];
-          let promises = [];
+          const promises = [];
 
           for (let i = 0; i < todolists.length; i++) {
             promises.push(
-              axios
-                .get(TODOS_URI(userId, todolists[i].id), {
-                  headers: {
-                    Authorization: jwt,
-                  },
-                })
-                .then((response) => {
-                  const { data } = response;
-                  const { todos, numOfTodos } = data;
-
-                  // if there are no todos, save the todos as a property as an empty array in a new object
-                  if (numOfTodos === 0) {
-                    let todolistNoTodos = {
-                      todolist: todolists[i],
-                      todos: [],
-                      numOfTodos,
-                    };
-                    todolistsWithTodos.push(todolistNoTodos);
-                  } else {
-                    // if there are todos, save the todos as a property as an array in a new object
-                    let todolistWithTodos = {
-                      todolist: todolists[i],
-                      todos,
-                      numOfTodos,
-                    };
-                    todolistsWithTodos.push(todolistWithTodos);
-                  }
-                })
-                .catch((error) => console.error(error))
+              axios.get(TODOS_URI(userId, todolists[i].id), {
+                headers: {
+                  Authorization: jwt,
+                },
+              })
             );
           }
-          await Promise.all(promises)
-            .then(() => {
+
+          return await Promise.all(promises)
+            .then(async (results) => {
+              const todolistsWithTodos = [];
+              await results.map(({ data }, i) => {
+                const { todos, numOfTodos } = data;
+                // if there are no todos, save the todos as a property as an empty array in a new object
+                if (numOfTodos === 0) {
+                  const todolistNoTodos = {
+                    todolist: todolists[i],
+                    todos: [],
+                    numOfTodos,
+                  };
+                  todolistsWithTodos.push(todolistNoTodos);
+                } else {
+                  // if there are todos, save the todos as a property as an array in a new object
+                  const todolistWithTodos = {
+                    todolist: todolists[i],
+                    todos,
+                    numOfTodos,
+                  };
+                  todolistsWithTodos.push(todolistWithTodos);
+                }
+              });
               setTodolists(todolistsWithTodos);
               setNumOfTodolists(todolists.length);
             })
@@ -76,13 +73,13 @@ const Home = ({
         })
         .catch((error) => console.error(error));
 
-      setFetching(false);
       return data;
     }
   };
 
   useEffect(() => {
     fetchData();
+    setFetching(false);
   }, [fetching]);
 
   return isLoggedIn ? (
