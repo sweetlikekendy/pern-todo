@@ -12,27 +12,21 @@ const Home = ({
   userId,
   isLoggedIn,
   jwt,
-  persistedTodolists,
-  setPersistedTodolists,
   todolists,
   setTodolists,
   setNumOfTodolists,
   fetching,
   setFetching,
-  moveItemUp,
-  moveItemDown,
   reordering,
   setReordering,
-  moveUp,
-  setMoveUp,
-  moveDown,
-  setMoveDown,
 }) => {
   const [newTodolist, setNewTodolist] = useState("");
 
   const fetchData = async () => {
-    if (fetching) {
-      const data = await axios
+    console.log(todolists.length);
+    if (todolists.length === 0) {
+      console.log("inside todolists.length === 0");
+      await axios
         .get(TODOLISTS_URI(userId), {
           headers: {
             Authorization: jwt,
@@ -82,19 +76,9 @@ const Home = ({
             .catch((error) => console.error(error));
         })
         .catch((error) => console.error(error));
-
-      return data;
-    }
-  };
-
-  const reorderData = async () => {
-    if (reordering) {
-      if (moveUp) {
-        setMoveUp(false);
-      }
-      if (moveDown) {
-        setMoveDown(false);
-      }
+    } else {
+      console.log("inside else");
+      window.localStorage.setItem("todolists", JSON.stringify(todolists));
     }
   };
 
@@ -102,10 +86,6 @@ const Home = ({
     if (fetching) {
       fetchData();
       setFetching(false);
-    }
-    if (reordering) {
-      reorderData();
-      setReordering(false);
     }
   }, [fetching, reordering]);
 
@@ -146,6 +126,8 @@ const Home = ({
           {todolists.map(({ todolist, todos }, i) => (
             <Todolist
               index={i}
+              setTodolists={setTodolists}
+              todolists={todolists}
               todolist={todolist}
               todos={todos}
               jwt={jwt}
@@ -154,8 +136,8 @@ const Home = ({
               todolistTitle={todolist.title}
               setFetching={setFetching}
               key={todolist.id}
-              moveItemUp={moveItemUp}
-              moveItemDown={moveItemDown}
+              reordering={reordering}
+              setReordering={setReordering}
             />
           ))}
         </ul>

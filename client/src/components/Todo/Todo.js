@@ -1,24 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { deleteTodo, editTodo } from "./";
 
 const Todo = ({
+  index,
   jwt,
+  todos,
   userId,
+  todolists,
   todolistId,
+  todolistIndex,
   todoId,
   description,
   setFetching,
+  moveTodoElementUp,
+  moveTodoElementDown,
+  reordering,
+  setReordering,
+  reorderData,
 }) => {
   const [newTodo, setNewTodo] = useState(description);
   const [showInput, setShowInput] = useState(false);
   const buttonStyle = { padding: "8px", margin: "8px" };
-  const showEditTodo = (event) => {
+
+  const showEditTodo = () => {
     setShowInput(true);
   };
 
+  // useEffect(() => {
+  //   if (reordering) {
+  //     reorderData(todos);
+  //     setReordering(false);
+  //   }
+  // }, [reordering]);
+
   return (
     <li>
+      <button
+        style={buttonStyle}
+        onClick={() => {
+          setReordering(true);
+          moveTodoElementUp(todolists, todolistIndex, todos, index);
+        }}
+      >
+        Up
+      </button>
+      <button
+        style={buttonStyle}
+        onClick={() => {
+          setReordering(true);
+          moveTodoElementDown(todolists, todolistIndex, todos, index);
+        }}
+      >
+        Down
+      </button>
       <button
         style={buttonStyle}
         onClick={() => {

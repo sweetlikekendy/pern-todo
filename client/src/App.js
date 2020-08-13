@@ -20,8 +20,6 @@ const App = () => {
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
   const [fetching, setFetching] = useState(false);
   const [reordering, setReordering] = useState(false);
-  const [moveUp, setMoveUp] = useState(false);
-  const [moveDown, setMoveDown] = useState(false);
 
   // Fetch data on page refresh
   const pageRefresh = () => {
@@ -31,63 +29,6 @@ const App = () => {
       } else {
         setFetching(false);
       }
-    }
-  };
-
-  // Move and item up on a todolist or todo
-  const moveItemUp = async (index) => {
-    const currentIndex = index;
-    let newIndex = 0;
-
-    console.log("up");
-    console.log("current index", currentIndex);
-    if (currentIndex === 0) {
-      return console.log("can't move up, already at the top");
-    }
-    if (currentIndex !== 0) {
-      newIndex = index - 1;
-      console.log("new index", newIndex);
-
-      const todolistCurrent = todolists[currentIndex];
-      const todolistAhead = todolists[newIndex];
-
-      console.log("current todolist", todolistCurrent);
-      console.log("todolist ahead", todolistAhead);
-      todolists[currentIndex] = todolistAhead;
-      todolists[newIndex] = todolistCurrent;
-
-      await setTodolists(todolists);
-
-      console.log("new persisted todolist order", todolists);
-      setReordering(true);
-    }
-  };
-
-  // Move and item down on a todolist or todo
-  const moveItemDown = async (index) => {
-    const currentIndex = index;
-    let newIndex = 0;
-
-    console.log("down");
-    console.log("current index", currentIndex);
-    if (currentIndex === todolists.length - 1) {
-      return console.log("can't move down, already at the bottom");
-    }
-    if (currentIndex !== todolists.length - 1) {
-      newIndex = index + 1;
-      console.log("new index", newIndex);
-
-      const todolistCurrent = todolists[currentIndex];
-      const todolistBehind = todolists[newIndex];
-
-      console.log("current todolist", todolistCurrent);
-      console.log("todolist behind", todolistBehind);
-      todolists[currentIndex] = todolistBehind;
-      todolists[newIndex] = todolistCurrent;
-
-      await setTodolists(todolists);
-      console.log("new persisted todolist order", todolists);
-      setReordering(true);
     }
   };
 
@@ -120,14 +61,8 @@ const App = () => {
           setNumOfTodolists={setNumOfTodolists}
           fetching={fetching}
           setFetching={setFetching}
-          moveItemUp={moveItemUp}
-          moveItemDown={moveItemDown}
           reordering={reordering}
           setReordering={setReordering}
-          moveUp={moveUp}
-          setMoveUp={setMoveUp}
-          moveDown={moveDown}
-          setMoveDown={setMoveDown}
         />
         <Login
           isLoggedIn={isLoggedIn}

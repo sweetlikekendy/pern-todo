@@ -13,6 +13,7 @@ export default function usePersistedState(key, defaultValue) {
   useEffect(() => {
     // Serialize the value of item to set the value
     window.localStorage.setItem(key, JSON.stringify(state));
+    console.log(`local storage ${key} saved`);
   }, [state, key]);
   return [state, setState];
 }
