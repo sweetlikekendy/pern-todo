@@ -24,62 +24,112 @@ const Home = ({
 
   const fetchData = async () => {
     console.log(todolists.length);
-    if (todolists.length === 0) {
-      console.log("inside todolists.length === 0");
-      await axios
-        .get(TODOLISTS_URI(userId), {
-          headers: {
-            Authorization: jwt,
-          },
-        })
-        .then(async (response) => {
-          const { data } = response;
-          const { todolists } = data;
-          const promises = [];
+    // if (todolists.length === 0) {
+    //   console.log("inside todolists.length === 0");
+    //   await axios
+    //     .get(TODOLISTS_URI(userId), {
+    //       headers: {
+    //         Authorization: jwt,
+    //       },
+    //     })
+    //     .then(async (response) => {
+    //       const { data } = response;
+    //       const { todolists } = data;
+    //       const promises = [];
 
-          for (let i = 0; i < todolists.length; i++) {
-            promises.push(
-              axios.get(TODOS_URI(userId, todolists[i].id), {
-                headers: {
-                  Authorization: jwt,
-                },
-              })
-            );
-          }
+    //       for (let i = 0; i < todolists.length; i++) {
+    //         promises.push(
+    //           axios.get(TODOS_URI(userId, todolists[i].id), {
+    //             headers: {
+    //               Authorization: jwt,
+    //             },
+    //           })
+    //         );
+    //       }
 
-          return await Promise.all(promises)
-            .then(async (results) => {
-              const todolistsWithTodos = [];
-              await results.map(({ data }, i) => {
-                const { todos, numOfTodos } = data;
-                // if there are no todos, save the todos as a property as an empty array in a new object
-                if (numOfTodos === 0) {
-                  const todolistNoTodos = {
-                    todolist: todolists[i],
-                    todos: [],
-                    numOfTodos,
-                  };
-                  todolistsWithTodos.push(todolistNoTodos);
-                } else {
-                  // if there are todos, save the todos as a property as an array in a new object
-                  const todolistWithTodos = {
-                    todolist: todolists[i],
-                    todos,
-                    numOfTodos,
-                  };
-                  todolistsWithTodos.push(todolistWithTodos);
-                }
-              });
-              setTodolists(todolistsWithTodos);
-              setNumOfTodolists(todolists.length);
+    //       return await Promise.all(promises)
+    //         .then(async (results) => {
+    //           const todolistsWithTodos = [];
+    //           await results.map(({ data }, i) => {
+    //             const { todos, numOfTodos } = data;
+    //             // if there are no todos, save the todos as a property as an empty array in a new object
+    //             if (numOfTodos === 0) {
+    //               const todolistNoTodos = {
+    //                 todolist: todolists[i],
+    //                 todos: [],
+    //                 numOfTodos,
+    //               };
+    //               todolistsWithTodos.push(todolistNoTodos);
+    //             } else {
+    //               // if there are todos, save the todos as a property as an array in a new object
+    //               const todolistWithTodos = {
+    //                 todolist: todolists[i],
+    //                 todos,
+    //                 numOfTodos,
+    //               };
+    //               todolistsWithTodos.push(todolistWithTodos);
+    //             }
+    //           });
+    //           setTodolists(todolistsWithTodos);
+    //           setNumOfTodolists(todolists.length);
+    //         })
+    //         .catch((error) => console.error(error));
+    //     })
+    //     .catch((error) => console.error(error));
+    // } else {
+    //   console.log("inside else");
+    //   window.localStorage.setItem("todolists", JSON.stringify(todolists));
+    // }
+    await axios
+      .get(TODOLISTS_URI(userId), {
+        headers: {
+          Authorization: jwt,
+        },
+      })
+      .then(async (response) => {
+        const { data } = response;
+        const { todolists } = data;
+        const promises = [];
+
+        for (let i = 0; i < todolists.length; i++) {
+          promises.push(
+            axios.get(TODOS_URI(userId, todolists[i].id), {
+              headers: {
+                Authorization: jwt,
+              },
             })
-            .catch((error) => console.error(error));
-        })
-        .catch((error) => console.error(error));
-    } else {
-      console.log("inside else");
-      window.localStorage.setItem("todolists", JSON.stringify(todolists));
-    }
+          );
+        }
+
+        return await Promise.all(promises)
+          .then(async (results) => {
+            const todolistsWithTodos = [];
+            await results.map(({ data }, i) => {
+              const { todos, numOfTodos } = data;
+              // if there are no todos, save the todos as a property as an empty array in a new object
+              if (numOfTodos === 0) {
+                const todolistNoTodos = {
+                  todolist: todolists[i],
+                  todos: [],
+                  numOfTodos,
+                };
+                todolistsWithTodos.push(todolistNoTodos);
+              } else {
+                // if there are todos, save the todos as a property as an array in a new object
+                const todolistWithTodos = {
+                  todolist: todolists[i],
+                  todos,
+                  numOfTodos,
+                };
+                todolistsWithTodos.push(todolistWithTodos);
+              }
+            });
+            setTodolists(todolistsWithTodos);
+            setNumOfTodolists(todolists.length);
+          })
+          .catch((error) => console.error(error));
+      })
+      .catch((error) => console.error(error));
   };
 
   useEffect(() => {
