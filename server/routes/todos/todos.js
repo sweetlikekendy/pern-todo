@@ -84,11 +84,13 @@ router.put(
   authorizeJwt,
   async (req, res) => {
     const { todolist_id, todo_id } = req.params;
-    const { description } = req.body;
+    const { description, newTodolistId } = req.body;
     const updatedAt = new Date();
 
+    console.log(newTodolistId);
+
     if (todo_id) {
-      return await updateOne(todo_id, description, updatedAt)
+      return await updateOne(todo_id, description, newTodolistId, updatedAt)
         .then((todo) => {
           if (todo) {
             return resStatusPayload(res, 200, {

@@ -74,11 +74,19 @@ const createOne = (description, createdAt, todolistId) => {
  * @param {object} updatedAt Date todo was updated at
  * @return {object} Knex object containing updated todo
  */
-const updateOne = (todoId, description, updatedAt) => {
-  return knex("todos").where("id", todoId).first().update({
-    description,
-    updated_at: updatedAt,
-  });
+const updateOne = (todoId, description, newTodolistId, updatedAt) => {
+  if (!newTodolistId) {
+    return knex("todos").where("id", todoId).first().update({
+      description,
+      updated_at: updatedAt,
+    });
+  }
+  if (newTodolistId) {
+    return knex("todos").where("id", todoId).first().update({
+      todolist_id: newTodolistId,
+      updated_at: updatedAt,
+    });
+  }
 };
 
 export const todosRoutes = {

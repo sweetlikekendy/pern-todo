@@ -3,11 +3,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { Todo } from "../Todo";
 
-import {
-  SINGLE_TODOLIST_URI,
-  TODOS_URI,
-  SINGLE_TODO_URI,
-} from "../../endpoints";
+import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../endpoints";
 
 import { deleteTodolist, editTodolist } from "./crud";
 import { addTodo } from "../Todo";
@@ -80,34 +76,34 @@ const Todolist = ({
 
       console.log(totalNumOfTodos);
 
+      const {
+        title: aheadTodolistTitle,
+        id: aheadTodolistId,
+      } = todolistsArrayCopy[aheadIndex].todolist;
+      const {
+        title: currentTodolistTitle,
+        id: currentTodolistId,
+      } = todolistsArrayCopy[currentIndex].todolist;
+      const { numOfTodos: aheadNumOfTodos } = todolistsArrayCopy[aheadIndex];
+      const { numOfTodos: currentNumOfTodos } = todolistsArrayCopy[
+        currentIndex
+      ];
+
+      console.log(
+        "ahead title, todolist id",
+        aheadTodolistTitle,
+        aheadTodolistId
+      );
+      console.log(
+        "current title, todolist id",
+        currentTodolistTitle,
+        currentTodolistId
+      );
+
+      console.log("ahead num of todos", aheadNumOfTodos);
+      console.log("current num of todos", currentNumOfTodos);
+
       if (totalNumOfTodos === 0) {
-        const {
-          title: aheadTodolistTitle,
-          id: aheadTodolistId,
-        } = todolistsArrayCopy[aheadIndex].todolist;
-        const {
-          title: currentTodolistTitle,
-          id: currentTodolistId,
-        } = todolistsArrayCopy[currentIndex].todolist;
-        const { numOfTodos: aheadNumOfTodos } = todolistsArrayCopy[aheadIndex];
-        const { numOfTodos: currentNumOfTodos } = todolistsArrayCopy[
-          currentIndex
-        ];
-
-        console.log(
-          "ahead title, todolist id",
-          aheadTodolistTitle,
-          aheadTodolistId
-        );
-        console.log(
-          "current title, todolist id",
-          currentTodolistTitle,
-          currentTodolistId
-        );
-
-        console.log("ahead num of todos", aheadNumOfTodos);
-        console.log("current num of todos", currentNumOfTodos);
-
         await axios
           .put(
             SINGLE_TODOLIST_URI(userId, aheadTodolistId),
@@ -136,8 +132,128 @@ const Todolist = ({
             console.log(response);
           })
           .catch((error) => console.error(error));
-      } else {
-        console.log("inside else");
+        return;
+      }
+
+      // 1. Destructure the number of todos from the array elements
+      // 2. Sort elements based on number of todos
+      // in ascending order start from 0 to n. Ex: 0, 2;  1,2
+      twoElementsArray.sort(({ numOfTodos: a }, { numOfTodos: b }) => {
+        return a - b;
+      });
+
+      // Empty array of promises
+      let promises = [];
+      promises.push(
+        axios.put(
+          SINGLE_TODOLIST_URI(userId, aheadTodolistId),
+          { title: currentTodolistTitle },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+      );
+      promises.push(
+        axios.put(
+          SINGLE_TODOLIST_URI(userId, currentTodolistId),
+          { title: aheadTodolistTitle },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+      );
+
+      // If the first element in the array has no todos, the second element must have todos
+      if (twoElementsArray[0].numOfTodos === 0) {
+        // The new todolist id is the todolist id of the first element
+        const newTodolistId = twoElementsArray[0].todolist.id;
+
+        // Push axios put requests to promise array to all the todos with their new todolist ids
+        for (let i = 0; i < twoElementsArray[1].numOfTodos; i++) {
+          promises.push(
+            axios.put(
+              SINGLE_TODO_URI(
+                userId,
+                twoElementsArray[1].todolist.id,
+                twoElementsArray[1].todos[i].id
+              ),
+              {
+                newTodolistId,
+              },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+        }
+
+        // Execute all the promises
+        await Promise.all(promises)
+          .then((results) => console.log("change todos", results))
+          .catch((error) => console.error(error));
+        return;
+      }
+
+      // If the first element in the array has todos, the second element must have todos
+      if (twoElementsArray[0].numOfTodos !== 0) {
+        for (let i = 0; i < twoElementsArray[0].numOfTodos; i++) {
+          // The new todolist id is the todolist id of the second element
+          const newTodolistId = twoElementsArray[1].todolist.id;
+
+          // Push axios put requests to promise array to all the todos with their new todolist ids
+          promises.push(
+            axios.put(
+              SINGLE_TODO_URI(
+                userId,
+                twoElementsArray[0].todolist.id,
+                twoElementsArray[0].todos[i].id
+              ),
+              {
+                newTodolistId,
+              },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+        }
+        for (let i = 0; i < twoElementsArray[1].numOfTodos; i++) {
+          // The new todolist id is the todolist id of the first element
+          const newTodolistId = twoElementsArray[0].todolist.id;
+
+          // Push axios put requests to promise array to all the todos with their new todolist ids
+          promises.push(
+            axios.put(
+              SINGLE_TODO_URI(
+                userId,
+                twoElementsArray[1].todolist.id,
+                twoElementsArray[1].todos[i].id
+              ),
+              {
+                newTodolistId,
+              },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+        }
+
+        // Execute all the promises
+        await Promise.all(promises)
+          .then((results) => console.log("change todos", results))
+          .catch((error) => console.error(error));
+        return;
       }
     }
   };
