@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import axios from "axios";
 import { Todo } from "../Todo";
+
 import {
   SINGLE_TODOLIST_URI,
   TODOS_URI,
@@ -36,32 +38,112 @@ const Todolist = ({
     setShowInput(true);
   };
 
-  // Move todolist up the list
-  const moveTodolistElementUp = (array, index) => {
-    const currentIndex = index;
-    let newIndex = 0;
+  const swap = (array, x, y) => {
+    const tmp = array[x];
+    array[x] = array[y];
+    array[y] = tmp;
 
-    console.log(todolists);
+    return array;
+  };
+
+  // Move todolist up the list
+  const moveTodolistElementUp = async (array, index) => {
+    const currentIndex = index;
+    let aheadIndex = 0;
+    const todolistsArrayCopy = array;
+
     console.log("up");
+    console.log("todolists arr copy", todolistsArrayCopy);
     console.log("current index", currentIndex);
     if (currentIndex === 0) {
+      aheadIndex = 0;
       console.log("can't move up, already at the top");
     } else {
-      newIndex = index - 1;
-      console.log("new index", newIndex);
+      aheadIndex = index - 1;
+      console.log("new index", aheadIndex);
+      let twoElementsArray = [];
+
+      twoElementsArray = todolistsArrayCopy.slice(aheadIndex, currentIndex + 1);
 
       // Es6 Swap the element before with the current element
-      [todolists[newIndex], todolists[currentIndex]] = [
-        todolists[currentIndex],
-        todolists[newIndex],
+      [twoElementsArray[0], twoElementsArray[1]] = [
+        twoElementsArray[1],
+        twoElementsArray[0],
       ];
+      console.log("2 elements array swapped", twoElementsArray);
 
-      window.localStorage.setItem("todolists", JSON.stringify(todolists));
+      // window.localStorage.setItem("todolists", JSON.stringify(todolists));
+
+      const totalNumOfTodos = twoElementsArray.reduce((sum, { numOfTodos }) => {
+        return sum + numOfTodos;
+      }, 0);
+
+      console.log(totalNumOfTodos);
+
+      if (totalNumOfTodos === 0) {
+        const {
+          title: aheadTodolistTitle,
+          id: aheadTodolistId,
+        } = todolistsArrayCopy[aheadIndex].todolist;
+        const {
+          title: currentTodolistTitle,
+          id: currentTodolistId,
+        } = todolistsArrayCopy[currentIndex].todolist;
+        const { numOfTodos: aheadNumOfTodos } = todolistsArrayCopy[aheadIndex];
+        const { numOfTodos: currentNumOfTodos } = todolistsArrayCopy[
+          currentIndex
+        ];
+
+        console.log(
+          "ahead title, todolist id",
+          aheadTodolistTitle,
+          aheadTodolistId
+        );
+        console.log(
+          "current title, todolist id",
+          currentTodolistTitle,
+          currentTodolistId
+        );
+
+        console.log("ahead num of todos", aheadNumOfTodos);
+        console.log("current num of todos", currentNumOfTodos);
+
+        await axios
+          .put(
+            SINGLE_TODOLIST_URI(userId, aheadTodolistId),
+            { title: currentTodolistTitle },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => console.error(error));
+        await axios
+          .put(
+            SINGLE_TODOLIST_URI(userId, currentTodolistId),
+            { title: aheadTodolistTitle },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => console.error(error));
+      } else {
+        console.log("inside else");
+      }
     }
   };
 
   // Move todolist down the list
-  const moveTodolistElementDown = (todolists, index) => {
+  const moveTodolistElementDown = async (todolists, index) => {
     const currentIndex = index;
     let newIndex = 0;
 
@@ -80,7 +162,10 @@ const Todolist = ({
         todolists[currentIndex],
       ];
 
-      window.localStorage.setItem("todolists", JSON.stringify(todolists));
+      // window.localStorage.setItem("todolists", JSON.stringify(todolists));
+      // await axios.put().then((response) => {
+      //   SINGLE_TODOLIST_URI(userId, todolistId);
+      // });
     }
   };
 
