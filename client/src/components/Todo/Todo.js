@@ -40,7 +40,7 @@ const Todo = ({
         style={buttonStyle}
         onClick={() => {
           setReordering(true);
-          moveTodoElementUp(todolists, todolistIndex, todos, index);
+          moveTodoElementUp(todos, index);
         }}
       >
         Up
@@ -49,7 +49,7 @@ const Todo = ({
         style={buttonStyle}
         onClick={() => {
           setReordering(true);
-          moveTodoElementDown(todolists, todolistIndex, todos, index);
+          moveTodoElementDown(todos, index);
         }}
       >
         Down

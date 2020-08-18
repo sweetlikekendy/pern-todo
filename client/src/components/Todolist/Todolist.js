@@ -51,14 +51,18 @@ const Todolist = ({
     console.log("up");
     console.log("todolists arr copy", todolistsArrayCopy);
     console.log("current index", currentIndex);
+
+    // Element is at the beginning of array, can't move it forward
     if (currentIndex === 0) {
       aheadIndex = 0;
       console.log("can't move up, already at the top");
+      return;
     } else {
       aheadIndex = index - 1;
       console.log("new index", aheadIndex);
       let twoElementsArray = [];
 
+      // Slice the array to create a new array containing the two elements being swapped.
       twoElementsArray = todolistsArrayCopy.slice(aheadIndex, currentIndex + 1);
 
       // Es6 Swap the element before with the current element
@@ -67,8 +71,6 @@ const Todolist = ({
         twoElementsArray[0],
       ];
       console.log("2 elements array swapped", twoElementsArray);
-
-      // window.localStorage.setItem("todolists", JSON.stringify(todolists));
 
       const totalNumOfTodos = twoElementsArray.reduce((sum, { numOfTodos }) => {
         return sum + numOfTodos;
@@ -259,99 +261,373 @@ const Todolist = ({
   };
 
   // Move todolist down the list
-  const moveTodolistElementDown = async (todolists, index) => {
+  const moveTodolistElementDown = async (array, index) => {
     const currentIndex = index;
-    let newIndex = 0;
+    let behindIndex = 0;
+    const todolistsArrayCopy = array;
 
-    console.log(todolists);
+    console.log(todolistsArrayCopy);
     console.log("down");
     console.log("current index", currentIndex);
-    if (currentIndex === todolists.length - 1) {
+
+    // Element is at the end of array, can't move it backwards
+    if (currentIndex === todolistsArrayCopy.length - 1) {
       console.log("can't move down, already at the bottom");
     } else {
-      newIndex = index + 1;
-      console.log("new index", newIndex);
+      behindIndex = index + 1;
+      console.log("new index", behindIndex);
 
       // Swap the element after with the current element
-      [todolists[currentIndex], todolists[newIndex]] = [
-        todolists[newIndex],
-        todolists[currentIndex],
+      // [todolists[currentIndex], todolists[behindIndex]] = [
+      //   todolists[behindIndex],
+      //   todolists[currentIndex],
+      // ];
+
+      let twoElementsArray = [];
+
+      // Slice the array to create a new array containing the two elements being swapped.
+      twoElementsArray = todolistsArrayCopy.slice(
+        currentIndex,
+        behindIndex + 1
+      );
+
+      // Es6 Swap the element before with the current element
+      [twoElementsArray[0], twoElementsArray[1]] = [
+        twoElementsArray[1],
+        twoElementsArray[0],
+      ];
+      console.log("2 elements array swapped", twoElementsArray);
+
+      const totalNumOfTodos = twoElementsArray.reduce((sum, { numOfTodos }) => {
+        return sum + numOfTodos;
+      }, 0);
+
+      console.log(totalNumOfTodos);
+
+      const {
+        title: behindTodolistTitle,
+        id: behindTodolistId,
+      } = todolistsArrayCopy[behindIndex].todolist;
+      const {
+        title: currentTodolistTitle,
+        id: currentTodolistId,
+      } = todolistsArrayCopy[currentIndex].todolist;
+      const { numOfTodos: behindNumOfTodos } = todolistsArrayCopy[behindIndex];
+      const { numOfTodos: currentNumOfTodos } = todolistsArrayCopy[
+        currentIndex
       ];
 
-      // window.localStorage.setItem("todolists", JSON.stringify(todolists));
-      // await axios.put().then((response) => {
-      //   SINGLE_TODOLIST_URI(userId, todolistId);
-      // });
+      console.log(
+        "behind title, todolist id",
+        behindTodolistTitle,
+        behindTodolistId
+      );
+      console.log(
+        "current title, todolist id",
+        currentTodolistTitle,
+        currentTodolistId
+      );
+
+      console.log("behind num of todos", behindNumOfTodos);
+      console.log("current num of todos", currentNumOfTodos);
+
+      if (totalNumOfTodos === 0) {
+        await axios
+          .put(
+            SINGLE_TODOLIST_URI(userId, behindTodolistId),
+            { title: currentTodolistTitle },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => console.error(error));
+        await axios
+          .put(
+            SINGLE_TODOLIST_URI(userId, currentTodolistId),
+            { title: behindTodolistTitle },
+            {
+              headers: {
+                Authorization: jwt,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => console.error(error));
+        return;
+      }
+
+      // 1. Destructure the number of todos from the array elements
+      // 2. Sort elements based on number of todos
+      // in ascending order start from 0 to n. Ex: 0, 2;  1,2
+      twoElementsArray.sort(({ numOfTodos: a }, { numOfTodos: b }) => {
+        return a - b;
+      });
+
+      console.log(twoElementsArray);
+
+      // Empty array of promises
+      let promises = [];
+      promises.push(
+        axios.put(
+          SINGLE_TODOLIST_URI(userId, behindTodolistId),
+          { title: currentTodolistTitle },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+      );
+      promises.push(
+        axios.put(
+          SINGLE_TODOLIST_URI(userId, currentTodolistId),
+          { title: behindTodolistTitle },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+      );
+
+      // If the first element in the array has no todos, the second element must have todos
+      if (twoElementsArray[0].numOfTodos === 0) {
+        // The new todolist id is the todolist id of the first element
+        const newTodolistId = twoElementsArray[0].todolist.id;
+
+        // Push axios put requests to promise array to all the todos with their new todolist ids
+        for (let i = 0; i < twoElementsArray[1].numOfTodos; i++) {
+          promises.push(
+            axios.put(
+              SINGLE_TODO_URI(
+                userId,
+                twoElementsArray[1].todolist.id,
+                twoElementsArray[1].todos[i].id
+              ),
+              {
+                newTodolistId,
+              },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+        }
+
+        // Execute all the promises
+        await Promise.all(promises)
+          .then((results) => console.log("change todos", results))
+          .catch((error) => console.error(error));
+        return;
+      }
+
+      // If the first element in the array has todos, the second element must have todos
+      if (twoElementsArray[0].numOfTodos !== 0) {
+        for (let i = 0; i < twoElementsArray[0].numOfTodos; i++) {
+          // The new todolist id is the todolist id of the second element
+          const newTodolistId = twoElementsArray[1].todolist.id;
+
+          // Push axios put requests to promise array to all the todos with their new todolist ids
+          promises.push(
+            axios.put(
+              SINGLE_TODO_URI(
+                userId,
+                twoElementsArray[0].todolist.id,
+                twoElementsArray[0].todos[i].id
+              ),
+              {
+                newTodolistId,
+              },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+        }
+        for (let i = 0; i < twoElementsArray[1].numOfTodos; i++) {
+          // The new todolist id is the todolist id of the first element
+          const newTodolistId = twoElementsArray[0].todolist.id;
+
+          // Push axios put requests to promise array to all the todos with their new todolist ids
+          promises.push(
+            axios.put(
+              SINGLE_TODO_URI(
+                userId,
+                twoElementsArray[1].todolist.id,
+                twoElementsArray[1].todos[i].id
+              ),
+              {
+                newTodolistId,
+              },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+        }
+
+        // Execute all the promises
+        await Promise.all(promises)
+          .then((results) => console.log("change todos", results))
+          .catch((error) => console.error(error));
+        return;
+      }
     }
   };
 
   // Move todo up a todolist
-  const moveTodoElementUp = (todolists, todolistIndex, todos, index) => {
+  const moveTodoElementUp = async (todos, index) => {
     const currentIndex = index;
-    let newIndex = 0;
+    let aheadIndex = 0;
+    const todosArrayCopy = todos;
+
+    console.log(todosArrayCopy);
 
     if (currentIndex === 0) {
       console.log("can't move up, already at the top");
     } else {
-      newIndex = index - 1;
-      console.log("new index", newIndex);
+      aheadIndex = index - 1;
+      console.log("current index", currentIndex);
+      console.log("new index", aheadIndex);
 
-      const elementCurrent = todos[currentIndex];
-      const elementAhead = todos[newIndex];
+      let twoElementsArray = [];
 
-      console.log("current element", elementCurrent);
-      console.log("element ahead", elementAhead);
-      todos[currentIndex] = elementAhead;
-      todos[newIndex] = elementCurrent;
+      // Slice the array to create a new array containing the two elements being swapped.
+      twoElementsArray = todosArrayCopy.slice(aheadIndex, currentIndex + 1);
 
-      const newTodolistElement = {
-        numOfTodos: todolists[todolistIndex].numOfTodos,
-        todolist: todolists[todolistIndex].todolist,
-        todos: ([todos[currentIndex], todos[newIndex]] = [
-          todos[newIndex],
-          todos[currentIndex],
-        ]),
-      };
+      // Es6 Swap the element before with the current element
+      [twoElementsArray[0], twoElementsArray[1]] = [
+        twoElementsArray[1],
+        twoElementsArray[0],
+      ];
 
-      console.log(newTodolistElement);
-      todolists[todolistIndex] = newTodolistElement;
-      console.log(todolists);
-      window.localStorage.setItem("todolists", JSON.stringify(todolists));
+      const {
+        description: aheadTodoDescription,
+        id: aheadTodoId,
+      } = todosArrayCopy[aheadIndex];
+      const {
+        description: currentTodoDescription,
+        id: currentTodoId,
+      } = todosArrayCopy[currentIndex];
+
+      const { todolist_id: todolistId } = todosArrayCopy[currentIndex];
+
+      console.log("ahead description", aheadTodoDescription);
+      console.log("current description", currentTodoDescription);
+      console.log("todolist id", todolistId);
+
+      await axios
+        .put(
+          SINGLE_TODO_URI(userId, todolistId, aheadTodoId),
+          { description: currentTodoDescription },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => console.error(error));
+      await axios
+        .put(
+          SINGLE_TODO_URI(userId, todolistId, currentTodoId),
+          { description: aheadTodoDescription },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => console.error(error));
+      return;
     }
   };
 
   // Move todo down a todolist
-  const moveTodoElementDown = (todolists, todolistIndex, todos, index) => {
+  const moveTodoElementDown = async (todos, index) => {
     const currentIndex = index;
-    let newIndex = 0;
+    let behindIndex = 0;
+    const todosArrayCopy = todos;
 
     if (currentIndex === todos.length - 1) {
       console.log("can't move down, already at the bottom");
     } else {
-      newIndex = index + 1;
-      console.log("new index", newIndex);
+      behindIndex = index + 1;
+      console.log("new index", behindIndex);
 
-      const elementCurrent = todos[currentIndex];
-      const elementAhead = todos[newIndex];
+      let twoElementsArray = [];
 
-      console.log("current element", elementCurrent);
-      console.log("element ahead", elementAhead);
-      todos[currentIndex] = elementAhead;
-      todos[newIndex] = elementCurrent;
+      // Slice the array to create a new array containing the two elements being swapped.
+      twoElementsArray = todosArrayCopy.slice(currentIndex, behindIndex + 1);
 
-      const newTodolistElement = {
-        numOfTodos: todolists[todolistIndex].numOfTodos,
-        todolist: todolists[todolistIndex].todolist,
-        todos: ([todos[newIndex], todos[currentIndex]] = [
-          todos[currentIndex],
-          todos[newIndex],
-        ]),
-      };
+      // Es6 Swap the element before with the current element
+      [twoElementsArray[0], twoElementsArray[1]] = [
+        twoElementsArray[1],
+        twoElementsArray[0],
+      ];
 
-      console.log(newTodolistElement);
-      todolists[todolistIndex] = newTodolistElement;
-      console.log(todolists);
-      window.localStorage.setItem("todolists", JSON.stringify(todolists));
+      const {
+        description: behindTodoDescription,
+        id: behindTodoId,
+      } = todosArrayCopy[behindIndex];
+      const {
+        description: currentTodoDescription,
+        id: currentTodoId,
+      } = todosArrayCopy[currentIndex];
+
+      const { todolist_id: todolistId } = todosArrayCopy[currentIndex];
+
+      console.log("behind description", behindTodoDescription);
+      console.log("current description", currentTodoDescription);
+      console.log("todolist id", todolistId);
+
+      await axios
+        .put(
+          SINGLE_TODO_URI(userId, todolistId, behindTodoId),
+          { description: currentTodoDescription },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => console.error(error));
+      await axios
+        .put(
+          SINGLE_TODO_URI(userId, todolistId, currentTodoId),
+          { description: behindTodoDescription },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => console.error(error));
+      return;
     }
   };
 
