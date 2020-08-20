@@ -8,23 +8,22 @@ import { Todolist, addTodolist } from "./Todolist";
 import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
 
 const Home = ({
-  numOfTodolists,
   firstName,
   userId,
   isLoggedIn,
   jwt,
   todolists,
   setTodolists,
-  setNumOfTodolists,
   fetching,
   setFetching,
   reordering,
   setReordering,
-  persistedData,
   setPersistedData,
+  stateData,
+  setStateData,
 }) => {
   const [newTodolist, setNewTodolist] = useState("");
-
+  const { numOfTodolists, todos } = stateData;
   const fetchData = async () => {
     // old working stuff
     await axios
@@ -76,7 +75,6 @@ const Home = ({
               }
             });
             setTodolists(todolistsWithTodos);
-            setNumOfTodolists(todolists.length);
           })
           .catch((error) => console.error(error));
       })
@@ -109,8 +107,12 @@ const Home = ({
         // Execute the array of promises
         await Promise.all(promises)
           .then(async (results) => {
-            const tmpData = { todos: {}, todolists: {}, todolistOrder: [] };
-            const todolistsWithTodos = {};
+            const tmpData = {
+              numOfTodolists,
+              todos: {},
+              todolists: {},
+              todolistOrder: [],
+            };
             const tmpTodos = [];
             await results.map(({ data }, i) => {
               const { todos, numOfTodos } = data;
@@ -119,24 +121,8 @@ const Home = ({
               todos.map((todo) => {
                 tmpTodos.push(todo);
               });
-
-              if (numOfTodos === 0) {
-                // const todolistNoTodos = {
-                //   todolist: todolists[i],
-                //   todos: [],
-                //   numOfTodos,
-                // };
-                // todolistsWithTodos[`todolist-${i}`] = todolistNoTodos;
-              } else {
-                // if there are todos, save the todos as a property as an array in a new object
-                // const todolistWithTodos = {
-                //   todolist: todolists[i],
-                //   todos,
-                //   numOfTodos,
-                // };
-                // todolistsWithTodos[`todolist-${i}`] = todolistWithTodos;
-              }
             });
+
             tmpTodos.map((todo, i) => {
               const normalizedIndex = i + 1;
               const {
@@ -194,10 +180,46 @@ const Home = ({
                 updatedAt: updated_at,
                 firstName: first_name,
                 lastName: last_name,
+                todoIds: [],
               };
               tmpData.todolistOrder.push(`todolist-${normalizedIndex}`);
             });
+
+            const todoEntries = Object.entries(tmpData.todos);
+            const todolistEntries = Object.entries(tmpData.todolists);
+
+            // for (let i = 0; i < todolistEntries.length; i++) {
+            //   console.log(todolistEntries[i]);
+            //   for (let j = 0; j < todoEntries.length; j++) {
+            //     console.log(todoEntries[j]);
+            //     if (todoEntries[j][1].todolistId === todolistEntries[i][1].id) {
+            //       console.log(
+            //         "matching",
+            //         todoEntries[j][1].todolistId,
+            //         todolistEntries[i][1].id
+            //       );
+            //       console.log(todoEntries[j][0]);
+            //       tmpData.todolists[`todolist-${i + 1}`].todoIds.push(
+            //         todoEntries[j][0]
+            //       );
+            //     }
+            //   }
+            // }
+
+            // Set the todos ids to their respective todolists
+            todolistEntries.map((todolistEntry, i) => {
+              return todoEntries.map((todoEntry, j) => {
+                // if there is a match
+                if (todoEntry[1].todolistId === todolistEntry[1].id) {
+                  tmpData.todolists[`todolist-${i + 1}`].todoIds.push(
+                    todoEntries[j][0]
+                  );
+                }
+              });
+            });
+            tmpData[`numOfTodolists`] = Object.keys(tmpData.todolists).length;
             setPersistedData(tmpData);
+            setStateData(tmpData);
           })
           .catch((error) => console.error(error));
       })
@@ -225,6 +247,8 @@ const Home = ({
     )
       return;
   };
+
+  console.log(stateData);
 
   return isLoggedIn ? (
     <div>

@@ -9,10 +9,8 @@ const Logout = ({
   setLoggedIn,
   setUserId,
   setJwt,
-  setNumOfTodolists,
-  // setNumOfTodos,
   setTodolists,
-  // setTodos,
+  setPersistedData,
 }) => {
   const logout = () => {
     setLoggedIn(false);
@@ -21,10 +19,8 @@ const Logout = ({
     setEmail("");
     setJwt("");
     setUserId("");
-    setNumOfTodolists(0);
-    // setNumOfTodos(0);
     setTodolists([]);
-    // setTodos("");
+    setPersistedData({});
   };
 
   useEffect(() => {

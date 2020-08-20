@@ -18,10 +18,7 @@ const App = () => {
     {}
   );
   const [stateData, setStateData] = useState(persistedData);
-  const [numOfTodolists, setNumOfTodolists] = usePersistedState(
-    `numOfTodolists`,
-    0
-  );
+
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
   const [fetching, setFetching] = useState(false);
   const [reordering, setReordering] = useState(false);
@@ -60,15 +57,14 @@ const App = () => {
           userId={userId}
           isLoggedIn={isLoggedIn}
           jwt={jwt}
-          numOfTodolists={numOfTodolists}
           todolists={todolists}
           setTodolists={setTodolists}
-          setNumOfTodolists={setNumOfTodolists}
           fetching={fetching}
           setFetching={setFetching}
           reordering={reordering}
           setReordering={setReordering}
-          persistedData={persistedData}
+          stateData={stateData}
+          setStateData={setStateData}
           setPersistedData={setPersistedData}
         />
         <Login
@@ -95,8 +91,8 @@ const App = () => {
           setLoggedIn={setLoggedIn}
           setJwt={setJwt}
           setUserId={setUserId}
-          setNumOfTodolists={setNumOfTodolists}
           setTodolists={setTodolists}
+          setPersistedData={setPersistedData}
           path="/logout"
         />
         <Register
