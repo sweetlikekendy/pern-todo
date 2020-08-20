@@ -13,6 +13,11 @@ const App = () => {
   const [email, setEmail] = usePersistedState(`email`, "");
   const [userId, setUserId] = usePersistedState(`userId`, 0);
   const [todolists, setTodolists] = usePersistedState(`todolists`, []);
+  const [persistedData, setPersistedData] = usePersistedState(
+    `persistedData`,
+    {}
+  );
+  const [stateData, setStateData] = useState(persistedData);
   const [numOfTodolists, setNumOfTodolists] = usePersistedState(
     `numOfTodolists`,
     0
@@ -63,6 +68,8 @@ const App = () => {
           setFetching={setFetching}
           reordering={reordering}
           setReordering={setReordering}
+          persistedData={persistedData}
+          setPersistedData={setPersistedData}
         />
         <Login
           isLoggedIn={isLoggedIn}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Todo } from "../Todo";
 
 import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../endpoints";
@@ -10,7 +11,6 @@ import { addTodo } from "../Todo";
 
 const Todolist = ({
   index,
-  setTodolists,
   todolists,
   todolist,
   todos,
@@ -21,6 +21,7 @@ const Todolist = ({
   setFetching,
   reordering,
   setReordering,
+  fetchData,
 }) => {
   const [newTodo, setNewTodo] = useState("");
   const [newTodolist, setNewTodolist] = useState(todolistTitle);
@@ -645,6 +646,7 @@ const Todolist = ({
   useEffect(() => {
     if (reordering) {
       reorderData(todolists);
+      fetchData();
       setReordering(false);
     }
   }, [reordering]);
@@ -749,9 +751,7 @@ const Todolist = ({
                 todos={todos}
                 jwt={jwt}
                 userId={userId}
-                todolists={todolists}
                 todolistId={todolistId}
-                todolistIndex={index}
                 todoId={todo.id}
                 description={todo.description}
                 setFetching={setFetching}

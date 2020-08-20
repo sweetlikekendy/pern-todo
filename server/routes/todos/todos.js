@@ -87,8 +87,6 @@ router.put(
     const { description, newTodolistId } = req.body;
     const updatedAt = new Date();
 
-    console.log(newTodolistId);
-
     if (todo_id) {
       return await updateOne(todo_id, description, newTodolistId, updatedAt)
         .then((todo) => {
