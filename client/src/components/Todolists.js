@@ -91,20 +91,20 @@ const Todolists = ({
         console.log(response);
       })
       .catch((error) => console.error(error));
-    // await axios
-    //   .put(
-    //     SINGLE_TODO_URI(userId, todolistId, todoTwo.id),
-    //     { description: todoOne.content },
-    //     {
-    //       headers: {
-    //         Authorization: jwt,
-    //       },
-    //     }
-    //   )
-    //   .then((response) => {
-    //     console.log(response);
-    //   })
-    //   .catch((error) => console.error(error));
+    await axios
+      .put(
+        SINGLE_TODO_URI(userId, todolistId, todoTwo.id),
+        { description: todoOne.content },
+        {
+          headers: {
+            Authorization: jwt,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => console.error(error));
 
     setFetching(true);
   };

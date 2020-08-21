@@ -195,8 +195,8 @@ const Home = ({
         <button
           onClick={() => {
             if (newTodolist) {
-              setFetching(true);
               addTodolist(jwt, userId, newTodolist, setNewTodolist);
+              setFetching(true);
             }
           }}
         >

@@ -18,16 +18,8 @@ const Button = styled.button`
   margin: 8px;
 `;
 
-const Todo = ({
-  index,
-  userId,
-  todolistId,
-  todo,
-  jwt,
-  description,
-  setFetching,
-}) => {
-  const [newTodo, setNewTodo] = useState(description);
+const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
+  const [newTodo, setNewTodo] = useState(todo.content);
   const [showInput, setShowInput] = useState(false);
   const todoId = todo.id;
 
@@ -46,8 +38,8 @@ const Todo = ({
         >
           <Button
             onClick={() => {
-              setFetching(true);
               deleteTodo(jwt, userId, todolistId, todoId);
+              setFetching(true);
             }}
           >
             X
@@ -69,16 +61,10 @@ const Todo = ({
             <Button
               onClick={() => {
                 if (newTodo) {
+                  editTodo(jwt, userId, todolistId, todoId, newTodo);
+                  setNewTodo("");
+                  setShowInput(false);
                   setFetching(true);
-                  editTodo(
-                    jwt,
-                    userId,
-                    todolistId,
-                    todoId,
-                    newTodo,
-                    setNewTodo,
-                    setShowInput
-                  );
                 }
               }}
             >
@@ -87,8 +73,7 @@ const Todo = ({
           ) : (
             <Button
               onClick={() => {
-                setFetching(true);
-                showEditTodo(todolistId);
+                showEditTodo();
               }}
             >
               Edit Title

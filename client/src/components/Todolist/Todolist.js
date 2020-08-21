@@ -32,14 +32,13 @@ const Todolist = ({
   todolist,
   todos,
   jwt,
-  todolistTitle,
   setFetching,
   reordering,
   setReordering,
   fetchData,
 }) => {
   const [newTodo, setNewTodo] = useState("");
-  const [newTodolist, setNewTodolist] = useState(todolistTitle);
+  const [newTodolist, setNewTodolist] = useState(todolist.title);
   const [showInput, setShowInput] = useState(false);
 
   const userId = todolist.userId;
@@ -76,8 +75,8 @@ const Todolist = ({
               value={newTodolist}
               onChange={(e) => {
                 if (newTodolist) {
-                  setFetching(true);
                   setNewTodolist(e.target.value);
+                  setFetching(true);
                 }
               }}
             />
@@ -88,14 +87,9 @@ const Todolist = ({
         {showInput ? (
           <Button
             onClick={() => {
-              editTodolist(
-                jwt,
-                userId,
-                todolistId,
-                newTodolist,
-                setNewTodolist,
-                setShowInput
-              );
+              editTodolist(jwt, userId, todolistId, newTodolist);
+              setNewTodolist("");
+              setShowInput(false);
               setFetching(true);
             }}
           >

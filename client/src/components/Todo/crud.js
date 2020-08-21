@@ -59,19 +59,9 @@ export const deleteTodo = (jwt, userId, todolistId, todoId) => {
  * @param {number} userId User's ID
  * @param {number} todolistId Todolist's ID
  * @param {string} todo New todo
- * @param {method} setTodo The react hook to set the new todo
- * @param {method} setShowInput The react hook to show/hide input field for title
  * @return {object} The response of the axios put request
  */
-export const editTodo = (
-  jwt,
-  userId,
-  todolistId,
-  todoId,
-  todo,
-  setTodo,
-  setShowInput
-) => {
+export const editTodo = (jwt, userId, todolistId, todoId, todo) => {
   return axios
     .put(
       SINGLE_TODO_URI(userId, todolistId, todoId),
@@ -83,8 +73,6 @@ export const editTodo = (
       }
     )
     .then((response) => {
-      setTodo("");
-      setShowInput(false);
       console.log(response);
     })
     .catch((error) => console.error(error.response.request));
