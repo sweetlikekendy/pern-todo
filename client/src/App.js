@@ -12,12 +12,12 @@ const App = () => {
   const [lastName, setLastName] = usePersistedState(`lastName`, "");
   const [email, setEmail] = usePersistedState(`email`, "");
   const [userId, setUserId] = usePersistedState(`userId`, 0);
-  const [todolists, setTodolists] = usePersistedState(`todolists`, []);
   const [persistedData, setPersistedData] = usePersistedState(
     `persistedData`,
     {}
   );
   const [stateData, setStateData] = useState(persistedData);
+  const [stateUserId, setStateUserId] = useState(userId);
 
   const [jwt, setJwt] = usePersistedState(`Authorization`, "");
   const [fetching, setFetching] = useState(false);
@@ -57,8 +57,6 @@ const App = () => {
           userId={userId}
           isLoggedIn={isLoggedIn}
           jwt={jwt}
-          todolists={todolists}
-          setTodolists={setTodolists}
           fetching={fetching}
           setFetching={setFetching}
           reordering={reordering}
@@ -66,6 +64,7 @@ const App = () => {
           stateData={stateData}
           setStateData={setStateData}
           setPersistedData={setPersistedData}
+          stateUserId={stateUserId}
         />
         <Login
           isLoggedIn={isLoggedIn}
@@ -73,6 +72,7 @@ const App = () => {
           setLastName={setLastName}
           setEmail={setEmail}
           setUserId={setUserId}
+          setStateUserId={setStateUserId}
           setLoggedIn={setLoggedIn}
           setFetching={setFetching}
           setJwt={setJwt}
@@ -91,7 +91,6 @@ const App = () => {
           setLoggedIn={setLoggedIn}
           setJwt={setJwt}
           setUserId={setUserId}
-          setTodolists={setTodolists}
           setPersistedData={setPersistedData}
           path="/logout"
         />

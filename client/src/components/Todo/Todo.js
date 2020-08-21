@@ -1,111 +1,102 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import styled from "@emotion/styled";
+import { Draggable } from "react-beautiful-dnd";
+
 import { deleteTodo, editTodo } from "./";
+
+const Container = styled.div`
+  padding: 8px;
+  border: 2px solid lightgrey;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  background-color: ${(props) => (props.isDragging ? "lightgreen" : "white")};
+`;
+
+const Button = styled.button`
+  padding: 8px;
+  margin: 8px;
+`;
 
 const Todo = ({
   index,
+  todo,
   jwt,
-  todos,
   userId,
   todolistId,
   todoId,
   description,
   setFetching,
-  moveTodoElementUp,
-  moveTodoElementDown,
-  reordering,
-  setReordering,
-  reorderData,
 }) => {
   const [newTodo, setNewTodo] = useState(description);
   const [showInput, setShowInput] = useState(false);
-  const buttonStyle = { padding: "8px", margin: "8px" };
 
   const showEditTodo = () => {
     setShowInput(true);
   };
 
-  // useEffect(() => {
-  //   if (reordering) {
-  //     reorderData(todos);
-  //     setReordering(false);
-  //   }
-  // }, [reordering]);
-
   return (
-    <li>
-      <button
-        style={buttonStyle}
-        onClick={() => {
-          setReordering(true);
-          moveTodoElementUp(todos, index);
-        }}
-      >
-        Up
-      </button>
-      <button
-        style={buttonStyle}
-        onClick={() => {
-          setReordering(true);
-          moveTodoElementDown(todos, index);
-        }}
-      >
-        Down
-      </button>
-      <button
-        style={buttonStyle}
-        onClick={() => {
-          setFetching(true);
-          deleteTodo(jwt, userId, todolistId, todoId);
-        }}
-      >
-        X
-      </button>
-      {description}
-      {showInput ? (
-        <label>
-          <input
-            type="text"
-            name="todo"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-          />
-        </label>
-      ) : (
-        ""
-      )}
-      {showInput ? (
-        <button
-          style={buttonStyle}
-          onClick={() => {
-            if (newTodo) {
+    <Draggable draggableId={todo.dndId} index={index}>
+      {(provided, snapshot) => (
+        <Container
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          isDragging={snapshot.isDragging}
+        >
+          <Button
+            onClick={() => {
               setFetching(true);
-              editTodo(
-                jwt,
-                userId,
-                todolistId,
-                todoId,
-                newTodo,
-                setNewTodo,
-                setShowInput
-              );
-            }
-          }}
-        >
-          Submit
-        </button>
-      ) : (
-        <button
-          style={buttonStyle}
-          onClick={() => {
-            setFetching(true);
-            showEditTodo(todolistId);
-          }}
-        >
-          Edit Title
-        </button>
-      )}{" "}
-    </li>
+              deleteTodo(jwt, userId, todolistId, todoId);
+            }}
+          >
+            X
+          </Button>
+          {todo.content}
+          {showInput ? (
+            <label>
+              <input
+                type="text"
+                name="todo"
+                value={newTodo}
+                onChange={(e) => setNewTodo(e.target.value)}
+              />
+            </label>
+          ) : (
+            ""
+          )}
+          {showInput ? (
+            <Button
+              onClick={() => {
+                if (newTodo) {
+                  setFetching(true);
+                  editTodo(
+                    jwt,
+                    userId,
+                    todolistId,
+                    todoId,
+                    newTodo,
+                    setNewTodo,
+                    setShowInput
+                  );
+                }
+              }}
+            >
+              Submit
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                setFetching(true);
+                showEditTodo(todolistId);
+              }}
+            >
+              Edit Title
+            </Button>
+          )}{" "}
+        </Container>
+      )}
+    </Draggable>
   );
 };
 

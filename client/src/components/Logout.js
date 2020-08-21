@@ -9,7 +9,6 @@ const Logout = ({
   setLoggedIn,
   setUserId,
   setJwt,
-  setTodolists,
   setPersistedData,
 }) => {
   const logout = () => {
@@ -19,7 +18,6 @@ const Logout = ({
     setEmail("");
     setJwt("");
     setUserId("");
-    setTodolists([]);
     setPersistedData({});
   };
 

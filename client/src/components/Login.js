@@ -11,6 +11,7 @@ const Login = ({
   setFirstName,
   setLastName,
   setUserId,
+  setStateUserId,
   setLoggedIn,
   setJwt,
   setFetching,
@@ -20,9 +21,9 @@ const Login = ({
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
+    await axios
       .post(LOGIN_URI, {
         email: formEmail,
         password: formPassword,
@@ -40,7 +41,6 @@ const Login = ({
           setUserId(id);
           setEmail(email);
           setFetching(true);
-          navigate("/");
         } else {
           setStatusMessage(message);
         }

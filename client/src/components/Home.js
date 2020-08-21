@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "@reach/router";
 import axios from "axios";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+
 import Todolists from "./Todolists";
 import { Todolist, addTodolist } from "./Todolist";
 import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
@@ -10,10 +10,9 @@ import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
 const Home = ({
   firstName,
   userId,
+  stateUserId,
   isLoggedIn,
   jwt,
-  todolists,
-  setTodolists,
   fetching,
   setFetching,
   reordering,
@@ -23,66 +22,13 @@ const Home = ({
   setStateData,
 }) => {
   const [newTodolist, setNewTodolist] = useState("");
-  const { numOfTodolists, todos } = stateData;
+  const { numOfTodolists, todolistOrder, todolists, todos } = stateData;
   const fetchData = async () => {
-    // old working stuff
-    await axios
-      .get(TODOLISTS_URI(userId), {
-        headers: {
-          Authorization: jwt,
-        },
-      })
-      .then(async (response) => {
-        const { data } = response;
-        const { todolists } = data;
-        const promises = [];
-
-        // Get all the todos in a todolist
-        // Push onto promises array
-        for (let i = 0; i < todolists.length; i++) {
-          promises.push(
-            axios.get(TODOS_URI(userId, todolists[i].id), {
-              headers: {
-                Authorization: jwt,
-              },
-            })
-          );
-        }
-
-        // Execute the array of promises
-        await Promise.all(promises)
-          .then(async (results) => {
-            const todolistsWithTodos = [];
-            await results.map(({ data }, i) => {
-              const { todos, numOfTodos } = data;
-
-              // if there are no todos, save the todos as an element as an empty array in a new object
-              if (numOfTodos === 0) {
-                const todolistNoTodos = {
-                  todolist: todolists[i],
-                  todos: [],
-                  numOfTodos,
-                };
-                todolistsWithTodos.push(todolistNoTodos);
-              } else {
-                // if there are todos, save the todos as an element as an array in a new object
-                const todolistWithTodos = {
-                  todolist: todolists[i],
-                  todos,
-                  numOfTodos,
-                };
-                todolistsWithTodos.push(todolistWithTodos);
-              }
-            });
-            setTodolists(todolistsWithTodos);
-          })
-          .catch((error) => console.error(error));
-      })
-      .catch((error) => console.error(error));
-
+    console.log(`fetching data`);
+    console.log(stateUserId);
     // new stuff with react beautiful dnd and state
     await axios
-      .get(TODOLISTS_URI(userId), {
+      .get(TODOLISTS_URI(stateUserId), {
         headers: {
           Authorization: jwt,
         },
@@ -96,7 +42,7 @@ const Home = ({
         // Push onto promises array
         for (let i = 0; i < todolists.length; i++) {
           promises.push(
-            axios.get(TODOS_URI(userId, todolists[i].id), {
+            axios.get(TODOS_URI(stateUserId, todolists[i].id), {
               headers: {
                 Authorization: jwt,
               },
@@ -114,7 +60,7 @@ const Home = ({
               todolistOrder: [],
             };
             const tmpTodos = [];
-            await results.map(({ data }, i) => {
+            results.map(({ data }, i) => {
               const { todos, numOfTodos } = data;
 
               // Create an array with all the todos in there
@@ -136,21 +82,12 @@ const Home = ({
                 last_name,
               } = todo;
               if (todo.created_at === null) {
+                return;
+              }
+              if (todo.created_at !== null) {
                 tmpData.todos[`todo-${normalizedIndex}`] = {
-                  isEmpty: true,
                   id,
-                  todolistId: todolist_id,
-                  todolistTitle: title,
-                  content: description,
-                  createdAt: created_at,
-                  updatedAt: updated_at,
-                  firstName: first_name,
-                  lastName: last_name,
-                };
-              } else {
-                tmpData.todos[`todo-${normalizedIndex}`] = {
-                  isEmpty: false,
-                  id,
+                  dndId: `todo-${normalizedIndex}`,
                   todolistId: todolist_id,
                   todolistTitle: title,
                   content: description,
@@ -174,6 +111,7 @@ const Home = ({
               } = todolist;
               tmpData.todolists[`todolist-${normalizedIndex}`] = {
                 id,
+                dndId: `todolist-${normalizedIndex}`,
                 userId: user_id,
                 title,
                 createdAt: created_at,
@@ -218,8 +156,8 @@ const Home = ({
               });
             });
             tmpData[`numOfTodolists`] = Object.keys(tmpData.todolists).length;
-            setPersistedData(tmpData);
-            setStateData(tmpData);
+            await setPersistedData(tmpData);
+            await setStateData(tmpData);
           })
           .catch((error) => console.error(error));
       })
@@ -232,23 +170,6 @@ const Home = ({
       setFetching(false);
     }
   }, [fetching]);
-
-  const onDragEnd = (result) => {
-    // TODO reorder our lists
-    const { destination, source, draggableId } = result;
-
-    // No destination
-    if (!destination) return;
-
-    // If dropped in the same place started
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    )
-      return;
-  };
-
-  console.log(stateData);
 
   return isLoggedIn ? (
     <div>
@@ -282,24 +203,20 @@ const Home = ({
           Add new todolist
         </button>
       </div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="todolists-droppable" type="TODOLISTS">
-          {(provided, snapshot) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              <Todolists
-                todolists={todolists}
-                jwt={jwt}
-                userId={userId}
-                setFetching={setFetching}
-                reordering={reordering}
-                setReordering={setReordering}
-                fetchData={fetchData}
-              />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <Todolists
+        todolistOrder={todolistOrder}
+        todolists={todolists}
+        todos={todos}
+        jwt={jwt}
+        userId={userId}
+        setFetching={setFetching}
+        reordering={reordering}
+        setReordering={setReordering}
+        fetchData={fetchData}
+        stateData={stateData}
+        setStateData={setStateData}
+        setPersistedData={setPersistedData}
+      />
     </div>
   ) : (
     <div>

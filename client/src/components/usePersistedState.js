@@ -14,6 +14,7 @@ export default function usePersistedState(key, defaultValue) {
     // Serialize the value of item to set the value
     window.localStorage.setItem(key, JSON.stringify(state));
     console.log(`local storage ${key} saved`);
+    console.log("state", state);
   }, [state, key]);
   return [state, setState];
 }
