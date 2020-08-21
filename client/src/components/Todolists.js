@@ -55,58 +55,65 @@ const Todolists = ({
       },
     };
 
-    const cpyTodoIds = Array.from(todolist.todoIds);
-    const todoIdOne = cpyTodoIds[source.index];
-    const todoIdTwo = cpyTodoIds[destination.index];
+    // get the original todoIds for order
+    // the todoId order for the put request will be the same as the original order
+    // EX. todo-9, todo-8, todo-7, todo-6 ids
+    // The after the swap you want the new todoIds, but their data only.
+    // EX. todo-8 todo-7 todo-6 todo-9 data
+    // put request will be the ids of original array with new swapped data
+    // EX
+    // | todo-9, todo-8, todo-7, todo-6 ids
+    // | todo-8 todo-7 todo-6 todo-9 data
+    const originalTodoIds = Array.from(todolist.todoIds);
+    const copyTodoIds = Array.from(newTodoIds);
+    const difference = Math.abs(source.index - destination.index);
 
-    // const stringIdOne = todoIdOne[0];
-    // const stringIdTwo = todoIdTwo[0];
+    // The todo ids of all the todos that shifted after the move
+    const shiftedTodoIds = copyTodoIds.splice(source.index, difference + 1);
+    console.log("todoIds that have been shifted", shiftedTodoIds);
 
-    console.log(
-      `todo id source: ${todoIdOne} ||| todo id destination: ${todoIdTwo}`
-    );
-    console.log(
-      `todo source data, todo destination data`,
-      todos[todoIdOne],
-      todos[todoIdTwo]
-    );
+    // Convert todo objects into an array
+    const todosAsArray = Object.entries(newStateData.todos);
+    console.log("todos as array", todosAsArray);
+    const newTodos = [];
 
-    // Assign the two swapped todos to their own variables
-    const todoOne = todos[todoIdOne];
-    const todoTwo = todos[todoIdTwo];
-    const todolistId = todolist.id;
-
-    console.log("todo 1, todo 2", todoOne, todoTwo);
-    await axios
-      .put(
-        SINGLE_TODO_URI(userId, todolistId, todoOne.id),
-        { description: todoTwo.content },
-        {
-          headers: {
-            Authorization: jwt,
-          },
+    // Get the matching todos with the shifted todos
+    shiftedTodoIds.forEach((todo, i) => {
+      todosAsArray.forEach((element, j) => {
+        if (todosAsArray[j][0].includes(todo)) {
+          newTodos.push(todosAsArray[j][1]);
         }
-      )
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => console.error(error));
-    await axios
-      .put(
-        SINGLE_TODO_URI(userId, todolistId, todoTwo.id),
-        { description: todoOne.content },
-        {
-          headers: {
-            Authorization: jwt,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => console.error(error));
+      });
+    });
+    console.log(newTodos);
 
-    setFetching(true);
+    const promises = [];
+
+    newTodos.forEach((todo) => {
+      const { todolistId, id, content } = todo;
+      promises.push(
+        axios.put(
+          SINGLE_TODO_URI(userId, todolistId, id),
+          { description: content },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        )
+      );
+    });
+
+    // Execute the array of promises
+    await Promise.all(promises)
+      .then((results) => {
+        console.log(results);
+      })
+      .catch((error) => console.error(error.response.request));
+
+    setStateData(newStateData);
+    // setFetching(true);
+    // console.log(newStateData);
   };
   return (
     <div>

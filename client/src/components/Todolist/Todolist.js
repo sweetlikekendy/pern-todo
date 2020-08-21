@@ -48,12 +48,12 @@ const Todolist = ({
     setShowInput(true);
   };
 
-  useEffect(() => {
-    if (reordering) {
-      fetchData();
-      setReordering(false);
-    }
-  }, [reordering]);
+  // useEffect(() => {
+  //   if (reordering) {
+  //     fetchData();
+  //     setReordering(false);
+  //   }
+  // }, [reordering]);
 
   return (
     <Container>

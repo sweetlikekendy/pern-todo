@@ -1,5 +1,4 @@
 import axios from "axios";
-import { navigate } from "@reach/router";
 import { TODOS_URI, SINGLE_TODO_URI } from "../../endpoints";
 
 /**

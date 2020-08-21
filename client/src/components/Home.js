@@ -25,10 +25,9 @@ const Home = ({
   const { numOfTodolists, todolistOrder, todolists, todos } = stateData;
   const fetchData = async () => {
     console.log(`fetching data`);
-    console.log(stateUserId);
     // new stuff with react beautiful dnd and state
     await axios
-      .get(TODOLISTS_URI(stateUserId), {
+      .get(TODOLISTS_URI(userId), {
         headers: {
           Authorization: jwt,
         },
@@ -42,7 +41,7 @@ const Home = ({
         // Push onto promises array
         for (let i = 0; i < todolists.length; i++) {
           promises.push(
-            axios.get(TODOS_URI(stateUserId, todolists[i].id), {
+            axios.get(TODOS_URI(userId, todolists[i].id), {
               headers: {
                 Authorization: jwt,
               },
@@ -85,9 +84,9 @@ const Home = ({
                 return;
               }
               if (todo.created_at !== null) {
-                tmpData.todos[`todo-${normalizedIndex}`] = {
+                tmpData.todos[`todo-${id}`] = {
                   id,
-                  dndId: `todo-${normalizedIndex}`,
+                  dndId: `todo-${id}`,
                   todolistId: todolist_id,
                   todolistTitle: title,
                   content: description,
@@ -109,9 +108,9 @@ const Home = ({
                 first_name,
                 last_name,
               } = todolist;
-              tmpData.todolists[`todolist-${normalizedIndex}`] = {
+              tmpData.todolists[`todolist-${id}`] = {
                 id,
-                dndId: `todolist-${normalizedIndex}`,
+                dndId: `todolist-${id}`,
                 userId: user_id,
                 title,
                 createdAt: created_at,
@@ -120,48 +119,33 @@ const Home = ({
                 lastName: last_name,
                 todoIds: [],
               };
-              tmpData.todolistOrder.push(`todolist-${normalizedIndex}`);
+              tmpData.todolistOrder.push(`todolist-${id}`);
             });
 
             const todoEntries = Object.entries(tmpData.todos);
             const todolistEntries = Object.entries(tmpData.todolists);
-
-            // for (let i = 0; i < todolistEntries.length; i++) {
-            //   console.log(todolistEntries[i]);
-            //   for (let j = 0; j < todoEntries.length; j++) {
-            //     console.log(todoEntries[j]);
-            //     if (todoEntries[j][1].todolistId === todolistEntries[i][1].id) {
-            //       console.log(
-            //         "matching",
-            //         todoEntries[j][1].todolistId,
-            //         todolistEntries[i][1].id
-            //       );
-            //       console.log(todoEntries[j][0]);
-            //       tmpData.todolists[`todolist-${i + 1}`].todoIds.push(
-            //         todoEntries[j][0]
-            //       );
-            //     }
-            //   }
-            // }
 
             // Set the todos ids to their respective todolists
             todolistEntries.map((todolistEntry, i) => {
               return todoEntries.map((todoEntry, j) => {
                 // if there is a match
                 if (todoEntry[1].todolistId === todolistEntry[1].id) {
-                  tmpData.todolists[`todolist-${i + 1}`].todoIds.push(
+                  const todolistId = todolistEntry[1].id;
+                  tmpData.todolists[`todolist-${todolistId}`].todoIds.push(
                     todoEntries[j][0]
                   );
                 }
               });
             });
+
+            // set number of todolists
             tmpData[`numOfTodolists`] = Object.keys(tmpData.todolists).length;
             await setPersistedData(tmpData);
             await setStateData(tmpData);
           })
-          .catch((error) => console.error(error));
+          .catch((error) => console.error(error.response.request));
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error.response.request));
   };
 
   useEffect(() => {
