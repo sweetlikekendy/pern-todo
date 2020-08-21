@@ -61,8 +61,8 @@ const Todolist = ({
       <Title>
         <Button
           onClick={() => {
-            setFetching(true);
             deleteTodolist(jwt, userId, todolistId);
+            setFetching(true);
           }}
         >
           X
@@ -88,7 +88,6 @@ const Todolist = ({
         {showInput ? (
           <Button
             onClick={() => {
-              setFetching(true);
               editTodolist(
                 jwt,
                 userId,
@@ -97,6 +96,7 @@ const Todolist = ({
                 setNewTodolist,
                 setShowInput
               );
+              setFetching(true);
             }}
           >
             Submit
@@ -118,8 +118,9 @@ const Todolist = ({
       <Button
         onClick={() => {
           if (newTodo) {
+            addTodo(jwt, userId, todolistId, newTodo);
+            setNewTodo("");
             setFetching(true);
-            addTodo(jwt, userId, todolistId, newTodo, setNewTodo);
           }
         }}
       >
@@ -133,7 +134,15 @@ const Todolist = ({
             isDraggingOver={snapshot.isDraggingOver}
           >
             {todos.map((todo, i) => (
-              <Todo key={todo.id} todo={todo} index={i} />
+              <Todo
+                key={todo.id}
+                jwt={jwt}
+                todo={todo}
+                userId={userId}
+                todolistId={todolistId}
+                index={i}
+                setFetching={setFetching}
+              />
             ))}
             {provided.placeholder}
           </List>

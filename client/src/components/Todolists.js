@@ -121,6 +121,7 @@ const Todolists = ({
             return (
               <Todolist
                 key={todolist.id}
+                jwt={jwt}
                 todolist={todolist}
                 todos={tmpTodos}
                 setFetching={setFetching}

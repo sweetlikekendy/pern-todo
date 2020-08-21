@@ -12,7 +12,7 @@ import { TODOS_URI, SINGLE_TODO_URI } from "../../endpoints";
  * @param {method} setTodo The react hook to set the new todo
  * @return {object} The response of the axios post request
  */
-export const addTodo = (jwt, userId, todolistId, todo, setTodo) => {
+export const addTodo = (jwt, userId, todolistId, todo) => {
   axios
     .post(
       TODOS_URI(userId, todolistId),
@@ -25,10 +25,8 @@ export const addTodo = (jwt, userId, todolistId, todo, setTodo) => {
     )
     .then((response) => {
       console.log(response);
-      setTodo("");
-      navigate("/");
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };
 
 /**
@@ -51,7 +49,7 @@ export const deleteTodo = (jwt, userId, todolistId, todoId) => {
     .then((response) => {
       console.log(response);
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };
 
 /**
@@ -89,5 +87,5 @@ export const editTodo = (
       setShowInput(false);
       console.log(response);
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };

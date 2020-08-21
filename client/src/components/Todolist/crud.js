@@ -25,7 +25,7 @@ export const addTodolist = async (jwt, userId, todolist, setTodolist) => {
       setTodolist("");
       console.log(response);
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 
   return data;
 };
@@ -48,7 +48,7 @@ export const deleteTodolist = (jwt, userId, todolistId) => {
     .then((response) => {
       console.log(response);
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };
 
 /**
@@ -86,5 +86,5 @@ export const editTodolist = (
       setShowInput(false);
       console.log(response);
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };

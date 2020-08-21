@@ -20,16 +20,16 @@ const Button = styled.button`
 
 const Todo = ({
   index,
-  todo,
-  jwt,
   userId,
   todolistId,
-  todoId,
+  todo,
+  jwt,
   description,
   setFetching,
 }) => {
   const [newTodo, setNewTodo] = useState(description);
   const [showInput, setShowInput] = useState(false);
+  const todoId = todo.id;
 
   const showEditTodo = () => {
     setShowInput(true);
