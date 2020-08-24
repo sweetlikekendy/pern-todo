@@ -20,7 +20,6 @@ const Todolists = ({
   fetchData,
 }) => {
   const onDragEnd = async (result) => {
-    // TODO reorder our lists
     const { destination, source, draggableId } = result;
 
     // No destination
@@ -66,11 +65,28 @@ const Todolists = ({
     // | todo-8 todo-7 todo-6 todo-9 data
     const originalTodoIds = Array.from(todolist.todoIds);
     const copyTodoIds = Array.from(newTodoIds);
-    const difference = Math.abs(source.index - destination.index);
 
-    // The todo ids of all the todos that shifted after the move
-    const shiftedTodoIds = copyTodoIds.splice(source.index, difference + 1);
-    console.log("todoIds that have been shifted", shiftedTodoIds);
+    console.log("original todo order", originalTodoIds);
+    console.log("new todo order", copyTodoIds);
+
+    let shiftedTodoIds = [];
+    let oldTodoIds = [];
+
+    if (source.index < destination.index) {
+      // The todo ids of all the todos that shifted after the move
+      shiftedTodoIds = copyTodoIds.splice(source.index, destination.index + 1);
+      console.log("todoIds that have been shifted", shiftedTodoIds);
+      // Get the original todo ids
+      oldTodoIds = originalTodoIds.splice(source.index, destination.index + 1);
+      console.log("Old todo Ids", oldTodoIds);
+    } else {
+      // The todo ids of all the todos that shifted after the move
+      shiftedTodoIds = copyTodoIds.splice(destination.index, source.index + 1);
+      console.log("todoIds that have been shifted", shiftedTodoIds);
+      // Get the original todo ids
+      oldTodoIds = originalTodoIds.splice(destination.index, source.index + 1);
+      console.log("Old todo Ids", oldTodoIds);
+    }
 
     // Convert todo objects into an array
     const todosAsArray = Object.entries(newStateData.todos);
@@ -78,18 +94,39 @@ const Todolists = ({
     const newTodos = [];
 
     // Get the matching todos with the shifted todos
-    shiftedTodoIds.forEach((todo, i) => {
+    oldTodoIds.forEach((todo, i) => {
       todosAsArray.forEach((element, j) => {
         if (todosAsArray[j][0].includes(todo)) {
-          newTodos.push(todosAsArray[j][1]);
+          newTodos.push({ id: todosAsArray[j][1].id });
         }
       });
     });
-    console.log(newTodos);
+    console.log("new todos", newTodos);
+
+    const copyNewTodos = Array.from(newTodos);
+
+    //  Get the matching todos with the shifted todos
+    shiftedTodoIds.forEach((todo, i) => {
+      todosAsArray.forEach((element, j) => {
+        if (todosAsArray[j][0].includes(todo)) {
+          copyNewTodos[i] = {
+            ...copyNewTodos[i],
+            content: todosAsArray[j][1].content,
+            createdAt: todosAsArray[j][1].createdAt,
+            firstName: todosAsArray[j][1].firstName,
+            lastName: todosAsArray[j][1].lastName,
+            todolistId: todosAsArray[j][1].todolistId,
+            todolistTitle: todosAsArray[j][1].todolistTitle,
+            updatedAt: todosAsArray[j][1].updatedAt,
+          };
+        }
+      });
+    });
+    console.log("new todos", copyNewTodos);
 
     const promises = [];
 
-    newTodos.forEach((todo) => {
+    copyNewTodos.forEach((todo) => {
       const { todolistId, id, content } = todo;
       promises.push(
         axios.put(
@@ -111,8 +148,8 @@ const Todolists = ({
       })
       .catch((error) => console.error(error.response.request));
 
-    setStateData(newStateData);
-    // setFetching(true);
+    // setStateData(newStateData);
+    setFetching(true);
     // console.log(newStateData);
   };
   return (

@@ -69,7 +69,6 @@ const Home = ({
             });
 
             tmpTodos.map((todo, i) => {
-              const normalizedIndex = i + 1;
               const {
                 id,
                 todolist_id,
@@ -98,7 +97,6 @@ const Home = ({
               }
             });
             todolists.map((todolist, i) => {
-              const normalizedIndex = i + 1;
               const {
                 id,
                 user_id,
