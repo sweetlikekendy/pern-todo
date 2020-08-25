@@ -27,6 +27,10 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
     setShowInput(true);
   };
 
+  const hideEditTodo = () => {
+    setShowInput(false);
+  };
+
   return (
     <Draggable draggableId={todo.dndId} index={index}>
       {(provided, snapshot) => (
@@ -58,18 +62,27 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
             ""
           )}
           {showInput ? (
-            <Button
-              onClick={() => {
-                if (newTodo) {
-                  editTodo(jwt, userId, todolistId, todoId, newTodo);
-                  setNewTodo("");
-                  setShowInput(false);
-                  setFetching(true);
-                }
-              }}
-            >
-              Submit
-            </Button>
+            <div>
+              <Button
+                onClick={() => {
+                  if (newTodo) {
+                    editTodo(jwt, userId, todolistId, todoId, newTodo);
+                    setNewTodo("");
+                    hideEditTodo();
+                    setFetching(true);
+                  }
+                }}
+              >
+                Submit
+              </Button>
+              <Button
+                onClick={() => {
+                  hideEditTodo();
+                }}
+              >
+                Close
+              </Button>
+            </div>
           ) : (
             <Button
               onClick={() => {

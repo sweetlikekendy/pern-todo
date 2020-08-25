@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import styled from "@emotion/styled";
-import { Droppable } from "react-beautiful-dnd";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 import { Todo } from "../Todo";
 
 import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../endpoints";
@@ -10,17 +10,21 @@ import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../endpoints";
 import { addTodolist, deleteTodolist, editTodolist } from "./crud";
 import { addTodo } from "../Todo";
 
-const Container = styled.div`
+const TodolistContainer = styled.div`
   margin: 8px;
   border: 1px solid lightgrey;
   border-radius: 2px;
+  background-color: white;
 `;
+
 const Title = styled.h3`
   padding: 8px;
 `;
+
 const List = styled.div`
   padding: 8px;
-  background-color: ${(props) => (props.isDraggingOver ? "skyblue" : "white")};
+  background-color: ${(props) =>
+    props.isDraggingOver ? "skyblue" : "inherit"};
 `;
 
 const Button = styled.button`
@@ -28,15 +32,7 @@ const Button = styled.button`
   margin: 8px;
 `;
 
-const Todolist = ({
-  todolist,
-  todos,
-  jwt,
-  setFetching,
-  reordering,
-  setReordering,
-  fetchData,
-}) => {
+const Todolist = ({ index, jwt, todolist, todos, setFetching, fetchData }) => {
   const [newTodo, setNewTodo] = useState("");
   const [newTodolist, setNewTodolist] = useState(todolist.title);
   const [showInput, setShowInput] = useState(false);
@@ -48,101 +44,115 @@ const Todolist = ({
     setShowInput(true);
   };
 
-  // useEffect(() => {
-  //   if (reordering) {
-  //     fetchData();
-  //     setReordering(false);
-  //   }
-  // }, [reordering]);
+  const hideEditTodolist = () => {
+    setShowInput(false);
+  };
 
   return (
-    <Container>
-      <Title>
-        <Button
-          onClick={() => {
-            deleteTodolist(jwt, userId, todolistId);
-            setFetching(true);
-          }}
+    <Draggable draggableId={todolist.dndId} index={index}>
+      {(provided) => (
+        <TodolistContainer
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
         >
-          X
-        </Button>
-        {todolist.title}
-        {showInput ? (
+          <Title>
+            <Button
+              onClick={() => {
+                deleteTodolist(jwt, userId, todolistId);
+                setFetching(true);
+              }}
+            >
+              X
+            </Button>
+            {todolist.title}
+            {showInput ? (
+              <label>
+                <input
+                  type="text"
+                  name="todo"
+                  value={newTodolist}
+                  onChange={(e) => {
+                    if (newTodolist) {
+                      setNewTodolist(e.target.value);
+                      setFetching(true);
+                    }
+                  }}
+                />
+              </label>
+            ) : (
+              ""
+            )}
+            {showInput ? (
+              <div>
+                <Button
+                  onClick={() => {
+                    editTodolist(jwt, userId, todolistId, newTodolist);
+                    setNewTodolist("");
+                    hideEditTodolist();
+                    setFetching(true);
+                  }}
+                >
+                  Submit
+                </Button>
+                <Button
+                  onClick={() => {
+                    hideEditTodolist();
+                  }}
+                >
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <Button onClick={() => showEditTodolist()}>Edit Title</Button>
+            )}{" "}
+            | {todos.length} todos
+          </Title>
           <label>
             <input
               type="text"
               name="todo"
-              value={newTodolist}
-              onChange={(e) => {
-                if (newTodolist) {
-                  setNewTodolist(e.target.value);
-                  setFetching(true);
-                }
-              }}
+              value={newTodo}
+              placeholder="Enter todo here"
+              onChange={(e) => setNewTodo(e.target.value)}
             />
           </label>
-        ) : (
-          ""
-        )}
-        {showInput ? (
           <Button
             onClick={() => {
-              editTodolist(jwt, userId, todolistId, newTodolist);
-              setNewTodolist("");
-              setShowInput(false);
-              setFetching(true);
+              if (newTodo) {
+                addTodo(jwt, userId, todolistId, newTodo);
+                setNewTodo("");
+                setFetching(true);
+              }
             }}
           >
-            Submit
+            Add new todo
           </Button>
-        ) : (
-          <Button onClick={() => showEditTodolist()}>Edit Title</Button>
-        )}{" "}
-        | {todos.length} todos
-      </Title>
-      <label>
-        <input
-          type="text"
-          name="todo"
-          value={newTodo}
-          placeholder="Enter todo here"
-          onChange={(e) => setNewTodo(e.target.value)}
-        />
-      </label>
-      <Button
-        onClick={() => {
-          if (newTodo) {
-            addTodo(jwt, userId, todolistId, newTodo);
-            setNewTodo("");
-            setFetching(true);
-          }
-        }}
-      >
-        Add new todo
-      </Button>
-      <Droppable droppableId={todolist.dndId}>
-        {(provided, snapshot) => (
-          <List
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            isDraggingOver={snapshot.isDraggingOver}
-          >
-            {todos.map((todo, i) => (
-              <Todo
-                key={todo.id}
-                jwt={jwt}
-                todo={todo}
-                userId={userId}
-                todolistId={todolistId}
-                index={i}
-                setFetching={setFetching}
-              />
-            ))}
-            {provided.placeholder}
-          </List>
-        )}
-      </Droppable>
-    </Container>
+          <Droppable droppableId={todolist.dndId} type="todo">
+            {(provided, snapshot) => (
+              <List
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                isDraggingOver={snapshot.isDraggingOver}
+              >
+                {todos.map((todo, i) => (
+                  <Todo
+                    key={todo.id}
+                    jwt={jwt}
+                    todo={todo}
+                    userId={userId}
+                    todolistId={todolistId}
+                    index={i}
+                    setFetching={setFetching}
+                  />
+                ))}
+                {provided.placeholder}
+              </List>
+            )}
+          </Droppable>
+        </TodolistContainer>
+      )}
+    </Draggable>
   );
 };
 
