@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 import { Todolist } from "./Todolist";
-import { SINGLE_TODO_URI } from "../endpoints";
+import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../endpoints";
 
 const FlexBox = styled.div`
   display: flex;
@@ -41,6 +41,7 @@ const Todolists = ({
       return;
     }
 
+    // Moving todolists
     if (type === "todolist") {
       const newTodolistOrder = Array.from(todolistOrder);
 
@@ -55,8 +56,6 @@ const Todolists = ({
         ...stateData,
         todolistOrder: newTodolistOrder,
       };
-
-      console.log(newStateData);
 
       // I have to get the original todolists data
       const originalTodolistIds = Array.from(todolistOrder);
@@ -100,12 +99,153 @@ const Todolists = ({
         );
         console.log("Old todolist Ids", oldTodolistIds);
       }
-      // if both todolists are empty, swap the titles
 
+      // Convert todolist objects into an array
+      const todolistsAsArray = Object.entries(newStateData.todolists);
+      console.log("todolists as array", todolistsAsArray);
+      const newTodolists = [];
+
+      // Get the matching todos with the shifted todos
+      oldTodolistIds.forEach((todo, i) => {
+        todolistsAsArray.forEach((_element, j) => {
+          if (todolistsAsArray[j][0].includes(todo)) {
+            newTodolists.push({
+              id: todolistsAsArray[j][1].id,
+            });
+          }
+        });
+      });
+      console.log("new todolist ids", newTodolists);
+
+      const copyNewTodolists = Array.from(newTodolists);
+      //  Get the matching todos with the shifted todos
+      shiftedTodolistIds.forEach((todolist, i) => {
+        todolistsAsArray.forEach((element, j) => {
+          if (todolistsAsArray[j][0].includes(todolist)) {
+            copyNewTodolists[i] = {
+              ...copyNewTodolists[i],
+              userId: todolistsAsArray[j][1].userId,
+              title: todolistsAsArray[j][1].title,
+              createdAt: todolistsAsArray[j][1].createdAt,
+              firstName: todolistsAsArray[j][1].firstName,
+              lastName: todolistsAsArray[j][1].lastName,
+              todoIds: todolistsAsArray[j][1].todoIds,
+              updatedAt: todolistsAsArray[j][1].updatedAt,
+            };
+          }
+        });
+      });
+      console.log("new todolists", copyNewTodolists);
+      const promises = [];
+
+      // Array to hold todolists with no todos
+      let emptyTodolists = [];
+
+      // Array to hold todolists with todos
+      let notEmptyTodolists = [];
+
+      // Find todolists with/without todos and push onto 2 previously declared arrays
+      for (let todolist of copyNewTodolists) {
+        if (todolist.todoIds.length === 0) {
+          emptyTodolists.push(todolist);
+        } else {
+          notEmptyTodolists.push(todolist);
+        }
+      }
+
+      // If todolist with todos is empty, that means all swapped todolists are empty.
+      // Swap just the titles
+      if (notEmptyTodolists.length === 0) {
+        copyNewTodolists.forEach((todolist) => {
+          const { userId, id, title } = todolist;
+          promises.push(
+            axios.put(
+              SINGLE_TODOLIST_URI(userId, id),
+              { title },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+        });
+      }
+      // If todolists with todos is not empty, that means some todolists have todos
+      // Swap the titles and the todolist ids for the todos
+      else {
+        copyNewTodolists.forEach((todolist, i) => {
+          const { userId, id, title, todoIds } = todolist;
+          promises.push(
+            axios.put(
+              SINGLE_TODOLIST_URI(userId, id),
+              { title },
+              {
+                headers: {
+                  Authorization: jwt,
+                },
+              }
+            )
+          );
+          if (todoIds.length !== 0) {
+            // Convert todo objects into an array
+            const todosAsArray = Object.entries(newStateData.todos);
+            const newTodos = [];
+
+            // Get the matching todos with the shifted todos
+            todoIds.forEach((todo, j) => {
+              todosAsArray.forEach((_element, k) => {
+                if (todosAsArray[k][0].includes(todo)) {
+                  newTodos.push(todosAsArray[k][1]);
+                }
+              });
+            });
+            copyNewTodolists[i] = {
+              ...copyNewTodolists[i],
+              todos: newTodos,
+            };
+            // Push axios put requests to promise array to all the todos with their new todolist ids
+
+            if (copyNewTodolists[i].todos.length !== 0) {
+              for (let j = 0; j < copyNewTodolists[i].todos.length; j++) {
+                console.log(copyNewTodolists[i].todos[j]);
+                promises.push(
+                  axios.put(
+                    SINGLE_TODO_URI(
+                      userId,
+                      copyNewTodolists[i].id,
+                      copyNewTodolists[i].todos[j].id
+                    ),
+                    {
+                      newTodolistId: copyNewTodolists[i].id,
+                    },
+                    {
+                      headers: {
+                        Authorization: jwt,
+                      },
+                    }
+                  )
+                );
+              }
+            }
+          }
+        });
+      }
+
+      // Execute the array of promises
+      await Promise.all(promises)
+        .then((results) => {
+          console.log(results);
+        })
+        .catch((error) => console.error(error.response.request));
+
+      setFetching(true);
+      // setStateData(newStateData);
       // if one is empty, change the todolist IDs in the todos to the new one
       // if both have todos, change both todolist ids for the todos in the the todolists
     }
 
+    // Moving todos
     if (type === "todo") {
       const todolist = todolists[source.droppableId];
       const newTodoIds = Array.from(todolist.todoIds);

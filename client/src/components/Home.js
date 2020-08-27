@@ -151,7 +151,7 @@ const Home = ({
       fetchData();
       setFetching(false);
     }
-  }, [fetching]);
+  }, [fetching, fetchData, setFetching]);
 
   return isLoggedIn ? (
     <div>

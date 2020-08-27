@@ -5,8 +5,6 @@ import styled from "@emotion/styled";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import { Todo } from "../Todo";
 
-import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../endpoints";
-
 import { addTodolist, deleteTodolist, editTodolist } from "./crud";
 import { addTodo } from "../Todo";
 
@@ -15,6 +13,8 @@ const TodolistContainer = styled.div`
   border: 1px solid lightgrey;
   border-radius: 2px;
   background-color: white;
+  box-shadow: ${(props) =>
+    props.isDragging ? "10px 10px 50px -8px rgba(0, 0, 0, 0.32)" : "none"};
 `;
 
 const Title = styled.h3`
@@ -50,11 +50,12 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching, fetchData }) => {
 
   return (
     <Draggable draggableId={todolist.dndId} index={index}>
-      {(provided) => (
+      {(provided, snapshot) => (
         <TodolistContainer
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
+          isDragging={snapshot.isDragging}
         >
           <Title>
             <Button

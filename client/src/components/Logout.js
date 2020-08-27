@@ -23,7 +23,7 @@ const Logout = ({
 
   useEffect(() => {
     logout();
-  }, [isLoggedIn]);
+  });
 
   return (
     <div>{isLoggedIn ? <p>Logging Out</p> : <p>You're not logged in</p>}</div>
