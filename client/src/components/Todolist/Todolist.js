@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import styled from "@emotion/styled";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import { Todo } from "../Todo";
 
-import { addTodolist, deleteTodolist, editTodolist } from "./crud";
+import { deleteTodolist, editTodolist } from "./crud";
 import { addTodo } from "../Todo";
 
 const TodolistContainer = styled.div`

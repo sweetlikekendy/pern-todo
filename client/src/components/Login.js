@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Link, navigate, Redirect } from "@reach/router";
+import { Link, Redirect } from "@reach/router";
 import axios from "axios";
 
-import { ROOT_URI, LOGIN_URI } from "../endpoints";
+import { LOGIN_URI } from "../endpoints";
 
 const Login = ({
   isLoggedIn,
