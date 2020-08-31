@@ -72,16 +72,14 @@ export const moveTodos = (
   const copyTodoIds = Array.from(newTodoIds);
 
   // Get the todo ids that have shifted after moving the todo
-  let todoIds = getShiftedIds(
+  // ShiftedTodoIds array to keep track of which todo ids have shifted
+  // OldTodoIds array to keep track of original order of todo ids
+  let [shiftedTodoIds, oldTodoIds] = getShiftedIds(
     copyTodoIds,
     originalTodoIds,
     source.index,
     destination.index
   );
-  // empty array to keep track of which todo ids have shifted
-  let shiftedTodoIds = todoIds[0];
-  // empty array to keep track of original order of todo ids
-  let oldTodoIds = todoIds[1];
 
   // Convert todo objects into an array
   const todosAsArray = Object.entries(newStateData.todos);
