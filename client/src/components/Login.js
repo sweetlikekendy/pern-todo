@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, Redirect } from "@reach/router";
 import axios from "axios";
-
+import StyledForm from "../styles";
 import { LOGIN_URI } from "../endpoints";
 
 const Login = ({
@@ -53,31 +53,29 @@ const Login = ({
       ) : (
         <div>
           <p>Status: {statusMessage} </p>
-          <form onSubmit={handleSubmit}>
-            <label>
-              email
+          <StyledForm>
+            <form onSubmit={handleSubmit}>
               <input
                 type="text"
                 name="email"
+                placeholder="Email"
                 value={formEmail}
                 onChange={(e) => {
                   setFormEmail(e.target.value);
                 }}
               />
-            </label>
-            <label>
-              password
               <input
                 type="text"
                 name="password"
+                placeholder="Password"
                 value={formPassword}
                 onChange={(e) => {
                   setFormPassword(e.target.value);
                 }}
               />
-            </label>
-            <input type="submit" value="Log In" />
-          </form>
+              <button>Log In</button>
+            </form>
+          </StyledForm>
           <p>Don't have an account? Register now</p>
           <Link to="/register">Register</Link>
         </div>

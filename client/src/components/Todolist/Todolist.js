@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import styled from "@emotion/styled";
+import styled from "styled-components";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import { Todo } from "../Todo";
 
@@ -73,10 +73,8 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
                   name="todo"
                   value={newTodolist}
                   onChange={(e) => {
-                    if (newTodolist) {
-                      setNewTodolist(e.target.value);
-                      setFetching(true);
-                    }
+                    setNewTodolist(e.target.value);
+                    setFetching(true);
                   }}
                 />
               </label>
