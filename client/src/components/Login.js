@@ -11,11 +11,9 @@ const Login = ({
   setFirstName,
   setLastName,
   setUserId,
-  setStateUserId,
   setLoggedIn,
   setJwt,
   setFetching,
-  navigate,
 }) => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");

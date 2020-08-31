@@ -4,19 +4,16 @@ import { Link } from "@reach/router";
 import axios from "axios";
 
 import Todolists from "./Todolists";
-import { Todolist, addTodolist } from "./Todolist";
+import { addTodolist } from "./Todolist";
 import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
 
 const Home = ({
   firstName,
   userId,
-  stateUserId,
   isLoggedIn,
   jwt,
   fetching,
   setFetching,
-  reordering,
-  setReordering,
   setPersistedData,
   stateData,
   setStateData,
@@ -192,11 +189,7 @@ const Home = ({
         jwt={jwt}
         userId={userId}
         setFetching={setFetching}
-        reordering={reordering}
-        setReordering={setReordering}
-        fetchData={fetchData}
         stateData={stateData}
-        setStateData={setStateData}
         setPersistedData={setPersistedData}
       />
     </div>

@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Router, Link, Redirect } from "@reach/router";
 import Home from "./components/Home";
 import Login from "./components/Login";
@@ -59,12 +58,9 @@ const App = () => {
           jwt={jwt}
           fetching={fetching}
           setFetching={setFetching}
-          reordering={reordering}
-          setReordering={setReordering}
           stateData={stateData}
           setStateData={setStateData}
           setPersistedData={setPersistedData}
-          stateUserId={stateUserId}
         />
         <Login
           isLoggedIn={isLoggedIn}
@@ -72,7 +68,6 @@ const App = () => {
           setLastName={setLastName}
           setEmail={setEmail}
           setUserId={setUserId}
-          setStateUserId={setStateUserId}
           setLoggedIn={setLoggedIn}
           setFetching={setFetching}
           setJwt={setJwt}

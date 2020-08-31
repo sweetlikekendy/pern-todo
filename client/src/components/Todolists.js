@@ -16,13 +16,9 @@ const Todolists = ({
   todolists,
   todos,
   stateData,
-  setStateData,
   jwt,
   userId,
   setFetching,
-  reordering,
-  setReordering,
-  fetchData,
 }) => {
   const onDragEnd = async (result) => {
     const { destination, source, draggableId, type } = result;

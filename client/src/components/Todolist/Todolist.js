@@ -31,7 +31,7 @@ const Button = styled.button`
   margin: 8px;
 `;
 
-const Todolist = ({ index, jwt, todolist, todos, setFetching, fetchData }) => {
+const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
   const [newTodo, setNewTodo] = useState("");
   const [newTodolist, setNewTodolist] = useState(todolist.title);
   const [showInput, setShowInput] = useState(false);

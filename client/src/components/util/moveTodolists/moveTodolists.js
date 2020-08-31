@@ -1,11 +1,8 @@
 import axios from "axios";
 import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../../endpoints";
 import { removeAndInsertArrayElement } from "..";
-import {
-  getShiftedIds,
-  selectArrayFromRange,
-  findMatchingElementsInArrays,
-} from "../util";
+import { getShiftedIds, findMatchingElementsInArrays } from "../util";
+
 /**
  * Move todolists with or without todos in it
  * First get the todolist being moved, then remove it from the todolistOrder array
