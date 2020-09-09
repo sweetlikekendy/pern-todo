@@ -1,19 +1,6 @@
-import styled from "styled-components";
-import tw from "twin.macro";
+import StyledHeader from "./StyledHeader";
+import LoginFormContainer from "./LoginFormContainer";
+import LoginForm from "./LoginForm";
+import Container from "./Container";
 
-const StyledForm = styled.main.attrs({
-  className: "flex flex-col h-screen justify-center items-center bg-gray-100",
-})`
-  & {
-    form {
-      ${tw`bg-white text-center rounded py-8 px-5 shadow max-w-xs`}
-    }
-    input {
-      ${tw`border-gray-300 mb-4 w-full border-solid border rounded py-4`}
-    }
-    button {
-      ${tw`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 border border-blue-700 rounded`}
-    }
-  }
-`;
-export default StyledForm;
+export { LoginFormContainer, LoginForm, StyledHeader, Container };

@@ -6,6 +6,7 @@ import axios from "axios";
 import Todolists from "./Todolists";
 import { addTodolist } from "./Todolist";
 import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
+import { Container } from "../styles";
 
 const Home = ({
   firstName,
@@ -151,7 +152,7 @@ const Home = ({
   }, [fetching, fetchData, setFetching]);
 
   return isLoggedIn ? (
-    <div>
+    <Container>
       <div>
         <h2>Hello, {firstName}</h2>
         <p>
@@ -192,11 +193,11 @@ const Home = ({
         stateData={stateData}
         setPersistedData={setPersistedData}
       />
-    </div>
+    </Container>
   ) : (
-    <div>
+    <Container>
       Not logged in. Click <Link to="/login">here</Link> to login
-    </div>
+    </Container>
   );
 };
 

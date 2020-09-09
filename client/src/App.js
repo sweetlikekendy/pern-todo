@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Router, Link, Redirect } from "@reach/router";
+import { Router, Redirect } from "@reach/router";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import { Navbar } from "./components/Navbar";
 import Register from "./components/Register";
 import Logout from "./components/Logout";
 import usePersistedState from "./components/usePersistedState";
+
+import "tailwindcss/dist/base.min.css";
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = usePersistedState(`isLoggedIn`, false);
@@ -40,16 +43,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <nav>
-          <Link to="/">Home</Link>
-          {isLoggedIn ? (
-            <Link to="/logout">Log Out</Link>
-          ) : (
-            <Link to="/login">Log In</Link>
-          )}
-        </nav>
-      </header>
+      <Navbar isLoggedIn={isLoggedIn} />
       <Router>
         <Home
           path="/"

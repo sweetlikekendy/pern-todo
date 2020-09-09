@@ -1,10 +1,3 @@
-import React from "react";
-import PropTypes from "prop-types";
+import Navbar from "./Navbar";
 
-const index = (props) => {
-  return <div></div>;
-};
-
-index.propTypes = {};
-
-export default index;
+export { Navbar };
