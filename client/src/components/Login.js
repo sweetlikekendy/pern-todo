@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, Redirect } from "@reach/router";
 import axios from "axios";
-import { LoginForm, LoginFormContainer } from "../styles";
+import {
+  Button,
+  Container,
+  LoginForm,
+  LoginFormContainer,
+  CustomLink,
+} from "../styles";
 import { LOGIN_URI } from "../endpoints";
 
 const Login = ({
@@ -47,40 +53,40 @@ const Login = ({
   };
 
   return (
-    <div>
+    <Container>
       {isLoggedIn ? (
         <Redirect to="/" noThrow />
       ) : (
-        <div>
-          <LoginFormContainer>
-            {statusMessage && <p>{statusMessage} </p>}
-            <LoginForm onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="email"
-                placeholder="Email"
-                value={formEmail}
-                onChange={(e) => {
-                  setFormEmail(e.target.value);
-                }}
-              />
-              <input
-                type="text"
-                name="password"
-                placeholder="Password"
-                value={formPassword}
-                onChange={(e) => {
-                  setFormPassword(e.target.value);
-                }}
-              />
-              <button>Log In</button>
-            </LoginForm>
-          </LoginFormContainer>
-          <p>Don't have an account? Register now</p>
-          <Link to="/register">Register</Link>
-        </div>
+        <LoginFormContainer>
+          {statusMessage && <p className="mb-4">{statusMessage} </p>}
+          <LoginForm onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="email"
+              placeholder="Email"
+              value={formEmail}
+              onChange={(e) => {
+                setFormEmail(e.target.value);
+              }}
+            />
+            <input
+              type="text"
+              name="password"
+              placeholder="Password"
+              value={formPassword}
+              onChange={(e) => {
+                setFormPassword(e.target.value);
+              }}
+            />
+            <Button isPrimary>Log In</Button>
+          </LoginForm>
+          <p className="mb-4 text-center">Don't have an account?</p>
+          <CustomLink text="Register" linkTo="/register" isPrimary>
+            Register
+          </CustomLink>
+        </LoginFormContainer>
       )}
-    </div>
+    </Container>
   );
 };
 

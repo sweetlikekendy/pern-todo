@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
+import { Redirect } from "@reach/router";
 
 const Logout = ({
   isLoggedIn,
@@ -23,10 +24,16 @@ const Logout = ({
 
   useEffect(() => {
     logout();
-  });
+  }, isLoggedIn);
 
   return (
-    <div>{isLoggedIn ? <p>Logging Out</p> : <p>You're not logged in</p>}</div>
+    <div>
+      {isLoggedIn ? (
+        <p>You're already logged in!</p>
+      ) : (
+        <Redirect to="/" noThrow />
+      )}
+    </div>
   );
 };
 

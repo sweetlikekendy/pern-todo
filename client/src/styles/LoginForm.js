@@ -1,8 +1,7 @@
-// import styled from "styled-components";
 import tw, { styled, css, theme } from "twin.macro";
 
-const LoginForm = styled.div(() => [
-  tw`flex flex-col`,
+const LoginForm = styled.form(() => [
+  tw``,
   css`
     input {
       ${tw`mb-4 border py-2 px-4 rounded-md w-full`}

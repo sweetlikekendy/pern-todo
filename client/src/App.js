@@ -7,7 +7,10 @@ import Register from "./components/Register";
 import Logout from "./components/Logout";
 import usePersistedState from "./components/usePersistedState";
 
+import { AppContainer } from "./styles";
+
 import "tailwindcss/dist/base.min.css";
+import "./tailwind.output.css";
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = usePersistedState(`isLoggedIn`, false);
@@ -42,7 +45,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className="App">
+    <AppContainer className="App">
       <Navbar isLoggedIn={isLoggedIn} />
       <Router>
         <Home
@@ -68,7 +71,6 @@ const App = () => {
           setJwt={setJwt}
           path="/login"
         />
-        <Redirect from="/login" to="/" />
         <Logout
           userFirstName={firstName}
           userLastName={lastName}
@@ -95,7 +97,7 @@ const App = () => {
           setEmail={setEmail}
         />
       </Router>
-    </div>
+    </AppContainer>
   );
 };
 

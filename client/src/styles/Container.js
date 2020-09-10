@@ -1,8 +1,7 @@
-import styled from "styled-components";
+import tw, { styled } from "twin.macro";
 
-const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-`;
+const Container = styled.div(() => [
+  tw`h-screen w-full bg-gray-100 flex justify-center items-center`,
+]);
 
 export default Container;

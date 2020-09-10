@@ -1,6 +1,6 @@
 import tw, { styled, css, theme } from "twin.macro";
 
-const StyledHeader = styled.header(() => [
+const Header = styled.header(() => [
   tw`p-4 bg-red-100`,
   css`
     nav a {
@@ -9,4 +9,4 @@ const StyledHeader = styled.header(() => [
   `,
 ]);
 
-export default StyledHeader;
+export default Header;

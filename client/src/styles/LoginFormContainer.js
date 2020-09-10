@@ -1,8 +1,7 @@
-import styled from "styled-components";
-import tw from "twin.macro";
+import tw, { styled, css } from "twin.macro";
 
 const LoginFormContainer = styled.div(() => [
-  tw`flex flex-col h-screen justify-center items-center bg-gray-100 max-w-md`,
+  tw`flex flex-col h-screen justify-center max-w-sm`,
 ]);
 
 export default LoginFormContainer;
