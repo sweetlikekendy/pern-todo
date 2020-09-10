@@ -1,26 +1,15 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
-import { Link } from "@reach/router";
-
+import { Redirect } from "@reach/router";
+import { Button, Container, FormContainer, Form } from "../styles";
 // todo change production uri
 const REGISTER_URI =
   process.env.NODE_ENV === "development"
     ? "http://localhost:5000/api/register"
     : "something else";
 
-const Register = ({
-  userEmail,
-  userFirstName,
-  userLastName,
-  userPassword,
-  isLoggedIn,
-  setEmail,
-  setFirstName,
-  setLastName,
-  setPassword,
-  setLoggedIn,
-}) => {
+const Register = ({ isLoggedIn }) => {
   const [formFirstName, setFormFirstName] = useState("");
   const [formLastName, setFormLastName] = useState("");
   const [formEmail, setFormEmail] = useState("");
@@ -55,56 +44,46 @@ const Register = ({
       .catch((err) => console.error(err));
   };
   return (
-    <div>
+    <Container>
       {isLoggedIn ? (
-        <div>
-          <div>Hello, {userFirstName}! You're logged in!</div>
-        </div>
+        <Redirect to="/" noThrow />
       ) : (
-        <div>
-          <p>Status: {statusMessage} </p>
-          <form onSubmit={handleSubmit}>
-            <label>
-              First Name
-              <input
-                type="text"
-                name="firstName"
-                value={formFirstName}
-                onChange={(e) => setFormFirstName(e.target.value)}
-              />
-            </label>
-            <label>
-              Last Name
-              <input
-                type="text"
-                name="lastName"
-                value={formLastName}
-                onChange={(e) => setFormLastName(e.target.value)}
-              />
-            </label>
-            <label>
-              email
-              <input
-                type="text"
-                name="email"
-                value={formEmail}
-                onChange={(e) => setFormEmail(e.target.value)}
-              />
-            </label>
-            <label>
-              password
-              <input
-                type="password"
-                name="password"
-                value={formPassword}
-                onChange={(e) => setFormPassword(e.target.value)}
-              />
-            </label>
-            <input type="submit" value="Register" />
-          </form>
-        </div>
+        <FormContainer>
+          {statusMessage && <p className="mb-4">{statusMessage} </p>}
+          <Form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={formFirstName}
+              onChange={(e) => setFormFirstName(e.target.value)}
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={formLastName}
+              onChange={(e) => setFormLastName(e.target.value)}
+            />
+            <input
+              type="text"
+              name="email"
+              placeholder="Email"
+              value={formEmail}
+              onChange={(e) => setFormEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formPassword}
+              onChange={(e) => setFormPassword(e.target.value)}
+            />
+            <Button isPrimary>Register</Button>
+          </Form>
+        </FormContainer>
       )}
-    </div>
+    </Container>
   );
 };
 

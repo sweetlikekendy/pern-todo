@@ -86,16 +86,7 @@ const App = () => {
           setPersistedData={setPersistedData}
           path="/logout"
         />
-        <Register
-          path="register"
-          isLoggedIn={isLoggedIn}
-          firstName={firstName}
-          lastName={lastName}
-          email={email}
-          setFirstName={setFirstName}
-          setLastName={setLastName}
-          setEmail={setEmail}
-        />
+        <Register path="register" isLoggedIn={isLoggedIn} />
       </Router>
     </AppContainer>
   );

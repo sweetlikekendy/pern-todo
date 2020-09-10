@@ -1,6 +1,6 @@
 import tw, { styled, css, theme } from "twin.macro";
 
-const LoginForm = styled.form(() => [
+const Form = styled.form(() => [
   tw``,
   css`
     input {
@@ -9,4 +9,4 @@ const LoginForm = styled.form(() => [
   `,
 ]);
 
-export default LoginForm;
+export default Form;
