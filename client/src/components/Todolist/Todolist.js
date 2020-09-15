@@ -60,7 +60,7 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          <div className="flex">
+          <div className="flex mb-4">
             <Button
               isClose
               onClick={() => {
@@ -83,6 +83,7 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
           <p className="mb-4">{todos.length} todos</p>
           <Input
             full
+            border
             type="text"
             name="todo"
             value={newTodo}

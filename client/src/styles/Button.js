@@ -1,10 +1,10 @@
 import tw, { styled, css, theme } from "twin.macro";
 
 const Button = styled.button(
-  ({ full, noMargin, isClose, isPrimary, isSecondary, isTertiary }) => [
+  ({ full, marginBottom, isClose, isPrimary, isSecondary, isTertiary }) => [
     tw`rounded-md`,
-    full ? tw`w-full` : tw``,
-    noMargin ? tw`` : tw`mb-4 `,
+    full && tw`w-full`,
+    marginBottom && tw`mb-4 `,
     tw`hocus:(scale-105 text-yellow-400)`,
     isClose &&
       css`

@@ -53,6 +53,7 @@ const Register = ({ isLoggedIn }) => {
           <form onSubmit={handleSubmit}>
             <Input
               full
+              border
               type="text"
               name="firstName"
               placeholder="First Name"
@@ -61,6 +62,7 @@ const Register = ({ isLoggedIn }) => {
             />
             <Input
               full
+              border
               type="text"
               name="lastName"
               placeholder="Last Name"
@@ -69,6 +71,7 @@ const Register = ({ isLoggedIn }) => {
             />
             <Input
               full
+              border
               type="text"
               name="email"
               placeholder="Email"
@@ -77,6 +80,7 @@ const Register = ({ isLoggedIn }) => {
             />
             <Input
               full
+              border
               type="password"
               name="password"
               placeholder="Password"

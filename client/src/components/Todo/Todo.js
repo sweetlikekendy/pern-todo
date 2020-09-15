@@ -42,7 +42,6 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
           <div className="flex">
             <Button
               isClose
-              noMargin
               onClick={() => {
                 deleteTodo(jwt, userId, todolistId, todoId);
                 setFetching(true);
@@ -51,7 +50,6 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
               X
             </Button>
             <Input
-              noMargin
               type="text"
               name="todo"
               value={newTodo}

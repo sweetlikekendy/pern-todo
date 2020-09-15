@@ -187,7 +187,7 @@ const Home = ({
               </p>
               <Input
                 full
-                noMargin
+                border
                 type="text"
                 name="title"
                 value={newTodolist}

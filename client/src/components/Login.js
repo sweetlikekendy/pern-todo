@@ -62,6 +62,7 @@ const Login = ({
           <form onSubmit={handleSubmit}>
             <Input
               full
+              border
               type="text"
               name="email"
               placeholder="Email"
@@ -72,6 +73,7 @@ const Login = ({
             />
             <Input
               full
+              border
               type="text"
               name="password"
               placeholder="Password"
