@@ -75,22 +75,18 @@ export const getShiftedIds = (
  * @return {array} Array with the matching elements
  */
 export const findMatchingElementsInArrays = (array1, array2) => {
-  // let matchingElements = [];
+  let matchingElements = [];
 
-  // // Get the matching todos with the shifted todos
-  // array1.forEach((arrayElement1, i) => {
-  //   array2.forEach((_arrayElement2, j) => {
-  //     if (array2[j][0].includes(arrayElement1)) {
-  //       matchingElements.push({
-  //         id: array2[j][1].id,
-  //       });
-  //     }
-  //   });
-  // });
-
-  return array2.filter(function (el) {
-    return array1.indexOf(el) !== -1;
+  // Get the matching todos with the shifted todos
+  array1.forEach((arrayElement1, i) => {
+    array2.forEach((_arrayElement2, j) => {
+      if (array2[j][0].includes(arrayElement1)) {
+        matchingElements.push({
+          id: array2[j][1].id,
+        });
+      }
+    });
   });
 
-  // return matchingElements;
+  return matchingElements;
 };

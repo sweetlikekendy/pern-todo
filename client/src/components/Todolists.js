@@ -5,11 +5,7 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 import { Todolist } from "./Todolist";
 import { moveTodolists, moveTodos } from "./util";
-
-const FlexBox = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-`;
+import { FlexBoxWrap, JustifyCenterContainer } from "../styles";
 
 const Todolists = ({
   todolistOrder,
@@ -49,40 +45,42 @@ const Todolists = ({
     }
   };
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      {todolistOrder === undefined ? (
-        <div>Loading ... </div>
-      ) : (
-        <Droppable
-          droppableId="all-todolists"
-          direction="horizontal"
-          type="todolist"
-        >
-          {(provided) => (
-            <FlexBox {...provided.droppableProps} ref={provided.innerRef}>
-              {todolistOrder.map((todolistId, i) => {
-                const todolist = todolists[todolistId];
-                const tmpTodos = todolist.todoIds.map(
-                  (todoId) => todos[todoId]
-                );
+    <JustifyCenterContainer>
+      <DragDropContext onDragEnd={onDragEnd}>
+        {todolistOrder === undefined ? (
+          <div>Loading ... </div>
+        ) : (
+          <Droppable
+            droppableId="all-todolists"
+            direction="horizontal"
+            type="todolist"
+          >
+            {(provided) => (
+              <FlexBoxWrap {...provided.droppableProps} ref={provided.innerRef}>
+                {todolistOrder.map((todolistId, i) => {
+                  const todolist = todolists[todolistId];
+                  const tmpTodos = todolist.todoIds.map(
+                    (todoId) => todos[todoId]
+                  );
 
-                return (
-                  <Todolist
-                    key={todolist.id}
-                    index={i}
-                    jwt={jwt}
-                    todolist={todolist}
-                    todos={tmpTodos}
-                    setFetching={setFetching}
-                  />
-                );
-              })}
-              {provided.placeholder}
-            </FlexBox>
-          )}
-        </Droppable>
-      )}
-    </DragDropContext>
+                  return (
+                    <Todolist
+                      key={todolist.id}
+                      index={i}
+                      jwt={jwt}
+                      todolist={todolist}
+                      todos={tmpTodos}
+                      setFetching={setFetching}
+                    />
+                  );
+                })}
+                {provided.placeholder}
+              </FlexBoxWrap>
+            )}
+          </Droppable>
+        )}
+      </DragDropContext>
+    </JustifyCenterContainer>
   );
 };
 

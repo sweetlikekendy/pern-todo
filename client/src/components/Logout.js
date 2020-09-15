@@ -12,19 +12,22 @@ const Logout = ({
   setJwt,
   setPersistedData,
 }) => {
+  // TODO confirm the logout with a modal
   const logout = () => {
-    setLoggedIn(false);
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setJwt("");
-    setUserId("");
-    setPersistedData({});
+    if (isLoggedIn) {
+      setLoggedIn(false);
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setJwt("");
+      setUserId("");
+      setPersistedData({});
+    }
   };
 
   useEffect(() => {
     logout();
-  }, isLoggedIn);
+  }, [isLoggedIn]);
 
   return (
     <div>

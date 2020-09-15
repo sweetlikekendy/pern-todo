@@ -4,95 +4,62 @@ import styled from "styled-components";
 import { Draggable } from "react-beautiful-dnd";
 
 import { deleteTodo, editTodo } from "./";
+import { Button, Input, JustifyCenterContainer } from "../../styles";
 
 const Container = styled.div`
-  padding: 8px;
-  border: 2px solid lightgrey;
+  display: flex;
+  padding: 1rem;
+  border-top: 2px solid lightgrey;
+  /* border-bottom: 2px solid lightgrey; */
   border-radius: 2px;
   margin-bottom: 8px;
   background-color: ${(props) => (props.isDragging ? "lightgreen" : "white")};
 `;
 
-const Button = styled.button`
-  padding: 8px;
-  margin: 8px;
-`;
-
 const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
   const [newTodo, setNewTodo] = useState(todo.content);
-  const [showInput, setShowInput] = useState(false);
   const todoId = todo.id;
 
-  const showEditTodo = () => {
-    setShowInput(true);
-  };
+  const editTodoOnKeyPress = (event) => {
+    const { key } = event;
 
-  const hideEditTodo = () => {
-    setShowInput(false);
+    if (key === "Enter") {
+      editTodo(jwt, userId, todolistId, todoId, newTodo);
+      setFetching(true);
+    }
   };
 
   return (
     <Draggable draggableId={todo.dndId} index={index}>
       {(provided, snapshot) => (
-        <Container
+        <JustifyCenterContainer
+          className="items-center p-4"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          <Button
-            onClick={() => {
-              deleteTodo(jwt, userId, todolistId, todoId);
-              setFetching(true);
-            }}
-          >
-            X
-          </Button>
-          {todo.content}
-          {showInput ? (
-            <label>
-              <input
-                type="text"
-                name="todo"
-                value={newTodo}
-                onChange={(e) => setNewTodo(e.target.value)}
-              />
-            </label>
-          ) : (
-            ""
-          )}
-          {showInput ? (
-            <div>
-              <Button
-                onClick={() => {
-                  if (newTodo) {
-                    editTodo(jwt, userId, todolistId, todoId, newTodo);
-                    setNewTodo("");
-                    hideEditTodo();
-                    setFetching(true);
-                  }
-                }}
-              >
-                Submit
-              </Button>
-              <Button
-                onClick={() => {
-                  hideEditTodo();
-                }}
-              >
-                Close
-              </Button>
-            </div>
-          ) : (
+          <div className="flex">
             <Button
+              isClose
+              noMargin
               onClick={() => {
-                showEditTodo();
+                deleteTodo(jwt, userId, todolistId, todoId);
+                setFetching(true);
               }}
             >
-              Edit Title
+              X
             </Button>
-          )}{" "}
-        </Container>
+            <Input
+              noMargin
+              type="text"
+              name="todo"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              onKeyPress={(e) => editTodoOnKeyPress(e)}
+            />
+          </div>
+        </JustifyCenterContainer>
       )}
     </Draggable>
   );

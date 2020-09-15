@@ -7,44 +7,48 @@ import { Todo } from "../Todo";
 import { deleteTodolist, editTodolist } from "./crud";
 import { addTodo } from "../Todo";
 
-const TodolistContainer = styled.div`
-  margin: 8px;
-  border: 1px solid lightgrey;
-  border-radius: 2px;
-  background-color: white;
-  box-shadow: ${(props) =>
-    props.isDragging ? "10px 10px 50px -8px rgba(0, 0, 0, 0.32)" : "none"};
-`;
+import { Button, Input, TodolistContainer } from "../../styles";
 
-const Title = styled.h3`
-  padding: 8px;
-`;
+// const TodolistContainer = styled.div`
+//   margin: 8px;
+//   padding: 1.25rem;
+//   border: 1px solid lightgrey;
+//   border-radius: 2px;
+//   background-color: white;
+//   box-shadow: ${(props) =>
+//     props.isDragging ? "10px 10px 50px -8px rgba(0, 0, 0, 0.32)" : "none"};
+// `;
 
 const List = styled.div`
+  width: auto;
   padding: 8px;
   background-color: ${(props) =>
     props.isDraggingOver ? "skyblue" : "inherit"};
 `;
 
-const Button = styled.button`
-  padding: 8px;
-  margin: 8px;
-`;
-
 const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
   const [newTodo, setNewTodo] = useState("");
   const [newTodolist, setNewTodolist] = useState(todolist.title);
-  const [showInput, setShowInput] = useState(false);
 
   const userId = todolist.userId;
   const todolistId = todolist.id;
 
-  const showEditTodolist = () => {
-    setShowInput(true);
-  };
+  const editTodolistOnKeyPress = (event) => {
+    const { key } = event;
 
-  const hideEditTodolist = () => {
-    setShowInput(false);
+    if (key === "Enter") {
+      editTodolist(jwt, userId, todolistId, newTodolist);
+      setFetching(true);
+    }
+  };
+  const addTodoOnKeyPress = (event) => {
+    const { key } = event;
+
+    if (key === "Enter") {
+      addTodo(jwt, userId, todolistId, newTodo);
+      setNewTodo("");
+      setFetching(true);
+    }
   };
 
   return (
@@ -56,8 +60,9 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          <Title>
+          <div className="flex">
             <Button
+              isClose
               onClick={() => {
                 deleteTodolist(jwt, userId, todolistId);
                 setFetching(true);
@@ -65,67 +70,26 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
             >
               X
             </Button>
-            {todolist.title}
-            {showInput ? (
-              <label>
-                <input
-                  type="text"
-                  name="todo"
-                  value={newTodolist}
-                  onChange={(e) => {
-                    setNewTodolist(e.target.value);
-                    setFetching(true);
-                  }}
-                />
-              </label>
-            ) : (
-              ""
-            )}
-            {showInput ? (
-              <div>
-                <Button
-                  onClick={() => {
-                    editTodolist(jwt, userId, todolistId, newTodolist);
-                    setNewTodolist("");
-                    hideEditTodolist();
-                    setFetching(true);
-                  }}
-                >
-                  Submit
-                </Button>
-                <Button
-                  onClick={() => {
-                    hideEditTodolist();
-                  }}
-                >
-                  Close
-                </Button>
-              </div>
-            ) : (
-              <Button onClick={() => showEditTodolist()}>Edit Title</Button>
-            )}{" "}
-            | {todos.length} todos
-          </Title>
-          <label>
-            <input
+            <Input
               type="text"
               name="todo"
-              value={newTodo}
-              placeholder="Enter todo here"
-              onChange={(e) => setNewTodo(e.target.value)}
+              value={newTodolist}
+              onChange={(e) => {
+                setNewTodolist(e.target.value);
+              }}
+              onKeyPress={(e) => editTodolistOnKeyPress(e)}
             />
-          </label>
-          <Button
-            onClick={() => {
-              if (newTodo) {
-                addTodo(jwt, userId, todolistId, newTodo);
-                setNewTodo("");
-                setFetching(true);
-              }
-            }}
-          >
-            Add new todo
-          </Button>
+          </div>
+          <p className="mb-4">{todos.length} todos</p>
+          <Input
+            full
+            type="text"
+            name="todo"
+            value={newTodo}
+            placeholder="Enter todo here"
+            onChange={(e) => setNewTodo(e.target.value)}
+            onKeyPress={(e) => addTodoOnKeyPress(e)}
+          />
           <Droppable droppableId={todolist.dndId} type="todo">
             {(provided, snapshot) => (
               <List

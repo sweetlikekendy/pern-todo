@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, Redirect } from "@reach/router";
 import axios from "axios";
-import { Button, Container, Form, FormContainer, CustomLink } from "../styles";
+import {
+  Button,
+  CenterContainer,
+  CustomLink,
+  Input,
+  FormContainer,
+} from "../styles";
 import { LOGIN_URI } from "../endpoints";
 
 const Login = ({
@@ -47,14 +53,15 @@ const Login = ({
   };
 
   return (
-    <Container>
+    <CenterContainer>
       {isLoggedIn ? (
         <Redirect to="/" noThrow />
       ) : (
         <FormContainer>
           {statusMessage && <p className="mb-4">{statusMessage} </p>}
-          <Form onSubmit={handleSubmit}>
-            <input
+          <form onSubmit={handleSubmit}>
+            <Input
+              full
               type="text"
               name="email"
               placeholder="Email"
@@ -63,7 +70,8 @@ const Login = ({
                 setFormEmail(e.target.value);
               }}
             />
-            <input
+            <Input
+              full
               type="text"
               name="password"
               placeholder="Password"
@@ -72,15 +80,17 @@ const Login = ({
                 setFormPassword(e.target.value);
               }}
             />
-            <Button isPrimary>Log In</Button>
-          </Form>
+            <Button isPrimary full>
+              Log In
+            </Button>
+          </form>
           <p className="mb-4 text-center">Don't have an account?</p>
           <CustomLink text="Register" linkTo="/register" isPrimary>
             Register
           </CustomLink>
         </FormContainer>
       )}
-    </Container>
+    </CenterContainer>
   );
 };
 

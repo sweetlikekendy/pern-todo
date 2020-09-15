@@ -6,7 +6,14 @@ import axios from "axios";
 import Todolists from "./Todolists";
 import { addTodolist } from "./Todolist";
 import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
-import { Container, CustomLink } from "../styles";
+import {
+  CenterContainer,
+  Container,
+  CustomLink,
+  Input,
+  JustifyCenterHfullContainer,
+  JustifyCenterContainer,
+} from "../styles";
 
 const Home = ({
   firstName,
@@ -146,6 +153,16 @@ const Home = ({
     }
   };
 
+  const addTodolistOnKeyPress = (event) => {
+    const { key } = event;
+
+    if (key === "Enter") {
+      addTodolist(jwt, userId, newTodolist, setNewTodolist);
+      setNewTodolist("");
+      setFetching(true);
+    }
+  };
+
   useEffect(() => {
     if (fetching) {
       fetchData();
@@ -153,54 +170,52 @@ const Home = ({
     }
   }, [fetching, fetchData, setFetching]);
 
-  return isLoggedIn ? (
-    <Container>
-      <div>
-        <h2>Hello, {firstName}</h2>
-        <p>
-          You have {numOfTodolists}
-          {numOfTodolists === 1 ? (
-            <span> todolist</span>
-          ) : (
-            <span> todolists</span>
-          )}
-        </p>
-        <label>
-          <input
-            type="text"
-            name="title"
-            value={newTodolist}
-            placeholder="Enter todolist title here"
-            onChange={(e) => setNewTodolist(e.target.value)}
+  return (
+    <Container className="testing">
+      {isLoggedIn ? (
+        <JustifyCenterHfullContainer>
+          <JustifyCenterContainer>
+            <div className="my-8 w-84">
+              <h2>Hello, {firstName}</h2>
+              <p className="mb-4">
+                You have {numOfTodolists}
+                {numOfTodolists === 1 ? (
+                  <span> todolist</span>
+                ) : (
+                  <span> todolists</span>
+                )}
+              </p>
+              <Input
+                full
+                noMargin
+                type="text"
+                name="title"
+                value={newTodolist}
+                placeholder="Enter todolist title here"
+                onChange={(e) => setNewTodolist(e.target.value)}
+                onKeyPress={(e) => addTodolistOnKeyPress(e)}
+              />
+            </div>
+          </JustifyCenterContainer>
+          <Todolists
+            todolistOrder={todolistOrder}
+            todolists={todolists}
+            todos={todos}
+            jwt={jwt}
+            userId={userId}
+            setFetching={setFetching}
+            stateData={stateData}
+            setPersistedData={setPersistedData}
           />
-        </label>
-        <button
-          onClick={() => {
-            if (newTodolist) {
-              addTodolist(jwt, userId, newTodolist, setNewTodolist);
-              setFetching(true);
-            }
-          }}
-        >
-          Add new todolist
-        </button>
-      </div>
-      <Todolists
-        todolistOrder={todolistOrder}
-        todolists={todolists}
-        todos={todos}
-        jwt={jwt}
-        userId={userId}
-        setFetching={setFetching}
-        stateData={stateData}
-        setPersistedData={setPersistedData}
-      />
-    </Container>
-  ) : (
-    <Container>
-      <p>
-        Not logged in. Click <CustomLink text="here" linkTo="/login" /> to login
-      </p>
+        </JustifyCenterHfullContainer>
+      ) : (
+        <CenterContainer>
+          <p>
+            Not logged in. Click <CustomLink text="here" linkTo="/login" /> to
+            login
+          </p>
+        </CenterContainer>
+      )}
     </Container>
   );
 };

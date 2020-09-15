@@ -22,11 +22,17 @@ module.exports = {
         cyan: "#9cdbff",
       },
       spacing: {
+        "72": "18rem",
+        "84": "21rem",
+        "96": "24rem",
         "96": "24rem",
         "128": "32rem",
       },
+      width: {
+        "1600": "1600px",
+      },
     },
   },
-  variants: {},
+  variants: { width: ["responsive", "hover", "focus"] },
   plugins: [],
 };

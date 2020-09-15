@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { Redirect } from "@reach/router";
-import { Button, Container, FormContainer, Form } from "../styles";
+import { Button, CenterContainer, FormContainer, Input } from "../styles";
 // todo change production uri
 const REGISTER_URI =
   process.env.NODE_ENV === "development"
@@ -44,46 +44,52 @@ const Register = ({ isLoggedIn }) => {
       .catch((err) => console.error(err));
   };
   return (
-    <Container>
+    <CenterContainer>
       {isLoggedIn ? (
         <Redirect to="/" noThrow />
       ) : (
         <FormContainer>
           {statusMessage && <p className="mb-4">{statusMessage} </p>}
-          <Form onSubmit={handleSubmit}>
-            <input
+          <form onSubmit={handleSubmit}>
+            <Input
+              full
               type="text"
               name="firstName"
               placeholder="First Name"
               value={formFirstName}
               onChange={(e) => setFormFirstName(e.target.value)}
             />
-            <input
+            <Input
+              full
               type="text"
               name="lastName"
               placeholder="Last Name"
               value={formLastName}
               onChange={(e) => setFormLastName(e.target.value)}
             />
-            <input
+            <Input
+              full
               type="text"
               name="email"
               placeholder="Email"
               value={formEmail}
               onChange={(e) => setFormEmail(e.target.value)}
             />
-            <input
+            <Input
+              full
               type="password"
               name="password"
               placeholder="Password"
               value={formPassword}
               onChange={(e) => setFormPassword(e.target.value)}
             />
-            <Button isPrimary>Register</Button>
-          </Form>
+            <Button full isPrimary>
+              Register
+            </Button>
+          </form>
         </FormContainer>
       )}
-    </Container>
+    </CenterContainer>
   );
 };
 
