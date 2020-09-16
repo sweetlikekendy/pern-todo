@@ -29,7 +29,7 @@ const CustomLink = ({
   if (isSecondary) {
     return (
       <Link
-        className="bg-green-600 px-4 py-2 text-white text-center mb-4 rounded-md w-full hover:text-teal-800"
+        className="border border-green-600 px-4 py-2 text-green-600 text-center mb-4 rounded-md w-full hover:bg-green-600 hover:text-white"
         to={`${linkTo}`}
       >
         {text}

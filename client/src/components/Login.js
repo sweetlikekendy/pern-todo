@@ -63,6 +63,7 @@ const Login = ({
             <Input
               full
               border
+              marginBottom
               type="text"
               name="email"
               placeholder="Email"
@@ -74,6 +75,7 @@ const Login = ({
             <Input
               full
               border
+              marginBottom
               type="text"
               name="password"
               placeholder="Password"
@@ -82,12 +84,12 @@ const Login = ({
                 setFormPassword(e.target.value);
               }}
             />
-            <Button isPrimary full>
+            <Button isPrimary marginBottom full>
               Log In
             </Button>
           </form>
           <p className="mb-4 text-center">Don't have an account?</p>
-          <CustomLink text="Register" linkTo="/register" isPrimary>
+          <CustomLink text="Register" linkTo="/register" isSecondary>
             Register
           </CustomLink>
         </FormContainer>

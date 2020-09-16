@@ -32,8 +32,8 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
   return (
     <Draggable draggableId={todo.dndId} index={index}>
       {(provided, snapshot) => (
-        <JustifyCenterContainer
-          className="items-center p-4"
+        <div
+          className="flex p-4"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
@@ -53,11 +53,13 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
               type="text"
               name="todo"
               value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
-              onKeyPress={(e) => editTodoOnKeyPress(e)}
+              updateInputValue={setNewTodo}
+              onEnterPress={editTodoOnKeyPress}
+              // onChange={(e) => setNewTodo(e.target.value)}
+              // onKeyPress={(e) => editTodoOnKeyPress(e)}
             />
           </div>
-        </JustifyCenterContainer>
+        </div>
       )}
     </Draggable>
   );

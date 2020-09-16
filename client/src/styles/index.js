@@ -10,6 +10,7 @@ import Header from "./Header";
 import Input from "./Input";
 import JustifyCenterContainer from "./JustifyCenterContainer";
 import JustifyCenterHfullContainer from "./JustifyCenterHfullContainer";
+import List from "./List";
 import TodolistContainer from "./TodolistContainer";
 
 export {
@@ -25,5 +26,6 @@ export {
   Input,
   JustifyCenterContainer,
   JustifyCenterHfullContainer,
+  List,
   TodolistContainer,
 };

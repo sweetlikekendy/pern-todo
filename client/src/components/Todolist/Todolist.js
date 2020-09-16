@@ -7,24 +7,7 @@ import { Todo } from "../Todo";
 import { deleteTodolist, editTodolist } from "./crud";
 import { addTodo } from "../Todo";
 
-import { Button, Input, TodolistContainer } from "../../styles";
-
-// const TodolistContainer = styled.div`
-//   margin: 8px;
-//   padding: 1.25rem;
-//   border: 1px solid lightgrey;
-//   border-radius: 2px;
-//   background-color: white;
-//   box-shadow: ${(props) =>
-//     props.isDragging ? "10px 10px 50px -8px rgba(0, 0, 0, 0.32)" : "none"};
-// `;
-
-const List = styled.div`
-  width: auto;
-  padding: 8px;
-  background-color: ${(props) =>
-    props.isDraggingOver ? "skyblue" : "inherit"};
-`;
+import { Button, Input, List, TodolistContainer } from "../../styles";
 
 const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
   const [newTodo, setNewTodo] = useState("");
@@ -84,6 +67,7 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
           <Input
             full
             border
+            marginBottom
             type="text"
             name="todo"
             value={newTodo}

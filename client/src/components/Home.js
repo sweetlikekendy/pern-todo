@@ -171,11 +171,11 @@ const Home = ({
   }, [fetching, fetchData, setFetching]);
 
   return (
-    <Container className="testing">
+    <Container>
       {isLoggedIn ? (
         <JustifyCenterHfullContainer>
           <JustifyCenterContainer>
-            <div className="my-8 w-84">
+            <div className="my-8" style={{ minWidth: "30%" }}>
               <h2>Hello, {firstName}</h2>
               <p className="mb-4">
                 You have {numOfTodolists}
