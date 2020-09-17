@@ -11,6 +11,7 @@ import Input from "./Input";
 import JustifyCenterContainer from "./JustifyCenterContainer";
 import JustifyCenterHfullContainer from "./JustifyCenterHfullContainer";
 import List from "./List";
+import TodoContainer from "./TodoContainer";
 import TodolistContainer from "./TodolistContainer";
 
 export {
@@ -27,5 +28,6 @@ export {
   JustifyCenterContainer,
   JustifyCenterHfullContainer,
   List,
+  TodoContainer,
   TodolistContainer,
 };

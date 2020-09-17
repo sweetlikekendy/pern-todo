@@ -4,12 +4,18 @@ import styled from "styled-components";
 import { Draggable } from "react-beautiful-dnd";
 
 import { deleteTodo, editTodo } from "./";
-import { Button, Input, JustifyCenterContainer } from "../../styles";
+import {
+  Button,
+  Input,
+  JustifyCenterContainer,
+  TodoContainer,
+} from "../../styles";
 
 const Container = styled.div`
   display: flex;
   padding: 1rem;
-  border-top: 2px solid lightgrey;
+  /* border: 2px solid lightgray; */
+  /* border-top: 2px solid lightgrey; */
   /* border-bottom: 2px solid lightgrey; */
   border-radius: 2px;
   margin-bottom: 8px;
@@ -32,34 +38,31 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
   return (
     <Draggable draggableId={todo.dndId} index={index}>
       {(provided, snapshot) => (
-        <div
-          className="flex p-4"
+        <TodoContainer
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
           isDragging={snapshot.isDragging}
         >
-          <div className="flex">
-            <Button
-              isClose
-              onClick={() => {
-                deleteTodo(jwt, userId, todolistId, todoId);
-                setFetching(true);
-              }}
-            >
-              X
-            </Button>
-            <Input
-              type="text"
-              name="todo"
-              value={newTodo}
-              updateInputValue={setNewTodo}
-              onEnterPress={editTodoOnKeyPress}
-              // onChange={(e) => setNewTodo(e.target.value)}
-              // onKeyPress={(e) => editTodoOnKeyPress(e)}
-            />
-          </div>
-        </div>
+          <Button
+            isClose
+            onClick={() => {
+              deleteTodo(jwt, userId, todolistId, todoId);
+              setFetching(true);
+            }}
+          >
+            X
+          </Button>
+          <Input
+            type="text"
+            name="todo"
+            value={newTodo}
+            // updateInputValue={setNewTodo}
+            // onEnterPress={editTodoOnKeyPress}
+            onChange={(e) => setNewTodo(e.target.value)}
+            onKeyPress={(e) => editTodoOnKeyPress(e)}
+          />
+        </TodoContainer>
       )}
     </Draggable>
   );

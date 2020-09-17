@@ -38,7 +38,6 @@ export const addTodo = (jwt, userId, todolistId, todo) => {
  * @return {object} The response of the axios delete request
  */
 export const deleteTodo = (jwt, userId, todolistId, todoId) => {
-  console.log(todoId);
   return axios
     .delete(SINGLE_TODO_URI(userId, todolistId, todoId), {
       headers: {
