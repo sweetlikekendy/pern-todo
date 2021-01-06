@@ -9,7 +9,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@xstate/fsm": "^1.4.0",
     "@xstate/react": "^0.8.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "formik": "^2.1.4",
     "js-search": "^2.0.0",
     "moment": "^2.25.3",
