@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import AutosizeInput from "react-input-autosize";
 import tw, { styled, css } from "twin.macro";
+import { editTodo } from "../components/Todo";
 
 // const Input = styled(AutosizeInput)(({ border, full, marginBottom }) => [
 //     tw`rounded-md py-2 px-4`,
@@ -15,6 +16,39 @@ const Input = styled.input(({ border, full, marginBottom }) => [
   marginBottom && tw`mb-4`,
   border && tw`border`,
 ]);
+
+// const Input = ({
+//   isTodoInput,
+//   type,
+//   name,
+//   jwt,
+//   userId,
+//   todolistId,
+//   todoId,
+//   content,
+//   setFetching,
+// }) => {
+//   const [newTodo, setNewTodo] = useState(content);
+
+//   const editTodoOnKeyPress = (event) => {
+//     const { key } = event;
+
+//     if (key === "Enter") {
+//       editTodo(jwt, userId, todolistId, todoId, newTodo);
+//       setFetching(true);
+//     }
+//   };
+
+//   return (
+//     <StyledInput
+//       type={type}
+//       name={name}
+//       value={newTodo}
+//       onChange={(e) => setNewTodo(e.target.value)}
+//       onKeyPress={(e) => editTodoOnKeyPress(e)}
+//     />
+//   );
+// };
 
 // <AutosizeInput
 //   name="form-field-name"

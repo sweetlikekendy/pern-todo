@@ -88,7 +88,7 @@ const Login = ({
               Log In
             </Button>
           </form>
-          <p className="mb-4 text-center">Don't have an account?</p>
+          <p className="mb-4 text-center">Don&apos;t have an account?</p>
           <CustomLink text="Register" linkTo="/register" isSecondary>
             Register
           </CustomLink>

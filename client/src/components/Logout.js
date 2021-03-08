@@ -32,7 +32,7 @@ const Logout = ({
   return (
     <div>
       {isLoggedIn ? (
-        <p>You're already logged in!</p>
+        <p>You&apos;re already logged in!</p>
       ) : (
         <Redirect to="/" noThrow />
       )}

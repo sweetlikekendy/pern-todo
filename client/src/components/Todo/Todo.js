@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
 import { Draggable } from "react-beautiful-dnd";
 
 import { deleteTodo, editTodo } from "./";
@@ -11,20 +10,22 @@ import {
   TodoContainer,
 } from "../../styles";
 
-const Container = styled.div`
-  display: flex;
-  padding: 1rem;
-  /* border: 2px solid lightgray; */
-  /* border-top: 2px solid lightgrey; */
-  /* border-bottom: 2px solid lightgrey; */
-  border-radius: 2px;
-  margin-bottom: 8px;
-  background-color: ${(props) => (props.isDragging ? "lightgreen" : "white")};
-`;
+// const Container = styled.div`
+//   display: flex;
+//   padding: 1rem;
+//   /* border: 2px solid lightgray; */
+//   /* border-top: 2px solid lightgrey; */
+//   /* border-bottom: 2px solid lightgrey; */
+//   border-radius: 2px;
+//   margin-bottom: 8px;
+//   background-color: ${(props) => (props.isDragging ? "lightgreen" : "white")};
+// `;
 
 const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
-  const [newTodo, setNewTodo] = useState(todo.content);
-  const todoId = todo.id;
+  const { id: todoId, dndId, content } = todo;
+  const [newTodo, setNewTodo] = useState(content);
+
+  console.log(newTodo);
 
   const editTodoOnKeyPress = (event) => {
     const { key } = event;
@@ -36,7 +37,7 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
   };
 
   return (
-    <Draggable draggableId={todo.dndId} index={index}>
+    <Draggable draggableId={dndId} index={index}>
       {(provided, snapshot) => (
         <TodoContainer
           {...provided.draggableProps}
@@ -53,15 +54,26 @@ const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
           >
             X
           </Button>
-          <Input
-            type="text"
-            name="todo"
-            value={newTodo}
-            // updateInputValue={setNewTodo}
-            // onEnterPress={editTodoOnKeyPress}
-            onChange={(e) => setNewTodo(e.target.value)}
-            onKeyPress={(e) => editTodoOnKeyPress(e)}
-          />
+          {/* <p>{todo.content}</p> */}
+          <label htmlFor={dndId}>
+            <Input
+              id={dndId}
+              type="text"
+              name="todo"
+              value={newTodo}
+              // updateInputValue={setNewTodo}
+              // onEnterPress={editTodoOnKeyPress}
+              onChange={(e) => setNewTodo(e.target.value)}
+              onKeyPress={(e) => editTodoOnKeyPress(e)}
+              isTodoInput
+              userId={userId}
+              todolistId={todolistId}
+              jwt={jwt}
+              todoId={todoId}
+              content={todo.content}
+              setFetching={setFetching}
+            />
+          </label>
         </TodoContainer>
       )}
     </Draggable>
