@@ -24,6 +24,7 @@ exports.up = function (knex) {
       table.string("description");
       table.datetime("created_at");
       table.datetime("updated_at");
+      table.boolean("isComplete");
       table.integer("todolist_id").unsigned();
       table.unique("id");
     }),

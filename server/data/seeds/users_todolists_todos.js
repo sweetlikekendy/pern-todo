@@ -67,6 +67,7 @@ const createTodo = (knex, todo, title) => {
         created_at: todo.created_at,
         updated_at: todo.updated_at,
         todolist_id: todolistRecord.id,
+        isComplete: todo.isComplete,
       });
     })
     .catch((err) => console.error(err));

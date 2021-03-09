@@ -28,7 +28,8 @@ const getAll = (userId, todolistId) => {
       "todos.created_at",
       "todos.updated_at",
       "title",
-      "description"
+      "description",
+      "isComplete"
     )
     .from("users")
     .leftJoin("todolists", "users.id", "=", "todolists.user_id")
@@ -62,6 +63,7 @@ const createOne = (description, createdAt, todolistId) => {
       description,
       created_at: createdAt,
       todolist_id: todolistId,
+      isComplete: false,
     },
   ]);
 };
