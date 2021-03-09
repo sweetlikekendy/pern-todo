@@ -33,21 +33,17 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
           if (todos[0].id === null) {
             numOfTodos = 0;
             return {
-              [`todolist-${todolist.id}`]: {
-                numOfTodos,
-                todolist,
-                todos: [],
-              },
+              numOfTodos,
+              todolist,
+              todos: [],
             };
           }
 
           // if there are todos in the todolist
           return {
-            [`todolist-${todolist.id}`]: {
-              numOfTodos,
-              todolist,
-              todos,
-            },
+            numOfTodos,
+            todolist,
+            todos,
           };
         });
         const todolists = await Promise.all(promises);
