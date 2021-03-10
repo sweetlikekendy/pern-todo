@@ -17,10 +17,7 @@ const App = () => {
   const [lastName, setLastName] = usePersistedState(`lastName`, "");
   const [email, setEmail] = usePersistedState(`email`, "");
   const [userId, setUserId] = usePersistedState(`userId`, 0);
-  const [persistedData, setPersistedData] = usePersistedState(
-    `persistedData`,
-    {}
-  );
+  const [persistedData, setPersistedData] = usePersistedState(`persistedData`, {});
   const [stateData, setStateData] = useState(persistedData);
   const [stateUserId, setStateUserId] = useState(userId);
 
