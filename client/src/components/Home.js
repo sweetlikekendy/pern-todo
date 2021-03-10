@@ -27,7 +27,9 @@ const Home = ({
   setStateData,
 }) => {
   const [newTodolist, setNewTodolist] = useState("");
-  const { numOfTodolists, todolistOrder, todolists, todos } = stateData;
+
+  const { data, todolistOrder } = stateData;
+  const { numOfTodolists, todolists } = data;
 
   const addTodolistOnKeyPress = (event) => {
     const { key } = event;
@@ -52,9 +54,16 @@ const Home = ({
           })
           .then(async (response) => {
             const { data } = response;
-            console.log(data);
-            await setPersistedData(data);
-            await setStateData(data);
+            const { todolists } = data;
+            let todolistOrder = [];
+
+            todolists.forEach((list) => {
+              const { todolist } = list;
+              todolistOrder.push(todolist.dndId);
+            });
+
+            await setPersistedData({ data, todolistOrder });
+            await setStateData({ data, todolistOrder });
             // const { todolists } = data;
             // const promises = [];
 
@@ -153,7 +162,7 @@ const Home = ({
       fetchData();
       setFetching(false);
     }
-  }, [fetching, setFetching]);
+  }, [isLoggedIn, jwt, setPersistedData, setStateData, userId, fetching, setFetching]);
 
   return (
     <Container>
@@ -181,7 +190,6 @@ const Home = ({
           <Todolists
             todolistOrder={todolistOrder}
             todolists={todolists}
-            todos={todos}
             jwt={jwt}
             userId={userId}
             setFetching={setFetching}
