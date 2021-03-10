@@ -29,12 +29,23 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
           const todos = await getAllTodos(user_id, todolist.id);
           let numOfTodos = todos.length;
 
+          // add an id for react-drag-and-drop
+          const todosWithdndId = todos.map((todo) => {
+            return {
+              ...todo,
+              dndId: `todo-${todo.id}`,
+            };
+          });
+
           // if there are no todos in the todolist
           if (todos[0].id === null) {
             numOfTodos = 0;
             return {
               numOfTodos,
-              todolist,
+              todolist: {
+                ...todolist,
+                dndId: `todolist-${todolist.id}`,
+              },
               todos: [],
             };
           }
@@ -42,8 +53,11 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
           // if there are todos in the todolist
           return {
             numOfTodos,
-            todolist,
-            todos,
+            todolist: {
+              ...todolist,
+              dndId: `todolist-${todolist.id}`,
+            },
+            todos: todosWithdndId,
           };
         });
         const todolists = await Promise.all(promises);
