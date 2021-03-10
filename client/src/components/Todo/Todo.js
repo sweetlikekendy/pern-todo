@@ -3,12 +3,7 @@ import PropTypes from "prop-types";
 import { Draggable } from "react-beautiful-dnd";
 
 import { deleteTodo, editTodo } from "./";
-import {
-  Button,
-  Input,
-  JustifyCenterContainer,
-  TodoContainer,
-} from "../../styles";
+import { Button, Input, JustifyCenterContainer, TodoContainer } from "../../styles";
 
 // const Container = styled.div`
 //   display: flex;
@@ -22,10 +17,8 @@ import {
 // `;
 
 const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
-  const { id: todoId, dndId, content } = todo;
-  const [newTodo, setNewTodo] = useState(content);
-
-  console.log(newTodo);
+  const { id: todoId, dndId, description } = todo;
+  const [newTodo, setNewTodo] = useState(description);
 
   const editTodoOnKeyPress = (event) => {
     const { key } = event;

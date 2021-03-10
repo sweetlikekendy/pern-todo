@@ -6,15 +6,7 @@ import { Todolist } from "./Todolist";
 import { moveTodolists, moveTodos } from "./util";
 import { FlexBoxWrap, JustifyCenterContainer } from "../styles";
 
-const Todolists = ({
-  todolistOrder,
-  todolists,
-  todos,
-  stateData,
-  jwt,
-  userId,
-  setFetching,
-}) => {
+const Todolists = ({ todolistOrder, todolists, stateData, jwt, userId, setFetching }) => {
   const onDragEnd = async (result) => {
     const { destination, source, draggableId, type } = result;
 
@@ -24,10 +16,7 @@ const Todolists = ({
     }
 
     // If dropped in the same place started
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return;
     }
 
@@ -43,24 +32,27 @@ const Todolists = ({
       setFetching(true);
     }
   };
+
   return (
     <JustifyCenterContainer>
       <DragDropContext onDragEnd={onDragEnd}>
-        {todolistOrder === undefined ? (
+        {todolists === undefined ? (
           <div>Loading ... </div>
         ) : (
-          <Droppable
-            droppableId="all-todolists"
-            direction="horizontal"
-            type="todolist"
-          >
+          <Droppable droppableId="all-todolists" direction="horizontal" type="todolist">
             {(provided) => (
               <FlexBoxWrap {...provided.droppableProps} ref={provided.innerRef}>
-                {todolistOrder.map((todolistId, i) => {
-                  const todolist = todolists[todolistId];
-                  const tmpTodos = todolist.todoIds.map(
-                    (todoId) => todos[todoId]
-                  );
+                {todolists.map((list, i) => {
+                  const { todolist, todos } = list;
+                  {
+                    /* const { [`todolist-${todolist.id}`] } = list; */
+                  }
+                  {
+                    /* const todolist = todolists[todolistId]; */
+                  }
+                  {
+                    /* const tmpTodos = todolist.todoIds.map((todoId) => todos[todoId]); */
+                  }
 
                   return (
                     <Todolist
@@ -68,7 +60,7 @@ const Todolists = ({
                       index={i}
                       jwt={jwt}
                       todolist={todolist}
-                      todos={tmpTodos}
+                      todos={todos}
                       setFetching={setFetching}
                     />
                   );

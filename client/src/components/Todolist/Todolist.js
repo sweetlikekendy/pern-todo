@@ -10,24 +10,25 @@ import { Button, Input, List, TodolistContainer } from "../../styles";
 
 const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
   const [newTodo, setNewTodo] = useState("");
+  // console.log(todolist);
   const [newTodolist, setNewTodolist] = useState(todolist.title);
 
-  const userId = todolist.userId;
-  const todolistId = todolist.id;
+  const { id: todolistId, user_id } = todolist;
 
   const editTodolistOnKeyPress = (event) => {
     const { key } = event;
 
     if (key === "Enter") {
-      editTodolist(jwt, userId, todolistId, newTodolist);
+      editTodolist(jwt, user_id, todolistId, newTodolist);
       setFetching(true);
     }
   };
+
   const addTodoOnKeyPress = (event) => {
     const { key } = event;
 
     if (key === "Enter") {
-      addTodo(jwt, userId, todolistId, newTodo);
+      addTodo(jwt, user_id, todolistId, newTodo);
       setNewTodo("");
       setFetching(true);
     }
@@ -46,7 +47,7 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
             <Button
               isClose
               onClick={() => {
-                deleteTodolist(jwt, userId, todolistId);
+                deleteTodolist(jwt, user_id, todolistId);
                 setFetching(true);
               }}
             >
@@ -76,17 +77,13 @@ const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
           />
           <Droppable droppableId={todolist.dndId} type="todo">
             {(provided, snapshot) => (
-              <List
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                isDraggingOver={snapshot.isDraggingOver}
-              >
+              <List ref={provided.innerRef} {...provided.droppableProps} isDraggingOver={snapshot.isDraggingOver}>
                 {todos.map((todo, i) => (
                   <Todo
                     key={todo.id}
                     jwt={jwt}
                     todo={todo}
-                    userId={userId}
+                    userId={user_id}
                     todolistId={todolistId}
                     index={i}
                     setFetching={setFetching}
