@@ -6,12 +6,7 @@
  * @param {string} id Id of the todolist being dragged
  * @return {array} Mutated array with elements in a new order
  */
-export const removeAndInsertArrayElement = (
-  array,
-  sourceIndex,
-  destinationIndex,
-  id
-) => {
+export const removeAndInsertArrayElement = (array, sourceIndex, destinationIndex, id) => {
   // Remove the item being dragged
   array.splice(sourceIndex, 1);
   // Insert item being dragged
@@ -42,12 +37,7 @@ export const selectArrayFromRange = (array, sourceIndex, destinationIndex) => {
  * @param {number} destinationIndex Destination index
  * @return {[array1, array2]} array1 Shifted array with the new elements, array2 Shifted array with the old elements
  */
-export const getShiftedIds = (
-  copyArray,
-  originalArray,
-  sourceIndex,
-  destinationIndex
-) => {
+export const getShiftedIds = (copyArray, originalArray, sourceIndex, destinationIndex) => {
   let array1 = [];
   let array2 = [];
   // Moving the down the list
