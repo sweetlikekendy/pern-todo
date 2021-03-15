@@ -42,8 +42,8 @@ const Todolists = ({ todolistOrder, todolists, stateData, jwt, userId, setFetchi
           <Droppable droppableId="all-todolists" direction="horizontal" type="todolist">
             {(provided) => (
               <FlexBoxWrap {...provided.droppableProps} ref={provided.innerRef}>
-                {todolists.map((list, i) => {
-                  const { todolist, todos } = list;
+                {todolists.map((todolist, i) => {
+                  const { todos } = todolist;
                   {
                     /* const { [`todolist-${todolist.id}`] } = list; */
                   }
