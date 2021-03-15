@@ -1,7 +1,6 @@
 import axios from "axios";
 import { SINGLE_TODO_URI } from "../../../endpoints";
 import { removeAndInsertArrayElement } from "..";
-import { getShiftedIds, findMatchingElementsInArrays } from "../util";
 
 /**
  * Move todos within a todolist
@@ -19,44 +18,41 @@ import { getShiftedIds, findMatchingElementsInArrays } from "../util";
  * @return {object} Asynchronously resolved Promise of Promise.all
  */
 export const moveTodos = (jwt, userId, stateData, source, destination, draggableId) => {
-  console.log(stateData, "stateData");
   const { data } = stateData;
   const { todolists } = data;
 
   // Get todolist data that the todo is in
-  const list = todolists.find((todolists, i) => {
-    if (todolists.todolist.dndId === source.droppableId) {
-      return todolists.todolist.dndId === source.droppableId;
+  const todolist = todolists.find((todolist) => {
+    if (todolist.dndId === source.droppableId) {
+      return todolist.dndId === source.droppableId;
     }
   });
 
-  const { todolist, todos } = list;
+  const { todos } = todolist;
 
-  console.log(todolist);
-
-  console.log(`todolist name: ${todolist.title}`);
-
+  // create a copy of the todos
   const copyTodos = Array.from(todos);
 
-  console.log(`todos in todolist name ${todolist.title}`, copyTodos);
-
-  const todoMoved = todos.find((todos, i) => {
+  // get the data of the todo that is being moved
+  const todoBeingMoved = todos.find((todos) => {
     if (todos.dndId === draggableId) {
       return todos.dndId === draggableId;
     }
   });
 
-  removeAndInsertArrayElement(copyTodos, source.index, destination.index, todoMoved);
-  // console.log(copyTodos);
+  // get the data of the todos after the todo has moved
+  removeAndInsertArrayElement(copyTodos, source.index, destination.index, todoBeingMoved);
 
-  const finalTodos = copyTodos.map((todo, i) => {
-    return {
-      ...todo,
+  // apply the data to the original todo ids
+  const finalTodos = [];
+
+  // only get the todos that are being moved in the final todos
+  for (let i = source.index; i <= destination.index; i++) {
+    finalTodos.push({
+      ...copyTodos[i],
       id: todos[i].id,
-    };
-  });
-
-  console.log(`finalTodos that will sent as a post request`, finalTodos);
+    });
+  }
 
   const promises = [];
 
