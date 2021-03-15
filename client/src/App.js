@@ -12,6 +12,12 @@ import "tailwindcss/dist/base.min.css";
 import "./tailwind.output.css";
 
 const App = () => {
+  // const [isLoggedIn, setLoggedIn] = useState(`isLoggedIn`, false);
+  // const [firstName, setFirstName] = useState(`firstName`, "");
+  // const [lastName, setLastName] = useState(`lastName`, "");
+  // const [email, setEmail] = useState(`email`, "");
+  // const [userId, setUserId] = useState(`userId`, 0);
+  // const [persistedData, setPersistedData] = useState(`persistedData`, {});
   const [isLoggedIn, setLoggedIn] = usePersistedState(`isLoggedIn`, false);
   const [firstName, setFirstName] = usePersistedState(`firstName`, "");
   const [lastName, setLastName] = usePersistedState(`lastName`, "");
