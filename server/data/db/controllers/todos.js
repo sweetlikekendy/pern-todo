@@ -85,6 +85,7 @@ const updateOne = (todoId, description, newTodolistId, updatedAt) => {
   }
   if (newTodolistId) {
     return knex("todos").where("id", todoId).first().update({
+      description,
       todolist_id: newTodolistId,
       updated_at: updatedAt,
     });
