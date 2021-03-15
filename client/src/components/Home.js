@@ -54,16 +54,9 @@ const Home = ({
           })
           .then(async (response) => {
             const { data } = response;
-            const { todolists } = data;
-            let todolistOrder = [];
 
-            todolists.forEach((list) => {
-              const { todolist } = list;
-              todolistOrder.push(todolist.dndId);
-            });
-
-            await setPersistedData({ data, todolistOrder });
-            await setStateData({ data, todolistOrder });
+            await setPersistedData({ data });
+            await setStateData({ data });
             // const { todolists } = data;
             // const promises = [];
 
