@@ -28,6 +28,7 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
         const promises = todolistRes.map(async (todolist) => {
           const todos = await getAllTodos(user_id, todolist.id);
           let numOfTodos = todos.length;
+          let todoOrder = [];
 
           // add an id for react-drag-and-drop
           const todosWithdndId = todos.map((todo) => {
@@ -42,27 +43,40 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
             numOfTodos = 0;
             return {
               numOfTodos,
-              todolist: {
-                ...todolist,
-                dndId: `todolist-${todolist.id}`,
-              },
+
+              ...todolist,
+              dndId: `todolist-${todolist.id}`,
+
               todos: [],
+              todoOrder,
             };
           }
 
           // if there are todos in the todolist
+          // get todo order
+          todosWithdndId.forEach((todo) => {
+            return todoOrder.push(todo.dndId);
+          });
+
           return {
             numOfTodos,
-            todolist: {
-              ...todolist,
-              dndId: `todolist-${todolist.id}`,
-            },
+
+            ...todolist,
+            dndId: `todolist-${todolist.id}`,
+
             todos: todosWithdndId,
+            todoOrder,
           };
         });
         const todolists = await Promise.all(promises);
 
-        return resStatusPayload(res, 200, { numOfTodolists, todolists });
+        let todolistOrder = [];
+
+        todolists.forEach((todolist) => {
+          todolistOrder.push(todolist.dndId);
+        });
+
+        return resStatusPayload(res, 200, { numOfTodolists, todolists, todolistOrder });
       })
       .catch((err) => console.error(err));
   }
