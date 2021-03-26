@@ -41,32 +41,38 @@ const getAll = () => {
  * @return {object} Knex object containing new user created
  */
 const createOne = (first_name, last_name, email, password, created_at) => {
-  return knex("users")
-    .select()
-    .where("email", email)
-    .then((rows) => {
-      if (rows.length === 0) {
-        // no matching records found
-        return knex("users").returning("id").insert([
-          {
-            first_name,
-            last_name,
-            email,
-            password,
-            created_at,
-          },
-        ]);
-      } else {
-        // duplicate email found
-        return {
-          message: "An account already exists with this email",
-          duplicateEmail: true,
-        };
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  return (
+    knex("users")
+      .select()
+      .where("email", email)
+      .then((rows) => {
+        if (rows.length === 0) {
+          // no matching records found
+          return knex("users").returning("id", "first_name", "last_name", "email", "created_at").insert([
+            {
+              first_name,
+              last_name,
+              email,
+              password,
+              created_at,
+            },
+          ]);
+        } else {
+          // duplicate email found
+          return {
+            message: "An account already exists with this email",
+            duplicateEmail: true,
+          };
+        }
+      })
+      // .then((data) => {
+      //   console.log(JSON.stringify(data));
+      //   return knex("users").where("id", 18).first();
+      // })
+      .catch((err) => {
+        console.error(err);
+      })
+  );
 };
 
 /**

@@ -18,77 +18,81 @@ const App = () => {
   // const [email, setEmail] = useState(`email`, "");
   // const [userId, setUserId] = useState(`userId`, 0);
   // const [persistedData, setPersistedData] = useState(`persistedData`, {});
-  const [isLoggedIn, setLoggedIn] = usePersistedState(`isLoggedIn`, false);
-  const [firstName, setFirstName] = usePersistedState(`firstName`, "");
-  const [lastName, setLastName] = usePersistedState(`lastName`, "");
-  const [email, setEmail] = usePersistedState(`email`, "");
-  const [userId, setUserId] = usePersistedState(`userId`, 0);
-  const [persistedData, setPersistedData] = usePersistedState(`persistedData`, {});
-  const [stateData, setStateData] = useState(persistedData);
-  const [stateUserId, setStateUserId] = useState(userId);
+  // const [isLoggedIn, setLoggedIn] = usePersistedState(`isLoggedIn`, false);
+  // const [firstName, setFirstName] = usePersistedState(`firstName`, "");
+  // const [lastName, setLastName] = usePersistedState(`lastName`, "");
+  // const [email, setEmail] = usePersistedState(`email`, "");
+  // const [userId, setUserId] = usePersistedState(`userId`, 0);
+  // const [persistedData, setPersistedData] = usePersistedState(`persistedData`, {});
+  // const [stateData, setStateData] = useState(persistedData);
+  // const [stateUserId, setStateUserId] = useState(userId);
 
-  const [jwt, setJwt] = usePersistedState(`Authorization`, "");
-  const [fetching, setFetching] = useState(false);
-  const [reordering, setReordering] = useState(false);
+  // const [jwt, setJwt] = usePersistedState(`Authorization`, "");
+  // const [fetching, setFetching] = useState(false);
+  // const [reordering, setReordering] = useState(false);
 
   // Fetch data on page refresh
-  const pageRefresh = () => {
-    if (window.performance) {
-      if (performance.navigation.type) {
-        setFetching(true);
-      } else {
-        setFetching(false);
-      }
-    }
-  };
+  // const pageRefresh = () => {
+  //   if (window.performance) {
+  //     if (performance.navigation.type) {
+  //       setFetching(true);
+  //     } else {
+  //       setFetching(false);
+  //     }
+  //   }
+  // };
 
-  useEffect(() => {
-    pageRefresh();
-  }, []);
+  // useEffect(() => {
+  //   pageRefresh();
+  // }, []);
 
   return (
     <AppContainer className="App">
-      <Navbar isLoggedIn={isLoggedIn} />
+      <Navbar />
+      {/* <Navbar isLoggedIn={isLoggedIn} /> */}
       <Router>
         <Home
           path="/"
-          firstName={firstName}
-          userId={userId}
-          isLoggedIn={isLoggedIn}
-          jwt={jwt}
-          fetching={fetching}
-          setFetching={setFetching}
-          stateData={stateData}
-          setStateData={setStateData}
-          setPersistedData={setPersistedData}
+          // firstName={firstName}
+          // userId={userId}
+          // isLoggedIn={isLoggedIn}
+          // jwt={jwt}
+          // fetching={fetching}
+          // setFetching={setFetching}
+          // stateData={stateData}
+          // setStateData={setStateData}
+          // setPersistedData={setPersistedData}
         />
         <Login
-          isLoggedIn={isLoggedIn}
-          setFirstName={setFirstName}
-          setLastName={setLastName}
-          setEmail={setEmail}
-          setUserId={setUserId}
-          setLoggedIn={setLoggedIn}
-          setFetching={setFetching}
-          setJwt={setJwt}
+          // isLoggedIn={isLoggedIn}
+          // setFirstName={setFirstName}
+          // setLastName={setLastName}
+          // setEmail={setEmail}
+          // setUserId={setUserId}
+          // setLoggedIn={setLoggedIn}
+          // setFetching={setFetching}
+          // setJwt={setJwt}
           path="/login"
         />
         <Logout
-          userFirstName={firstName}
-          userLastName={lastName}
-          userEmail={email}
-          jwt={jwt}
-          isLoggedIn={isLoggedIn}
-          setFirstName={setFirstName}
-          setLastName={setLastName}
-          setEmail={setEmail}
-          setLoggedIn={setLoggedIn}
-          setJwt={setJwt}
-          setUserId={setUserId}
-          setPersistedData={setPersistedData}
+          // userFirstName={firstName}
+          // userLastName={lastName}
+          // userEmail={email}
+          // jwt={jwt}
+          // isLoggedIn={isLoggedIn}
+          // setFirstName={setFirstName}
+          // setLastName={setLastName}
+          // setEmail={setEmail}
+          // setLoggedIn={setLoggedIn}
+          // setJwt={setJwt}
+          // setUserId={setUserId}
+          // setPersistedData={setPersistedData}
           path="/logout"
         />
-        <Register path="register" isLoggedIn={isLoggedIn} />
+        <Register
+          path="register"
+          // isLoggedIn={isLoggedIn}
+        />
       </Router>
     </AppContainer>
   );

@@ -3,11 +3,9 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { Redirect } from "@reach/router";
 import { Button, CenterContainer, FormContainer, Input } from "../styles";
+
 // todo change production uri
-const REGISTER_URI =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:5000/api/register"
-    : "something else";
+const REGISTER_URI = process.env.NODE_ENV === "development" ? "http://localhost:5000/api/register" : "something else";
 
 const Register = ({ isLoggedIn }) => {
   const [formFirstName, setFormFirstName] = useState("");
@@ -15,33 +13,56 @@ const Register = ({ isLoggedIn }) => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+
+  const canSave = [formFirstName, formLastName, formEmail, formPassword].every(Boolean);
+
   const clearInputs = () => {
     setFormFirstName("");
     setFormLastName("");
     setFormEmail("");
     setFormPassword("");
   };
+  // const handleSubmit = async () => {
+  //   if (canSave) {
+  //     try {
+  //       setAddRequestStatus("pending");
+  //       const resultAction = await dispatch(
+  //         addNewUser({ firstName: formFirstName, lastName: formLastName, email: formEmail, password: formPassword })
+  //       );
+  //       unwrapResult(resultAction);
+  //       setFormFirstName("");
+  //       setFormLastName("");
+  //       setFormEmail("");
+  //       setFormPassword("");
+  //       // setStatusMessage(resultAction);
+  //     } catch (err) {
+  //       console.error("Failed to save the post: ", err);
+  //       setAddRequestStatus("failed");
+  //       // setStatusMessage(err);
+  //     } finally {
+  //       setAddRequestStatus("idle");
+  //     }
+  //   }
+  // };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios
-      .post(REGISTER_URI, {
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(REGISTER_URI, {
         firstName: formFirstName,
         lastName: formLastName,
         email: formEmail,
         password: formPassword,
-      })
-      .then((res) => {
-        const { isCreated, message } = res.data;
-        console.log(res.data);
-        if (isCreated) {
-          setStatusMessage(message);
-          clearInputs();
-        } else {
-          setStatusMessage(message);
-        }
-      })
-      .catch((err) => console.error(err));
+      });
+      const { data } = response;
+      const { isCreated, message } = data;
+      if (isCreated) {
+        clearInputs();
+      }
+
+      setStatusMessage(message);
+    } catch (error) {
+      console.err(error);
+    }
   };
   return (
     <CenterContainer>
@@ -50,7 +71,12 @@ const Register = ({ isLoggedIn }) => {
       ) : (
         <FormContainer>
           {statusMessage && <p className="mb-4">{statusMessage} </p>}
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
             <Input
               full
               border
@@ -91,7 +117,7 @@ const Register = ({ isLoggedIn }) => {
               value={formPassword}
               onChange={(e) => setFormPassword(e.target.value)}
             />
-            <Button full isPrimary>
+            <Button full isPrimary disabled={!canSave}>
               Register
             </Button>
           </form>

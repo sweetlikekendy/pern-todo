@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../../endpoints";
+import { SINGLE_TODOLIST_URI, SINGLE_TODO_URI } from "../../endpoints";
 import { removeAndInsertArrayElement } from "..";
 
 /**

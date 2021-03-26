@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { Link } from "@reach/router";
-import axios from "axios";
-
-import Todolists from "./Todolists";
-import { addTodolist } from "./Todolist";
-import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
+import { useDispatch, useSelector } from "react-redux";
+import { unwrapResult } from "@reduxjs/toolkit";
 import {
   CenterContainer,
   Container,
@@ -15,147 +10,126 @@ import {
   JustifyCenterContainer,
 } from "../styles";
 
+import TodolistRedux from "./TodolistRedux";
+import { fetchTodolists, addTodolist, selectTodolistIds } from "../features/todolists/todolistsSlice";
+import TodolistListRedux from "./TodolistListRedux";
+
 const Home = ({
-  firstName,
-  userId,
-  isLoggedIn,
-  jwt,
+  // firstName,
+  // userId,
+  // isLoggedIn,
+  // jwt,
   fetching,
-  setFetching,
-  setPersistedData,
-  stateData,
-  setStateData,
+  // setFetching,
+  // setPersistedData,
+  // stateData,
+  // setStateData,
 }) => {
   const [newTodolist, setNewTodolist] = useState("");
+  const [addRequestStatus, setAddRequestStatus] = useState("idle");
+  // const { data, todolistOrder } = stateData;
+  // const { numOfTodolists, todolists } = data;
 
-  const { data, todolistOrder } = stateData;
-  const { numOfTodolists, todolists } = data;
+  const dispatch = useDispatch();
+  // const orderedTodolistIds = useSelector(selectTodolistIds);
+  const todolistStatus = useSelector((state) => state.todolists.status);
+  const todolistIds = useSelector(selectTodolistIds);
+  const error = useSelector((state) => state.todolists.error);
 
-  const addTodolistOnKeyPress = (event) => {
-    const { key } = event;
+  // Used for single user in redux store
+  const loggedInUserData = useSelector((state) => {
+    const todolistsData =
+      state.todolists.ids.length > 0 ? { todolists: state.todolists.entities, ids: state.todolists.ids } : {};
 
-    if (key === "Enter") {
-      addTodolist(jwt, userId, newTodolist, setNewTodolist);
-      setNewTodolist("");
-      setFetching(true);
+    // if there's a user, that means user has logged in
+    if (state.users.ids.length > 0) {
+      const { users } = state;
+      const { ids: userIds, entities: userEntities } = users;
+      const { first_name, id, loggedIn, token } = userEntities[userIds[0]];
+
+      return { first_name, id, loggedIn, token, todolistsData };
     }
-  };
+    return { first_name: ``, id: null, loggedIn: false, token: ``, todolistsData };
+  });
+
+  const { id: userId, loggedIn: isLoggedIn, first_name: firstName, token: jwt, todolistsData } = loggedInUserData;
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (todolistStatus === "idle") {
       if (isLoggedIn) {
-        console.log(`fetching data`);
-        // new stuff with react beautiful dnd and state
-        await axios
-          .get(TODOLISTS_URI(userId), {
-            headers: {
-              Authorization: jwt,
-            },
-          })
-          .then(async (response) => {
-            const { data } = response;
+        console.log(`${firstName} is logged in! fetching todolists`);
+        console.log(`Home userId and jwt`, userId, jwt);
 
-            await setPersistedData({ data });
-            await setStateData({ data });
-            // const { todolists } = data;
-            // const promises = [];
-
-            // Get all the todos in a todolist
-            // // Push onto promises array
-            // for (let i = 0; i < todolists.length; i++) {
-            //   promises.push(
-            //     axios.get(TODOS_URI(userId, todolists[i].id), {
-            //       headers: {
-            //         Authorization: jwt,
-            //       },
-            //     })
-            //   );
-            // }
-
-            // // Execute the array of promises
-            // await Promise.all(promises)
-            //   .then(async (results) => {
-            //     const tmpData = {
-            //       numOfTodolists,
-            //       todos: {},
-            //       todolists: {},
-            //       todolistOrder: [],
-            //     };
-            //     const tmpTodos = [];
-            //     results.map(({ data }, i) => {
-            //       const { todos, numOfTodos } = data;
-
-            //       // Create an array with all the todos in there
-            //       todos.map((todo) => {
-            //         tmpTodos.push(todo);
-            //       });
-            //     });
-
-            //     tmpTodos.map((todo, i) => {
-            //       const { id, todolist_id, description, title, created_at, updated_at, first_name, last_name } = todo;
-            //       if (todo.created_at === null) {
-            //         return;
-            //       }
-            //       if (todo.created_at !== null) {
-            //         tmpData.todos[`todo-${id}`] = {
-            //           id,
-            //           dndId: `todo-${id}`,
-            //           todolistId: todolist_id,
-            //           todolistTitle: title,
-            //           content: description,
-            //           createdAt: created_at,
-            //           updatedAt: updated_at,
-            //           firstName: first_name,
-            //           lastName: last_name,
-            //         };
-            //       }
-            //     });
-            //     todolists.map((todolist, i) => {
-            //       const { id, user_id, title, created_at, updated_at, first_name, last_name } = todolist;
-            //       tmpData.todolists[`todolist-${id}`] = {
-            //         id,
-            //         dndId: `todolist-${id}`,
-            //         userId: user_id,
-            //         title,
-            //         createdAt: created_at,
-            //         updatedAt: updated_at,
-            //         firstName: first_name,
-            //         lastName: last_name,
-            //         todoIds: [],
-            //       };
-            //       tmpData.todolistOrder.push(`todolist-${id}`);
-            //     });
-
-            //     const todoEntries = Object.entries(tmpData.todos);
-            //     const todolistEntries = Object.entries(tmpData.todolists);
-
-            //     // Set the todos ids to their respective todolists
-            //     todolistEntries.map((todolistEntry, i) => {
-            //       return todoEntries.map((todoEntry, j) => {
-            //         // if there is a match
-            //         if (todoEntry[1].todolistId === todolistEntry[1].id) {
-            //           const todolistId = todolistEntry[1].id;
-            //           tmpData.todolists[`todolist-${todolistId}`].todoIds.push(todoEntries[j][0]);
-            //         }
-            //       });
-            //     });
-
-            //     // set number of todolists
-            //     tmpData[`numOfTodolists`] = Object.keys(tmpData.todolists).length;
-            //     await setPersistedData(tmpData);
-            //     await setStateData(tmpData);
-            //   })
-            //   .catch((error) => console.error(error.response.request));
-          })
-          .catch((error) => console.error(error.response.request));
+        const resultAction = dispatch(fetchTodolists({ userId, jwt }));
+        unwrapResult(resultAction);
       }
-    };
-
-    if (fetching) {
-      fetchData();
-      setFetching(false);
     }
-  }, [isLoggedIn, jwt, setPersistedData, setStateData, userId, fetching, setFetching]);
+  }, [todolistStatus, dispatch, firstName, userId, jwt, isLoggedIn]);
+
+  let numOfTodolists = 0;
+
+  if (todolistIds.length > 0) {
+    numOfTodolists = todolistIds.length;
+  }
+
+  const canSave = [newTodolist].every(Boolean) && addRequestStatus === "idle";
+
+  const addTodolistOnKeyPress = async (event) => {
+    const { key } = event;
+
+    if (key === "Enter" && canSave) {
+      // addTodolist(jwt, userId, newTodolist, setNewTodolist);
+      try {
+        setAddRequestStatus("pending");
+        const resultAction = await dispatch(addTodolist({ userId, title: newTodolist, jwt }));
+
+        unwrapResult(resultAction);
+        setNewTodolist("");
+      } catch (err) {
+        console.error("Failed to save the post: ", err);
+      } finally {
+        setAddRequestStatus("idle");
+      }
+
+      // setFetching(true)
+    }
+  };
+  // let content;
+
+  // if (todolistStatus === "loading") {
+  //   content = <div className="loader">Loading...</div>;
+  // } else if (todolistStatus === "succeeded") {
+  //   content = orderedTodolistIds.map((todolistId) => <div key={todolistId}>{todolistId}</div>);
+  // } else if (todolistStatus === "error") {
+  //   content = <div>{error}</div>;
+  // }
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (isLoggedIn) {
+  //       console.log(`fetching data`);
+  //       // new stuff with react beautiful dnd and state
+  //       await axios
+  //         .get(TODOLISTS_URI(userId), {
+  //           headers: {
+  //             Authorization: jwt,
+  //           },
+  //         })
+  //         .then(async (response) => {
+  //           const { data } = response;
+
+  //           await setPersistedData({ data });
+  //           await setStateData({ data });
+  //         })
+  //         .catch((error) => console.error(error.response.request));
+  //     }
+  //   };
+
+  //   if (fetching) {
+  //     fetchData();
+  //     setFetching(false);
+  //   }
+  // }, [isLoggedIn, jwt, setPersistedData, setStateData, userId, fetching, setFetching]);
 
   return (
     <Container>
@@ -180,15 +154,16 @@ const Home = ({
               />
             </div>
           </JustifyCenterContainer>
-          <Todolists
-            todolistOrder={todolistOrder}
-            todolists={todolists}
+          <TodolistListRedux />
+          {/* <Todolists
+            // todolistOrder={todolistOrder}
+            // todolists={todolists}
             jwt={jwt}
             userId={userId}
-            setFetching={setFetching}
-            stateData={stateData}
-            setPersistedData={setPersistedData}
-          />
+            // setFetching={setFetching}
+            // stateData={stateData}
+            // setPersistedData={setPersistedData}
+          /> */}
         </JustifyCenterHfullContainer>
       ) : (
         <CenterContainer>

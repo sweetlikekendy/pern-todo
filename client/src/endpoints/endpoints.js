@@ -1,15 +1,13 @@
+/* eslint-disable no-undef */
 // TODO Add later
 const productionUri = `some production uri`;
-export const ROOT_URI =
-  process.env.NODE_ENV === `production`
-    ? productionUri
-    : `http://localhost:5000`;
+export const ROOT_URI = process.env.NODE_ENV === `production` ? productionUri : `http://localhost:5000`;
 
 // Login URI
-export const LOGIN_URI =
-  process.env.NODE_ENV === `production`
-    ? `${ROOT_URI}`
-    : `${ROOT_URI}/api/login`;
+export const LOGIN_URI = process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/login`;
+
+// all users
+export const ALL_USERS = process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/users`;
 
 /**
  * Todolists URI
@@ -18,9 +16,7 @@ export const LOGIN_URI =
  * @return {string} The URI/endpoint for a user's todolist(s).
  */
 export const TODOLISTS_URI = (userId) =>
-  process.env.NODE_ENV === `production`
-    ? `${ROOT_URI}`
-    : `${ROOT_URI}/api/users/${userId}/todolists`;
+  process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/users/${userId}/todolists`;
 
 /**
  * Single todolist URI
@@ -30,9 +26,7 @@ export const TODOLISTS_URI = (userId) =>
  * @return {string} The URI/endpoint for a user's specific todolist.
  */
 export const SINGLE_TODOLIST_URI = (userId, todolistId) =>
-  process.env.NODE_ENV === `production`
-    ? `${ROOT_URI}`
-    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}`;
+  process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}`;
 
 /**
  * Todos URI

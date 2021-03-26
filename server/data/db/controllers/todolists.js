@@ -9,10 +9,7 @@ import knex from "../index";
  * @return {object} Knex object containing todolist data
  */
 const getOne = (userId, todolistId) => {
-  return knex("todolists")
-    .where("todolists.user_id", userId)
-    .where("id", todolistId)
-    .first();
+  return knex("todolists").where("todolists.user_id", userId).where("id", todolistId).first();
 };
 
 /**
@@ -24,8 +21,8 @@ const getOne = (userId, todolistId) => {
 const getAll = (userId) => {
   return knex
     .select(
-      "first_name",
-      "last_name",
+      // "first_name",
+      // "last_name",
       "todolists.created_at",
       "todolists.updated_at",
       "todolists.user_id",
@@ -45,7 +42,7 @@ const getAll = (userId) => {
  * @return {object} Knex object confirming delete
  */
 const deleteOne = (todolistId) => {
-  return knex("todolists").where("id", todolistId).first().del();
+  return knex("todolists").where("id", todolistId).first().del().returning("*");
 };
 
 /**
@@ -56,14 +53,35 @@ const deleteOne = (todolistId) => {
  * @param {number} userId User's ID
  * @return {object} Knex object containing new todo created
  */
-const createOne = (title, createdAt, userId) => {
-  return knex("todolists").insert([
-    {
-      title,
-      created_at: createdAt,
-      user_id: userId,
-    },
-  ]);
+const createOne = async (title, createdAt, userId) => {
+  return await knex("todolists")
+    .insert([
+      {
+        title,
+        created_at: createdAt,
+        user_id: userId,
+      },
+    ])
+    .then(async () => {
+      return await knex
+        .select(
+          // "first_name",
+          // "last_name",
+          "todolists.created_at",
+          "todolists.updated_at",
+          "todolists.user_id",
+          "todolists.id",
+          "title"
+        )
+        .from("users")
+        .leftJoin("todolists", "users.id", "=", "todolists.user_id")
+        .where("users.id", userId)
+        .orderBy("todolists.created_at", "desc");
+    })
+    .catch((error) => {
+      console.log(error);
+      return error;
+    });
 };
 
 /**
@@ -75,10 +93,14 @@ const createOne = (title, createdAt, userId) => {
  * @return {object} Knex object containing updated todo
  */
 const updateOne = (todolistId, title, updatedAt) => {
-  return knex("todolists").where("id", todolistId).first().update({
-    title,
-    updated_at: updatedAt,
-  });
+  return knex("todolists")
+    .where("id", todolistId)
+    .first()
+    .update({
+      title,
+      updated_at: updatedAt,
+    })
+    .returning("*");
 };
 
 export const todolistsRoutes = {

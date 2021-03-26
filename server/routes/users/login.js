@@ -43,13 +43,17 @@ router.post("/", async (req, res) => {
       if (validPassword) {
         const tokenObject = issueJwt(user);
         const redirect = `/`;
+
+        delete user.password;
         return resStatusPayload(res, 200, {
           loggedIn: true,
-          user,
+          ...user,
           token: tokenObject.token,
           expiresIn: tokenObject.expiresIn,
-          redirect,
-          message: "Logging In",
+          success: {
+            redirect,
+            message: `Successfully loggin in ${user.first_name}`,
+          },
         });
       }
     }

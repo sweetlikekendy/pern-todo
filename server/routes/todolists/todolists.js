@@ -2,8 +2,12 @@ import express from "express";
 import { resStatusPayload, authorizeJwt } from "../../util";
 import { todolistsRoutes } from "../../data/db/controllers/todolists";
 import { todosRoutes } from "../../data/db/controllers/todos";
+import { usersRoutes } from "../../data/db/controllers/users";
+import { updateTodolist } from "../../../client/src/features/todolists/todolistsSlice";
 const { getOne, getAll, updateOne, createOne, deleteOne } = todolistsRoutes;
 const { getAll: getAllTodos } = todosRoutes;
+const { getOneById: getOneUserById } = usersRoutes;
+
 const router = express.Router();
 
 // Get all todolists for a user
@@ -32,7 +36,10 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
 
           // add an id for react-drag-and-drop
           const todosWithdndId = todos.map((todo) => {
+            // console.log({ [`${todo.id}`]: { ...todo, dndId: `todo-${todo.id}` } });
             return {
+              // normalize
+              // [`${todo.id}`]: { ...todo, dndId: `todo-${todo.id}` },
               ...todo,
               dndId: `todo-${todo.id}`,
             };
@@ -42,7 +49,7 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
           if (todos[0].id === null) {
             numOfTodos = 0;
             return {
-              numOfTodos,
+              // numOfTodos,
 
               ...todolist,
               dndId: `todolist-${todolist.id}`,
@@ -59,7 +66,7 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
           });
 
           return {
-            numOfTodos,
+            // numOfTodos,
 
             ...todolist,
             dndId: `todolist-${todolist.id}`,
@@ -70,13 +77,22 @@ router.get("/:user_id/todolists", authorizeJwt, async (req, res) => {
         });
         const todolists = await Promise.all(promises);
 
-        let todolistOrder = [];
+        // let todolistOrder = [];
 
-        todolists.forEach((todolist) => {
-          todolistOrder.push(todolist.dndId);
-        });
+        // todolists.forEach((todolist) => {
+        //   todolistOrder.push(todolist.dndId);
+        // });
 
-        return resStatusPayload(res, 200, { numOfTodolists, todolists, todolistOrder });
+        // console.log(todolists);
+        const todolistsAsObject = todolists.map((todolist) => ({ [`${todolist.id}`]: { ...todolist } }));
+        // const todolistsAsObject = todolists.reduce((obj, todolist) => ((obj[todolist.key] = todolist.value), obj), {});
+        // const todolistsAsObject = Object.fromEntries(todolists.map((todolist) => [todolist.key, todolist.value]));
+        // console.log("todolists as object", todolistsAsObject);
+
+        // normalize my own todolist data for redux
+        // return resStatusPayload(res, 200, todolistsAsObject);
+
+        return resStatusPayload(res, 200, todolists);
       })
       .catch((err) => console.error(err));
   }
@@ -120,12 +136,26 @@ router.post("/:user_id/todolists/", authorizeJwt, async (req, res) => {
   }
 
   if (title) {
-    return await createOne(title, createdAt, user_id).then(
-      resStatusPayload(res, 201, {
-        isCreated: true,
-        message: "Successfully created a todolist",
-      })
-    );
+    const todolist = await createOne(title, createdAt, user_id);
+
+    const loggedInUser = await getOneUserById(user_id);
+
+    if (loggedInUser) {
+      delete loggedInUser.password;
+    }
+
+    const finalTodolist = {
+      first_name: loggedInUser.first_name,
+      last_name: loggedInUser.last_name,
+      created_at: createdAt,
+      updated_at: null,
+      user_id,
+      dndId: `todolist-${todolist[0].id}`,
+      todos: [],
+      todoOrder: [],
+      ...todolist[0],
+    };
+    resStatusPayload(res, 201, finalTodolist);
   }
 });
 
@@ -136,21 +166,18 @@ router.put("/:user_id/todolists/:todolist_id", authorizeJwt, async (req, res) =>
   const updatedAt = new Date();
 
   if (todolist_id) {
-    return await updateOne(todolist_id, title, updatedAt)
-      .then((todolist) => {
-        if (todolist) {
-          return resStatusPayload(res, 200, {
-            isUpdated: true,
-            message: "Todolist Updated",
-            updatedAt,
-          });
-        }
-        return resStatusPayload(res, 404, {
-          isUpdated: false,
-          message: "Todolist Not Found",
-        });
-      })
-      .catch((err) => console.error(err));
+    try {
+      const updatedTodolist = await updateOne(todolist_id, title, updatedAt);
+      if (updatedTodolist.length > 0) {
+        return resStatusPayload(res, 200, updatedTodolist[0]);
+      }
+      return resStatusPayload(res, 404, {
+        isUpdated: false,
+        message: "Todolist Not Found",
+      });
+    } catch (error) {
+      console.error(`something went wrong`, error);
+    }
   }
   return resStatusPayload(res, 500, {
     isUpdated: false,
@@ -162,26 +189,39 @@ router.put("/:user_id/todolists/:todolist_id", authorizeJwt, async (req, res) =>
 router.delete("/:user_id/todolists/:todolist_id", authorizeJwt, async (req, res) => {
   const { todolist_id } = req.params;
 
-  if (todolist_id) {
-    return await deleteOne(todolist_id)
-      .then((todolist) => {
-        if (todolist) {
-          return resStatusPayload(res, 200, {
-            isDeleted: true,
-            message: "Successfully deleted todolist",
-          });
-        }
-        return resStatusPayload(res, 404, {
-          isDeleted: false,
-          message: "Todolist Not Found",
-        });
-      })
-      .catch((err) => console.error(err));
+  try {
+    if (todolist_id) {
+      const deletedTodolist = await deleteOne(todolist_id);
+
+      if (deletedTodolist.length > 0) {
+        return resStatusPayload(res, 200, deletedTodolist);
+      }
+
+      return resStatusPayload(res, 404, {
+        isDeleted: false,
+        message: "Todolist Not Found",
+      });
+      // .then((todolist) => {
+      //   console.log(todolist);
+      //   if (todolist) {
+      //     return resStatusPayload(res, 200, {
+      //       isDeleted: true,
+      //       message: "Successfully deleted todolist",
+      //     });
+      //   }
+      //   return resStatusPayload(res, 404, {
+      //     isDeleted: false,
+      //     message: "Todolist Not Found",
+      //   });
+      // })
+      // .catch((err) => console.error(err));
+    }
+  } catch (error) {
+    return resStatusPayload(res, 500, {
+      isDeleted: false,
+      message: "Invalid Todolist ID",
+    });
   }
-  return resStatusPayload(res, 500, {
-    isDeleted: false,
-    message: "Invalid Todolist ID",
-  });
 });
 
 export default router;

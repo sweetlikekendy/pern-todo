@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 import { Todolist } from "./Todolist";
-import { moveTodolists, moveTodos } from "./util";
+import { moveTodolists, moveTodos } from "../util";
 import { FlexBoxWrap, JustifyCenterContainer } from "../styles";
 
 const Todolists = ({ todolistOrder, todolists, stateData, jwt, userId, setFetching }) => {
@@ -44,15 +44,6 @@ const Todolists = ({ todolistOrder, todolists, stateData, jwt, userId, setFetchi
               <FlexBoxWrap {...provided.droppableProps} ref={provided.innerRef}>
                 {todolists.map((todolist, i) => {
                   const { todos } = todolist;
-                  {
-                    /* const { [`todolist-${todolist.id}`] } = list; */
-                  }
-                  {
-                    /* const todolist = todolists[todolistId]; */
-                  }
-                  {
-                    /* const tmpTodos = todolist.todoIds.map((todoId) => todos[todoId]); */
-                  }
 
                   return (
                     <Todolist
