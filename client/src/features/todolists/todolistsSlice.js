@@ -24,29 +24,16 @@ export const fetchTodolists = createAsyncThunk("todolists/fetchTodolists", async
     const { data: todolistData } = response;
     // console.log(todolistData);
 
-    // const todoSchema = new schema.Entity("todos", undefined, { idAttribute: `id` });
-    // const todolistSchema = new schema.Entity("todolists", { todos: todoSchema }, { idAttribute: `id` });
-    const todolistSchema = new schema.Entity("todolists", undefined, { idAttribute: `id` });
+    const todoSchema = new schema.Entity("todos", {}, { idAttribute: `id` });
+    const todolistSchema = new schema.Entity("todolists", { todos: [todoSchema] }, { idAttribute: `id` });
     const todolistArraySchema = [todolistSchema];
-    // const todoArraySchema = [todoSchema];
-    // const todolistComplete = new schema.Entity("todolist", {
-    //   todolists: todolistArraySchema,
-    //   todos: todoArraySchema,
-    // });
-
-    // console.log(todolistComplete);
 
     const normalizedData = normalize(todolistData, todolistArraySchema);
-    // const normalizedData = normalize(todolistData, todolistComplete);
-    // console.log(normalizedData);
+    // const normalizedData = normalize(todolistData, todolistCompleteArray);
+    console.log(normalizedData);
     const { entities } = normalizedData;
-    const { todolists } = entities;
 
-    return todolists;
-
-    // return response;
-    // console.log(data);
-    // return data;
+    return entities;
   } catch (error) {
     console.error(error);
     return error;
@@ -92,7 +79,7 @@ export const updateTodolist = createAsyncThunk(
       );
 
       const { data: updatedTodolist } = response;
-      console.log(updatedTodolist);
+
       return updatedTodolist;
     } catch (error) {
       console.log(error);
@@ -137,7 +124,7 @@ const todolistsSlice = createSlice({
     [fetchTodolists.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
-      todolistsAdapter.upsertMany(state, action.payload);
+      todolistsAdapter.upsertMany(state, action.payload.todolists);
     },
     [addTodolist.pending]: (state, action) => {
       state.status = "loading";

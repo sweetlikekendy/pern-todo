@@ -8,6 +8,6 @@ export default configureStore({
   reducer: {
     users: usersReducer,
     todolists: todolistsReducer,
-    // todos: todosReducer,
+    todos: todosReducer,
   },
 });

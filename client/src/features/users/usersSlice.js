@@ -16,7 +16,7 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
 
     const { data: usersData } = response;
     // Define a users schema
-    const user = new schema.Entity("users");
+    const user = new schema.Entity("users", {}, { idAttribute: "user_id" });
     const mySchema = { users: [user] };
     const normalizedData = normalize(usersData, mySchema);
     const { entities } = normalizedData;
@@ -36,19 +36,20 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
       password,
     });
 
-    // console.log(response);
-
     const { data: loggedInUser } = response;
 
     // Define a users schema
-    const user = new schema.Entity(`users`, {}, { idAttribute: `id` });
+    const user = new schema.Entity(`users`, {}, { idAttribute: "user_id" });
 
     const normalizedLoggedInUserData = normalize(loggedInUser, user);
+
+    // console.log(normalizedLoggedInUserData);
 
     const { entities } = normalizedLoggedInUserData;
     const { users } = entities;
 
     return users;
+    // return loggedInUser;
   } catch (error) {
     console.error(error);
     return error;

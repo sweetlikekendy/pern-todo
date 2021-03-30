@@ -51,7 +51,7 @@ const Login = ({
       try {
         setAddRequestStatus("pending");
         const resultAction = await dispatch(loginUser({ email: formEmail, password: formPassword }));
-        console.log("resultAction", resultAction);
+
         unwrapResult(resultAction);
         setFormEmail("");
         setFormPassword("");

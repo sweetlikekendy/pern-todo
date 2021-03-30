@@ -13,13 +13,13 @@ router.post("/", async (req, res) => {
   const { email, password } = req.body;
   const { error } = validateLogin(req.body); // validate user login credentials from req.body
 
-  // if there is an error with user login credentials
+  // error with user login credentials
   if (error) {
     const errorMessage = error.details[0].message;
     resStatusPayload(res, 202, { loggedIn: false, message: errorMessage });
   }
 
-  // if there are no errors
+  // no error with login credentials
   if (!error) {
     const user = await getOneByEmail(email);
 

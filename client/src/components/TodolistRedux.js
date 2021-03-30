@@ -1,17 +1,23 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Input } from "../styles";
 import { deleteTodolist, selectTodolistById, updateTodolist } from "../features/todolists/todolistsSlice";
+import { selectTodoIds, selectTodosByTodolist } from "../features/todos/todosSlice";
+import TodoRedux from "./TodoRedux";
 
 const TodolistRedux = ({ todolistId, ...rest }) => {
   const dispatch = useDispatch();
   const todolist = useSelector((state) => selectTodolistById(state, todolistId));
-  // console.log(todolist);
+  // const todoIds = useSelector(selectTodoIds, shallowEqual);
+
+  const todosInCurrentTodolist = useSelector((state) => selectTodosByTodolist(state, todolistId));
+
   const { dndId, title, todos, user_id: userId } = todolist;
 
-  const [titleFocusState, setTitleFocusState] = useState(false);
+  const [isTitleFocus, setTitleFocusState] = useState(false);
   const [newTodolistTitle, setNewTodolistTitle] = useState(title);
+  const [isFormSubmitting, setFormState] = useState(false);
 
   // Used for single user in redux store
   const loggedInUserData = useSelector((state) => {
@@ -28,6 +34,14 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
 
   const { token: jwt } = loggedInUserData;
 
+  let todoContent = [];
+
+  if (todosInCurrentTodolist.length > 0) {
+    todosInCurrentTodolist.map((todo) => todoContent.push(<TodoRedux key={todo.id} todoId={todo.id} />));
+  } else {
+    todoContent = <div>Empty todolist</div>;
+  }
+
   const handleDeleteClick = async () => {
     try {
       const resultAction = await dispatch(deleteTodolist({ jwt, userId, todolistId }));
@@ -37,14 +51,18 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
     }
   };
 
-  const onUpdateSubmit = async () => {
-    console.log(newTodolistTitle, title);
+  const onUpdateSubmit = async (e) => {
+    e.preventDefault();
+    setFormState(!isFormSubmitting);
     if (newTodolistTitle !== title) {
       try {
         const resultAction = await dispatch(updateTodolist({ userId, todolistId, title: newTodolistTitle, jwt }));
         unwrapResult(resultAction);
       } catch (error) {
         console.error(error);
+      } finally {
+        setFormState(!isFormSubmitting);
+        setTitleFocusState(!isTitleFocus);
       }
     }
   };
@@ -52,20 +70,19 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
   return (
     <div className="p-4" {...rest}>
       <div className="flex justify-between">
-        {titleFocusState ? (
-          <form>
+        {isTitleFocus && !isFormSubmitting ? (
+          <form onSubmit={(e) => onUpdateSubmit(e)}>
             <label htmlFor={dndId}>
               <Input type="text" value={newTodolistTitle} onChange={(e) => setNewTodolistTitle(e.target.value)} />
             </label>
 
-            {titleFocusState && (
+            {isTitleFocus && !isFormSubmitting && (
               <button
                 className="mr-2"
                 type="button"
                 onClick={(e) => {
-                  e.preventDefault();
-                  onUpdateSubmit();
-                  setTitleFocusState(!titleFocusState);
+                  onUpdateSubmit(e);
+                  setTitleFocusState(!isTitleFocus);
                 }}
               >
                 Done
@@ -76,17 +93,14 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
           <h3 className="mb-3 text-2xl">{title}</h3>
         )}
         <div>
-          <button className="mr-2" onClick={() => setTitleFocusState(!titleFocusState)}>
-            {!titleFocusState && `Edit`}
+          <button className="mr-2" onClick={() => setTitleFocusState(!isTitleFocus)}>
+            {!isTitleFocus && `Edit`}
           </button>
           <button onClick={() => handleDeleteClick()}>Delete</button>
         </div>
       </div>
-      <ol>
-        {todos.map((todo) => {
-          return <li key={todo.id}>{todo.description}</li>;
-        })}
-      </ol>
+
+      <ol>{todoContent}</ol>
     </div>
   );
 };

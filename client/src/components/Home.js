@@ -14,24 +14,13 @@ import TodolistRedux from "./TodolistRedux";
 import { fetchTodolists, addTodolist, selectTodolistIds } from "../features/todolists/todolistsSlice";
 import TodolistListRedux from "./TodolistListRedux";
 
-const Home = ({
-  // firstName,
-  // userId,
-  // isLoggedIn,
-  // jwt,
-  fetching,
-  // setFetching,
-  // setPersistedData,
-  // stateData,
-  // setStateData,
-}) => {
+const Home = () => {
   const [newTodolist, setNewTodolist] = useState("");
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
-  // const { data, todolistOrder } = stateData;
-  // const { numOfTodolists, todolists } = data;
+  const [formStatusMessage, setFormStatusMessage] = useState("");
 
   const dispatch = useDispatch();
-  // const orderedTodolistIds = useSelector(selectTodolistIds);
+
   const todolistStatus = useSelector((state) => state.todolists.status);
   const todolistIds = useSelector(selectTodolistIds);
   const error = useSelector((state) => state.todolists.error);
@@ -60,8 +49,8 @@ const Home = ({
         console.log(`${firstName} is logged in! fetching todolists`);
         console.log(`Home userId and jwt`, userId, jwt);
 
-        const resultAction = dispatch(fetchTodolists({ userId, jwt }));
-        unwrapResult(resultAction);
+        const fetchTodolistsAction = dispatch(fetchTodolists({ userId, jwt }));
+        unwrapResult(fetchTodolistsAction);
       }
     }
   }, [todolistStatus, dispatch, firstName, userId, jwt, isLoggedIn]);
@@ -78,7 +67,6 @@ const Home = ({
     const { key } = event;
 
     if (key === "Enter" && canSave) {
-      // addTodolist(jwt, userId, newTodolist, setNewTodolist);
       try {
         setAddRequestStatus("pending");
         const resultAction = await dispatch(addTodolist({ userId, title: newTodolist, jwt }));
@@ -90,46 +78,26 @@ const Home = ({
       } finally {
         setAddRequestStatus("idle");
       }
-
-      // setFetching(true)
     }
   };
-  // let content;
 
-  // if (todolistStatus === "loading") {
-  //   content = <div className="loader">Loading...</div>;
-  // } else if (todolistStatus === "succeeded") {
-  //   content = orderedTodolistIds.map((todolistId) => <div key={todolistId}>{todolistId}</div>);
-  // } else if (todolistStatus === "error") {
-  //   content = <div>{error}</div>;
-  // }
+  const onCreateTodolistSubmit = async (e) => {
+    e.preventDefault();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (isLoggedIn) {
-  //       console.log(`fetching data`);
-  //       // new stuff with react beautiful dnd and state
-  //       await axios
-  //         .get(TODOLISTS_URI(userId), {
-  //           headers: {
-  //             Authorization: jwt,
-  //           },
-  //         })
-  //         .then(async (response) => {
-  //           const { data } = response;
+    if (canSave) {
+      try {
+        setAddRequestStatus("pending");
+        const resultAction = await dispatch(addTodolist({ userId, title: newTodolist, jwt }));
 
-  //           await setPersistedData({ data });
-  //           await setStateData({ data });
-  //         })
-  //         .catch((error) => console.error(error.response.request));
-  //     }
-  //   };
-
-  //   if (fetching) {
-  //     fetchData();
-  //     setFetching(false);
-  //   }
-  // }, [isLoggedIn, jwt, setPersistedData, setStateData, userId, fetching, setFetching]);
+        unwrapResult(resultAction);
+        setNewTodolist("");
+      } catch (err) {
+        console.error("Failed to save the post: ", err);
+      } finally {
+        setAddRequestStatus("idle");
+      }
+    }
+  };
 
   return (
     <Container>
@@ -142,28 +110,20 @@ const Home = ({
                 You have {numOfTodolists}
                 {numOfTodolists === 1 ? <span> todolist</span> : <span> todolists</span>}
               </p>
-              <Input
-                full
-                border
-                type="text"
-                name="title"
-                value={newTodolist}
-                placeholder="Enter todolist title here"
-                onChange={(e) => setNewTodolist(e.target.value)}
-                onKeyPress={(e) => addTodolistOnKeyPress(e)}
-              />
+              <form onSubmit={(e) => onCreateTodolistSubmit(e)}>
+                <Input
+                  full
+                  border
+                  type="text"
+                  name="title"
+                  value={newTodolist}
+                  placeholder="Enter todolist title here"
+                  onChange={(e) => setNewTodolist(e.target.value)}
+                />
+              </form>
             </div>
           </JustifyCenterContainer>
           <TodolistListRedux />
-          {/* <Todolists
-            // todolistOrder={todolistOrder}
-            // todolists={todolists}
-            jwt={jwt}
-            userId={userId}
-            // setFetching={setFetching}
-            // stateData={stateData}
-            // setPersistedData={setPersistedData}
-          /> */}
         </JustifyCenterHfullContainer>
       ) : (
         <CenterContainer>
