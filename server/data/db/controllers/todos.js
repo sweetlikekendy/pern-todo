@@ -46,7 +46,7 @@ const getAll = (userId, todolistId) => {
  * @return {object} Knex object confirming delete
  */
 const deleteOne = (todoId) => {
-  return knex("todos").where("id", todoId).first().del();
+  return knex("todos").where("id", todoId).first().del().returning("*");
 };
 
 /**
@@ -58,14 +58,16 @@ const deleteOne = (todoId) => {
  * @return {object} Knex object containing new todo created
  */
 const createOne = (description, createdAt, todolistId) => {
-  return knex("todos").insert([
-    {
-      description,
-      created_at: createdAt,
-      todolist_id: todolistId,
-      isComplete: false,
-    },
-  ]);
+  return knex("todos")
+    .insert([
+      {
+        description,
+        created_at: createdAt,
+        todolist_id: todolistId,
+        isComplete: false,
+      },
+    ])
+    .returning("*");
 };
 
 /**
@@ -78,17 +80,25 @@ const createOne = (description, createdAt, todolistId) => {
  */
 const updateOne = (todoId, description, newTodolistId, updatedAt) => {
   if (!newTodolistId) {
-    return knex("todos").where("id", todoId).first().update({
-      description,
-      updated_at: updatedAt,
-    });
+    return knex("todos")
+      .where("id", todoId)
+      .first()
+      .update({
+        description,
+        updated_at: updatedAt,
+      })
+      .returning("*");
   }
   if (newTodolistId) {
-    return knex("todos").where("id", todoId).first().update({
-      description,
-      todolist_id: newTodolistId,
-      updated_at: updatedAt,
-    });
+    return knex("todos")
+      .where("id", todoId)
+      .first()
+      .update({
+        description,
+        todolist_id: newTodolistId,
+        updated_at: updatedAt,
+      })
+      .returning("*");
   }
 };
 

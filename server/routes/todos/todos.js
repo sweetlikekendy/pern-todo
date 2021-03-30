@@ -1,6 +1,7 @@
 import express from "express";
 import { resStatusPayload, authorizeJwt } from "../../util";
 import { todosRoutes } from "../../data/db/controllers/todos";
+import { updateTodo } from "../../../client/src/features/todos/todosSlice";
 
 const { getOne, getAll, updateOne, createOne, deleteOne } = todosRoutes;
 
@@ -64,12 +65,17 @@ router.post("/:user_id/todolists/:todolist_id/todos", authorizeJwt, async (req, 
   const createdAt = new Date();
 
   if (description && !isNaN(todolist_id)) {
-    return await createOne(description, createdAt, todolist_id).then(
-      resStatusPayload(res, 201, {
-        isCreated: true,
-        message: "Successfully created a todo",
-      })
-    );
+    try {
+      const newTodo = await createOne(description, createdAt, todolist_id);
+      console.log(newTodo);
+
+      if (newTodo.length > 0) {
+        resStatusPayload(res, 201, newTodo[0]);
+      }
+    } catch (error) {
+      console.error(error);
+      resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
+    }
   }
   return resStatusPayload(res, 500, {
     isCreated: false,
@@ -84,21 +90,16 @@ router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, asyn
   const updatedAt = new Date();
 
   if (todo_id) {
-    return await updateOne(todo_id, description, newTodolistId, updatedAt)
-      .then((todo) => {
-        if (todo) {
-          return resStatusPayload(res, 200, {
-            isUpdated: true,
-            message: "Updated todo info",
-            updatedAt,
-          });
-        }
-        return resStatusPayload(res, 404, {
-          isUpdated: false,
-          message: "Todo Not Found",
-        });
-      })
-      .catch((err) => console.error(err));
+    try {
+      const updatedTodo = await updateOne(todo_id, description, newTodolistId, updatedAt);
+
+      if (updatedTodo.length > 0) {
+        return resStatusPayload(res, 200, updatedTodo[0]);
+      }
+    } catch (error) {
+      console.error(error);
+      resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
+    }
   }
   return resStatusPayload(res, 500, {
     isUpdated: false,
@@ -111,23 +112,20 @@ router.delete("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, a
   const { todolist_id, todo_id } = req.params;
 
   if (todo_id) {
-    return await deleteOne(todo_id)
-      .then((todo) => {
-        if (todo) {
-          return resStatusPayload(res, 200, {
-            isDeleted: true,
-            message: "Successfully deleted todo",
-          });
-        }
-        return resStatusPayload(res, 404, {
-          isDeleted: true,
-          message: "Todo Not Found",
-        });
-      })
-      .catch((err) => console.error(err));
+    try {
+      const deleteTodo = await deleteOne(todo_id);
+      if (deleteTodo.length > 0) {
+        return resStatusPayload(res, 200, deleteTodo[0]);
+      }
+    } catch (error) {
+      return resStatusPayload(res, 400, {
+        isDeleted: false,
+        message: "BAD REQUEST",
+      });
+    }
   }
   return resStatusPayload(res, 500, {
-    isDeleted: true,
+    isDeleted: false,
     message: "Invalid Todo ID",
   });
 });

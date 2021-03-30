@@ -50,10 +50,10 @@ router.post("/", async (req, res) => {
           ...user,
           token: tokenObject.token,
           expiresIn: tokenObject.expiresIn,
-          success: {
-            redirect,
-            message: `Successfully loggin in ${user.first_name}`,
-          },
+          // success: {
+          //   redirect,
+          //   message: `Successfully loggin in ${user.first_name}`,
+          // },
         });
       }
     }

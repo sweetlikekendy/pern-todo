@@ -1,10 +1,8 @@
 import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import axios from "axios";
-import { normalize, schema } from "normalizr";
-// import { deleteTodo } from "../../components/Todo";
-import { SINGLE_TODOLIST_URI, TODOLISTS_URI } from "../../endpoints";
-// import normalize from "json-api-normalizer";
+import { SINGLE_TODO_URI, TODOS_URI } from "../../endpoints";
 import { fetchTodolists } from "../todolists/todolistsSlice";
+import { loginUser } from "../users/usersSlice";
 
 const todoAdapter = createEntityAdapter();
 
@@ -13,34 +11,13 @@ const initialState = todoAdapter.getInitialState({
   error: null,
 });
 
-export const addTodo = createAsyncThunk("todolists/addTodo", async ({ userId, title, jwt }, rejectWithValue) => {
-  try {
-    const response = await axios.post(
-      TODOLISTS_URI(userId),
-      { title },
-      {
-        headers: {
-          Authorization: jwt,
-        },
-      }
-    );
-
-    const { data: newTodolist } = response;
-
-    return newTodolist;
-  } catch (error) {
-    console.log(error);
-    return rejectWithValue(error);
-  }
-});
-
-export const updateTodo = createAsyncThunk(
-  "todolists/updateTodo",
-  async ({ userId, todolistId, title, jwt }, rejectWithValue) => {
+export const addTodo = createAsyncThunk(
+  "todos/addTodo",
+  async ({ userId, todolistId, jwt, description }, rejectWithValue) => {
     try {
-      const response = await axios.put(
-        SINGLE_TODOLIST_URI(userId, todolistId),
-        { title },
+      const response = await axios.post(
+        TODOS_URI(userId, todolistId),
+        { description },
         {
           headers: {
             Authorization: jwt,
@@ -48,9 +25,33 @@ export const updateTodo = createAsyncThunk(
         }
       );
 
-      const { data: updatedTodolist } = response;
+      const { data: newTodo } = response;
+      console.log(newTodo);
+      return newTodo;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 
-      return updatedTodolist;
+export const updateTodo = createAsyncThunk(
+  "todos/updateTodo",
+  async ({ jwt, userId, todolistId, todoId, description }, rejectWithValue) => {
+    try {
+      const response = await axios.put(
+        SINGLE_TODO_URI(userId, todolistId, todoId),
+        { description },
+        {
+          headers: {
+            Authorization: jwt,
+          },
+        }
+      );
+
+      const { data: updatedTodo } = response;
+
+      return updatedTodo;
     } catch (error) {
       console.log(error);
       return rejectWithValue(error);
@@ -59,11 +60,10 @@ export const updateTodo = createAsyncThunk(
 );
 
 export const deleteTodo = createAsyncThunk(
-  "todolists/deleteTodo",
-  async ({ userId, todolistId, jwt }, rejectWithValue) => {
+  "todos/deleteTodo",
+  async ({ jwt, userId, todolistId, todoId }, rejectWithValue) => {
     try {
-      // const deletedTodolist = await deleteTodo(jwt, userId, todolistId);
-      const response = await axios.delete(SINGLE_TODOLIST_URI(userId, todolistId), {
+      const response = await axios.delete(SINGLE_TODO_URI(userId, todolistId, todoId), {
         headers: {
           Authorization: jwt,
         },
@@ -92,6 +92,18 @@ const todosSlice = createSlice({
       state.status = "loading";
     },
     [fetchTodolists.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      // Add any fetched posts to the array
+      todoAdapter.upsertMany(state, action.payload.todos);
+    },
+    [loginUser.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
+    [loginUser.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
       todoAdapter.upsertMany(state, action.payload.todos);
@@ -125,7 +137,7 @@ const todosSlice = createSlice({
     },
     [deleteTodo.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      todoAdapter.removeOne(state, action.payload[0].id);
+      todoAdapter.removeOne(state, action.payload.id);
     },
     [deleteTodo.rejected]: (state, action) => {
       state.status = "failed";

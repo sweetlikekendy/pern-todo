@@ -25,7 +25,7 @@ const Home = () => {
   const todolistIds = useSelector(selectTodolistIds);
   const error = useSelector((state) => state.todolists.error);
 
-  // Used for single user in redux store
+  // User Data used for conditional formatting and http requests
   const loggedInUserData = useSelector((state) => {
     const todolistsData =
       state.todolists.ids.length > 0 ? { todolists: state.todolists.entities, ids: state.todolists.ids } : {};
@@ -41,19 +41,7 @@ const Home = () => {
     return { first_name: ``, id: null, loggedIn: false, token: ``, todolistsData };
   });
 
-  const { id: userId, loggedIn: isLoggedIn, first_name: firstName, token: jwt, todolistsData } = loggedInUserData;
-
-  useEffect(() => {
-    if (todolistStatus === "idle") {
-      if (isLoggedIn) {
-        console.log(`${firstName} is logged in! fetching todolists`);
-        console.log(`Home userId and jwt`, userId, jwt);
-
-        const fetchTodolistsAction = dispatch(fetchTodolists({ userId, jwt }));
-        unwrapResult(fetchTodolistsAction);
-      }
-    }
-  }, [todolistStatus, dispatch, firstName, userId, jwt, isLoggedIn]);
+  const { id: userId, loggedIn: isLoggedIn, first_name: firstName, token: jwt } = loggedInUserData;
 
   let numOfTodolists = 0;
 
@@ -63,23 +51,23 @@ const Home = () => {
 
   const canSave = [newTodolist].every(Boolean) && addRequestStatus === "idle";
 
-  const addTodolistOnKeyPress = async (event) => {
-    const { key } = event;
+  // const addTodolistOnKeyPress = async (event) => {
+  //   const { key } = event;
 
-    if (key === "Enter" && canSave) {
-      try {
-        setAddRequestStatus("pending");
-        const resultAction = await dispatch(addTodolist({ userId, title: newTodolist, jwt }));
+  //   if (key === "Enter" && canSave) {
+  //     try {
+  //       setAddRequestStatus("pending");
+  //       const resultAction = await dispatch(addTodolist({ userId, title: newTodolist, jwt }));
 
-        unwrapResult(resultAction);
-        setNewTodolist("");
-      } catch (err) {
-        console.error("Failed to save the post: ", err);
-      } finally {
-        setAddRequestStatus("idle");
-      }
-    }
-  };
+  //       unwrapResult(resultAction);
+  //       setNewTodolist("");
+  //     } catch (err) {
+  //       console.error("Failed to save the post: ", err);
+  //     } finally {
+  //       setAddRequestStatus("idle");
+  //     }
+  //   }
+  // };
 
   const onCreateTodolistSubmit = async (e) => {
     e.preventDefault();
@@ -135,7 +123,5 @@ const Home = () => {
     </Container>
   );
 };
-
-Home.propTypes = {};
 
 export default Home;

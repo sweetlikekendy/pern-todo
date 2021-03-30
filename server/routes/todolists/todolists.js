@@ -194,7 +194,7 @@ router.delete("/:user_id/todolists/:todolist_id", authorizeJwt, async (req, res)
       const deletedTodolist = await deleteOne(todolist_id);
 
       if (deletedTodolist.length > 0) {
-        return resStatusPayload(res, 200, deletedTodolist);
+        return resStatusPayload(res, 200, deletedTodolist[0]);
       }
 
       return resStatusPayload(res, 404, {

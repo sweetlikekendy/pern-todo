@@ -10,4 +10,5 @@
 export const resStatusPayload = (res, statusCode, payload) => {
   if (statusCode === 0) return res.json(payload);
   if (statusCode !== 0) return res.status(statusCode).json(payload);
+  throw Error(`Status Code: ${statusCode}`);
 };

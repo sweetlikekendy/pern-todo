@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, createEntityAdapter } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ALL_USERS, LOGIN_URI } from "../../endpoints";
+import { ALL_USERS, LOGIN_URI, TODOLISTS_URI } from "../../endpoints";
 import { normalize, schema } from "normalizr";
 
 const usersAdapter = createEntityAdapter();
@@ -31,25 +31,39 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
 
 export const loginUser = createAsyncThunk("users/loginUser", async ({ email, password }) => {
   try {
-    const response = await axios.post(LOGIN_URI, {
+    const loginResponse = await axios.post(LOGIN_URI, {
       email,
       password,
     });
 
-    const { data: loggedInUser } = response;
+    const { data: loggedInUser } = loginResponse;
 
-    // Define a users schema
-    const user = new schema.Entity(`users`, {}, { idAttribute: "user_id" });
+    // console.log(loggedInUser);
+    const { id, token, loggedIn } = loggedInUser;
 
-    const normalizedLoggedInUserData = normalize(loggedInUser, user);
+    if (loggedIn) {
+      const todolistsResponse = await axios.get(TODOLISTS_URI(id), {
+        headers: {
+          Authorization: token,
+        },
+      });
 
-    // console.log(normalizedLoggedInUserData);
+      const { data: todolistData } = todolistsResponse;
+      // console.log(todolistData);
 
-    const { entities } = normalizedLoggedInUserData;
-    const { users } = entities;
+      const allUserData = { ...loggedInUser, todolists: [...todolistData] };
 
-    return users;
-    // return loggedInUser;
+      // console.log(allUserData);
+
+      const todoSchema = new schema.Entity("todos", {}, { idAttribute: `id` });
+      const todolistSchema = new schema.Entity("todolists", { todos: [todoSchema] }, { idAttribute: `id` });
+      const user = new schema.Entity(`users`, { todolists: [todolistSchema] }, { idAttribute: "id" });
+
+      const normalizedData = normalize(allUserData, user);
+      // console.log(normalizedData);
+      const { entities } = normalizedData;
+      return entities;
+    }
   } catch (error) {
     console.error(error);
     return error;
@@ -90,7 +104,7 @@ const usersSlice = createSlice({
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
-      usersAdapter.upsertMany(state, action.payload);
+      usersAdapter.upsertMany(state, action.payload.users);
     },
     [fetchUsers.fulfilled]: usersAdapter.setAll,
 

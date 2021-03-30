@@ -3,6 +3,7 @@ import axios from "axios";
 import { normalize, schema } from "normalizr";
 import { deleteTodo } from "../../components/Todo";
 import { SINGLE_TODOLIST_URI, TODOLISTS_URI } from "../../endpoints";
+import { loginUser } from "../users/usersSlice";
 // import normalize from "json-api-normalizer";
 
 const todolistsAdapter = createEntityAdapter();
@@ -66,7 +67,7 @@ export const addTodolist = createAsyncThunk(
 
 export const updateTodolist = createAsyncThunk(
   "todolists/updateTodolist",
-  async ({ userId, todolistId, title, jwt }, rejectWithValue) => {
+  async ({ userId, todolistId, jwt, title }, rejectWithValue) => {
     try {
       const response = await axios.put(
         SINGLE_TODOLIST_URI(userId, todolistId),
@@ -126,6 +127,18 @@ const todolistsSlice = createSlice({
       // Add any fetched posts to the array
       todolistsAdapter.upsertMany(state, action.payload.todolists);
     },
+    [loginUser.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
+    [loginUser.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [loginUser.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      // Add any fetched posts to the array
+      todolistsAdapter.upsertMany(state, action.payload.todolists);
+    },
     [addTodolist.pending]: (state, action) => {
       state.status = "loading";
     },
@@ -155,7 +168,7 @@ const todolistsSlice = createSlice({
     },
     [deleteTodolist.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      todolistsAdapter.removeOne(state, action.payload[0].id);
+      todolistsAdapter.removeOne(state, action.payload.id);
     },
     [deleteTodolist.rejected]: (state, action) => {
       state.status = "failed";
