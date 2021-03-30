@@ -92,7 +92,13 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
 const usersSlice = createSlice({
   name: "users",
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      // From here we can take action only at this "counter" state
+      // But, as we have taken care of this particular "logout" action
+      // in rootReducer, we can use it to CLEAR the complete Redux Store's state
+    },
+  },
   extraReducers: {
     [loginUser.rejected]: (state, action) => {
       state.status = "failed";
@@ -118,6 +124,8 @@ const usersSlice = createSlice({
     // },
   },
 });
+
+export const { logout } = usersSlice.actions;
 
 export default usersSlice.reducer;
 

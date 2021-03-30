@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 import { Header, CustomLink } from "../../styles";
 import { useSelector } from "react-redux";
+import LogoutModal from "../LogoutModal";
 
 const Navbar = () => {
+  const [isLogOutModalOpen, setModalState] = useState(false);
+  // Get log in status of user
   const isLoggedIn = useSelector((state) => {
-    // if there's a user, that means user has logged in
     if (state.users.ids.length > 0) {
       const { users } = state;
       const { ids, entities } = users;
@@ -22,13 +24,17 @@ const Navbar = () => {
     }
   });
 
+  const handleLogOutModalClick = () => {
+    setModalState(true);
+  };
+
   return (
     <Header className="App-header">
       <nav className="flex justify-between">
         <CustomLink text="Home" linkTo="/" isNav />
         <div className="flex items-center">
           {isLoggedIn ? (
-            <CustomLink text="Log Out" linkTo="/logout" isNav />
+            <button onClick={() => handleLogOutModalClick()}>LOG OUT</button>
           ) : (
             <React.Fragment>
               <CustomLink text="Log In" linkTo="/login" isNav />
@@ -37,6 +43,7 @@ const Navbar = () => {
           )}
         </div>
       </nav>
+      {isLogOutModalOpen && <LogoutModal setModalState={setModalState} />}
     </Header>
   );
 };

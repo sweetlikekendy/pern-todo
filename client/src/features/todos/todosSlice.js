@@ -26,7 +26,7 @@ export const addTodo = createAsyncThunk(
       );
 
       const { data: newTodo } = response;
-      console.log(newTodo);
+
       return newTodo;
     } catch (error) {
       console.log(error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 import {
@@ -10,8 +10,7 @@ import {
   JustifyCenterContainer,
 } from "../styles";
 
-import TodolistRedux from "./TodolistRedux";
-import { fetchTodolists, addTodolist, selectTodolistIds } from "../features/todolists/todolistsSlice";
+import { addTodolist, selectTodolistIds } from "../features/todolists/todolistsSlice";
 import TodolistListRedux from "./TodolistListRedux";
 
 const Home = () => {
