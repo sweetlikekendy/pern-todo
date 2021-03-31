@@ -10,18 +10,19 @@ import { AppContainer } from "./styles";
 
 import "tailwindcss/dist/base.min.css";
 import "./tailwind.output.css";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
     <AppContainer className="App">
       <Navbar />
-
       <Router>
         <Home path="/" />
         <Login path="/login" />
         <Logout path="/logout" />
         <Register path="register" />
       </Router>
+      <Footer />
     </AppContainer>
   );
 };

@@ -36,7 +36,7 @@ const Login = ({
         Object.keys(ids).length !== 0 &&
         entities[users.ids[0]]
       ) {
-        const { first_name, loggedIn } = entities[users.ids[0]];
+        const { loggedIn } = entities[users.ids[0]];
         return loggedIn;
       }
     }
@@ -63,28 +63,6 @@ const Login = ({
         setAddRequestStatus("idle");
       }
     }
-    // .then((response) => {
-    //   const { loggedIn, message, token, user } = response.data;
-    // const user = await axios.post(LOGIN_URI, {
-    //   email: formEmail,
-    //   password: formPassword,
-    // });
-
-    //   if (loggedIn) {
-    //     const { first_name, last_name, email, id } = user;
-    //     setLoggedIn(loggedIn);
-    //     setJwt(token);
-    //     setStatusMessage(message);
-    //     setFirstName(first_name);
-    //     setLastName(last_name);
-    //     setUserId(id);
-    //     setEmail(email);
-    //     setFetching(true);
-    //   } else {
-    //     setStatusMessage(message);
-    //   }
-    // })
-    // .catch((error) => console.error(error));
   };
 
   return (
