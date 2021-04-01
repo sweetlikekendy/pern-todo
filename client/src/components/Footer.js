@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function Footer() {
+export default function Footer(props) {
   const date = new Date();
   const year = date.getFullYear();
   return (
-    <footer className="bg-white">
+    <footer className={`bg-white ${props.className ? props.className : ``}`}>
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
         <div className="flex justify-center space-x-6 md:order-2">
           <a href="/" className="text-gray-400 hover:text-gray-500">

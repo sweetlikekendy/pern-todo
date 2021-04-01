@@ -10,25 +10,6 @@ const initialState = usersAdapter.getInitialState({
   error: null,
 });
 
-export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-  try {
-    const response = await axios.get(ALL_USERS);
-
-    const { data: usersData } = response;
-    // Define a users schema
-    const user = new schema.Entity("users", {}, { idAttribute: "user_id" });
-    const mySchema = { users: [user] };
-    const normalizedData = normalize(usersData, mySchema);
-    const { entities } = normalizedData;
-    const { users } = entities;
-    return users;
-    // return data;
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-});
-
 export const loginUser = createAsyncThunk("users/loginUser", async ({ email, password }) => {
   try {
     const loginResponse = await axios.post(LOGIN_URI, {
@@ -36,10 +17,10 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
       password,
     });
 
-    const { data: loggedInUser } = loginResponse;
+    const { data } = loginResponse;
 
-    // console.log(loggedInUser);
-    const { id, token, loggedIn } = loggedInUser;
+    console.log(data);
+    const { id, token, loggedIn } = data;
 
     if (loggedIn) {
       const todolistsResponse = await axios.get(TODOLISTS_URI(id), {
@@ -51,7 +32,7 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
       const { data: todolistData } = todolistsResponse;
       // console.log(todolistData);
 
-      const allUserData = { ...loggedInUser, todolists: [...todolistData] };
+      const allUserData = { ...data, todolists: [...todolistData] };
 
       // console.log(allUserData);
 
@@ -64,6 +45,8 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
       const { entities } = normalizedData;
       return entities;
     }
+    console.log(data);
+    return data;
   } catch (error) {
     console.error(error);
     return error;
@@ -109,10 +92,15 @@ const usersSlice = createSlice({
     },
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
+      console.log(action);
       // Add any fetched posts to the array
-      usersAdapter.upsertMany(state, action.payload.users);
+      if (action.payload.message) {
+        usersAdapter.upsertOne(state, action.payload);
+      } else {
+        usersAdapter.upsertMany(state, action.payload.users);
+      }
     },
-    [fetchUsers.fulfilled]: usersAdapter.setAll,
+    // [fetchUsers.fulfilled]: usersAdapter.setAll,
 
     // [addNewUser.pending]: (state, action) => {
     //   state.status = "loading";

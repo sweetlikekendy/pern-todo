@@ -4,7 +4,7 @@ import { Header, CustomLink } from "../../styles";
 import { useSelector } from "react-redux";
 import LogoutModal from "../LogoutModal";
 
-const Navbar = () => {
+const Navbar = (props) => {
   const [isLogOutModalOpen, setModalState] = useState(false);
   const [isMobileMenuOpen, setMobileMenuState] = useState(false);
   // Get log in status of user
@@ -29,10 +29,10 @@ const Navbar = () => {
   };
 
   return (
-    <div className="relative bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <div className={`relative bg-white ${props.className ? props.className : ``}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center border-b-2 border-gray-100 py-6 md:justify-start md:space-x-10">
-          <div className="flex justify-start lg:w-0 lg:flex-1">
+          <div className={`flex ${isLoggedIn ? `justify-start` : `justify-center`} lg:w-0 lg:flex-1`}>
             {/* <a href="/">
                 <span className="sr-only">Workflow</span>
                 
@@ -42,7 +42,7 @@ const Navbar = () => {
                   alt=""
                 />
               </a> */}
-            <CustomLink text="Home" linkTo="/" isNav />
+            <CustomLink text="LogoHome" linkTo="/" isNav />
           </div>
           {/* 
             <div className="-mr-2 -my-2 md:hidden">
@@ -66,26 +66,28 @@ const Navbar = () => {
             </div>
                */}
 
-          <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
-            {isLoggedIn ? (
+          {isLoggedIn && (
+            <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
               <button onClick={() => handleLogOutModalClick()}>LOG OUT</button>
-            ) : (
-              <React.Fragment>
-                <CustomLink
+            </div>
+          )}
+
+          {/* <React.Fragment> */}
+          {/* <CustomLink
                   className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"
                   text="Log In"
                   linkTo="/login"
                   isNav
-                />
-                <CustomLink
-                  className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                /> */}
+          {/* <CustomLink
+                  className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-green-600 hover:bg-green-700"
                   text="Register"
                   linkTo="/register"
-                  isNav
-                />
-              </React.Fragment>
-            )}
-            {/* <a href="/" className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
+                  isNavPrimaryButton
+                /> */}
+          {/* </React.Fragment> */}
+
+          {/* <a href="/" className="whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900">
                 Sign in
               </a>
               <a
@@ -94,7 +96,6 @@ const Navbar = () => {
               >
                 Sign up
               </a> */}
-          </div>
         </div>
       </div>
 

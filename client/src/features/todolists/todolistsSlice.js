@@ -6,7 +6,15 @@ import { SINGLE_TODOLIST_URI, TODOLISTS_URI } from "../../endpoints";
 import { loginUser } from "../users/usersSlice";
 // import normalize from "json-api-normalizer";
 
-const todolistsAdapter = createEntityAdapter();
+const todolistsAdapter = createEntityAdapter({
+  selectId: (todolist) => todolist.id,
+  sortComparer: (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
+  // sortComparer: (a, b) => {
+  // console.log(a, b);
+  // return a.created_at.localeCompare(b.created_at);
+  // return a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0;
+  // },
+});
 
 const initialState = todolistsAdapter.getInitialState({
   status: "idle",
@@ -137,7 +145,11 @@ const todolistsSlice = createSlice({
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
-      todolistsAdapter.upsertMany(state, action.payload.todolists);
+      if (action.payload.todolists) {
+        todolistsAdapter.upsertMany(state, action.payload.todolists);
+      } else {
+        todolistsAdapter.upsertOne(state, action.payload);
+      }
     },
     [addTodolist.pending]: (state, action) => {
       state.status = "loading";

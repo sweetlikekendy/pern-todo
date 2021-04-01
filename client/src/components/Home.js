@@ -8,21 +8,57 @@ import {
   Input,
   JustifyCenterHfullContainer,
   JustifyCenterContainer,
+  FormContainer,
+  Button,
 } from "../styles";
-
+4;
 import { addTodolist, selectTodolistIds } from "../features/todolists/todolistsSlice";
 import TodolistListRedux from "./TodolistListRedux";
+import LoginForm from "./LoginForm";
+import { Link } from "@reach/router";
+import { loginUser } from "../features/users/usersSlice";
 
 const Home = () => {
   const [newTodolist, setNewTodolist] = useState("");
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
   const [formStatusMessage, setFormStatusMessage] = useState("");
 
+  const [formEmail, setFormEmail] = useState("");
+  const [formPassword, setFormPassword] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+
+  const [loginRequestStatus, setLoginRequestStatus] = useState("idle");
+
   const dispatch = useDispatch();
+
+  const canSaveLogin = [formEmail, formPassword].every(Boolean) && loginRequestStatus === "idle";
+
+  const loginStatus = useSelector((state) => state.users.status);
+  const loginError = useSelector((state) => state.users.error);
+
+  const handleLoginSubmit = async () => {
+    if (canSaveLogin) {
+      try {
+        setLoginRequestStatus("pending");
+        const resultAction = await dispatch(loginUser({ email: formEmail, password: formPassword }));
+
+        unwrapResult(resultAction);
+        setFormEmail("");
+        setFormPassword("");
+      } catch (error) {
+        setLoginRequestStatus("failed");
+        console.error("Failed to log in", error);
+        console.log(error);
+        setStatusMessage(error.message);
+      } finally {
+        setLoginRequestStatus("idle");
+      }
+    }
+  };
 
   const todolistStatus = useSelector((state) => state.todolists.status);
   const todolistIds = useSelector(selectTodolistIds);
-  const error = useSelector((state) => state.todolists.error);
+  const todolistError = useSelector((state) => state.todolists.error);
 
   // User Data used for conditional formatting and http requests
   const loggedInUserData = useSelector((state) => {
@@ -79,6 +115,7 @@ const Home = () => {
         unwrapResult(resultAction);
         setNewTodolist("");
       } catch (err) {
+        setAddRequestStatus("failed");
         console.error("Failed to save the post: ", err);
       } finally {
         setAddRequestStatus("idle");
@@ -93,10 +130,12 @@ const Home = () => {
           <JustifyCenterContainer>
             <div className="my-8" style={{ minWidth: "30%" }}>
               <h2>Hello, {firstName}</h2>
-              <p className="mb-4">
+              <p className="mb-4 ">
                 You have {numOfTodolists}
                 {numOfTodolists === 1 ? <span> todolist</span> : <span> todolists</span>}
               </p>
+              <p className="mb-4">Todolist status: {todolistStatus}</p>
+              <p className="mb-4">{todolistError && `Error: ${todolistError}`}</p>
               <form onSubmit={(e) => onCreateTodolistSubmit(e)}>
                 <Input
                   full
@@ -114,9 +153,49 @@ const Home = () => {
         </JustifyCenterHfullContainer>
       ) : (
         <CenterContainer>
-          <p>
-            Not logged in. Click <CustomLink text="here" linkTo="/login" /> to login
-          </p>
+          <FormContainer>
+            <p className="my-4">Login status: {loginStatus}</p>
+            <p className="mb-4">{loginError && `Error: ${loginError}`}</p>
+            {statusMessage && <p className="mb-4">{statusMessage} </p>}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLoginSubmit();
+              }}
+            >
+              <Input
+                full
+                border
+                marginBottom
+                type="text"
+                name="email"
+                placeholder="Email"
+                value={formEmail}
+                onChange={(e) => {
+                  setFormEmail(e.target.value);
+                }}
+              />
+              <Input
+                full
+                border
+                marginBottom
+                type="text"
+                name="password"
+                placeholder="Password"
+                value={formPassword}
+                onChange={(e) => {
+                  setFormPassword(e.target.value);
+                }}
+              />
+              <Button isPrimary marginBottom full disabled={!canSaveLogin}>
+                Log In
+              </Button>
+            </form>
+            <p className="mb-4 text-center">Don&apos;t have an account?</p>
+            <CustomLink text="Register" linkTo="/register" isSecondary>
+              Register
+            </CustomLink>
+          </FormContainer>
         </CenterContainer>
       )}
     </Container>

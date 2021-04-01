@@ -1,29 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { Input } from "../styles";
 import { deleteTodolist, selectTodolistById, updateTodolist } from "../features/todolists/todolistsSlice";
 import { addTodo, selectTodoIds, selectTodosByTodolist } from "../features/todos/todosSlice";
 import TodoRedux from "./TodoRedux";
+import { FiTrash2 } from "react-icons/fi";
+import DeleteTodolistConfirmationModal from "./DeleteTodolistConfirmationModal";
 
 const TodolistRedux = ({ todolistId, ...rest }) => {
   const dispatch = useDispatch();
   const todolist = useSelector((state) => selectTodolistById(state, todolistId));
+  const [isTodolistHover, setTodolistHover] = useState(false);
+  const [isConfirmationDelete, setDeleteConfirmation] = useState(false);
+
+  const addTodoInputEl = useRef(null);
+  const todolistTitleEl = useRef(null);
+  const newTodolistTitleEl = useRef(null);
   // const todoIds = useSelector(selectTodoIds, shallowEqual);
 
   const todosInCurrentTodolist = useSelector((state) => selectTodosByTodolist(state, todolistId));
 
   const { dndId, title, user_id: userId } = todolist;
 
-  const [isTodolistFocus, setTodolistFocus] = useState(false);
+  const [isTodolistTitleFocus, setTodolistTitleFocus] = useState(false);
   const [newTodolistTitle, setNewTodolistTitle] = useState(title);
-  const [isFormSubmitting, setFormState] = useState(false);
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
   const [newTodo, setNewTodo] = useState("");
 
   // Get JWT for http requests
   const loggedInUserData = useSelector((state) => {
-    // if there's a user, that means user has logged in
     if (state.users.ids.length > 0) {
       const { users } = state;
       const { ids: userIds, entities: userEntities } = users;
@@ -40,25 +45,13 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
 
   if (todosInCurrentTodolist.length > 0) {
     todosInCurrentTodolist.map((todo) => todoContent.push(<TodoRedux key={todo.id} todoId={todo.id} />));
-  } else {
-    todoContent = <div>Empty todolist</div>;
   }
 
   const canSave = [newTodo].every(Boolean) && addRequestStatus === "idle";
 
-  const handleTodolistDeleteClick = async () => {
-    try {
-      const resultAction = await dispatch(deleteTodolist({ jwt, userId, todolistId }));
-      unwrapResult(resultAction);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const onUpdateSubmit = async (e) => {
+  const onTodolistTitleUpdateSubmit = async (e) => {
     e.preventDefault();
     if (newTodolistTitle !== title) {
-      setFormState(true);
       try {
         const resultAction = await dispatch(updateTodolist({ userId, todolistId, jwt, title: newTodolistTitle }));
         unwrapResult(resultAction);
@@ -86,57 +79,110 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
     }
   };
 
-  return (
-    <div className="p-4" {...rest}>
-      <div className="flex justify-between">
-        {isTodolistFocus && !isFormSubmitting ? (
-          <form
-            onSubmit={(e) => {
-              onUpdateSubmit(e);
-              setTodolistFocus(false);
-              setFormState(false);
-            }}
-          >
-            <label htmlFor={dndId}>
-              <Input type="text" value={newTodolistTitle} onChange={(e) => setNewTodolistTitle(e.target.value)} />
-            </label>
+  useEffect(() => {
+    if (isTodolistTitleFocus) {
+      newTodolistTitleEl.current.focus();
+    }
+  }, [isTodolistTitleFocus, newTodolistTitleEl]);
 
-            {isTodolistFocus && !isFormSubmitting && (
-              <button
-                className="mr-2"
-                type="button"
-                onClick={(e) => {
-                  onUpdateSubmit(e);
-                  setTodolistFocus(false);
-                  setFormState(false);
-                }}
+  return (
+    <div
+      className="relative"
+      {...rest}
+      onMouseEnter={() => setTodolistHover(true)}
+      onMouseLeave={() => setTodolistHover(false)}
+    >
+      {isConfirmationDelete && (
+        <DeleteTodolistConfirmationModal todolistId={todolistId} setModalState={setDeleteConfirmation} />
+      )}
+
+      <button
+        className={`absolute top-0 right-0 z-10 bg-coolGray-100 p-2 rounded-full shadow-md ${
+          isTodolistHover ? `opacity-1` : `opacity-0`
+        } 
+        transition-opacity
+        hover:shadow-lg`}
+        onClick={() => setDeleteConfirmation(true)}
+      >
+        <FiTrash2 className="text-coolGray-800" />
+      </button>
+
+      <div className="container p-4 max-w-md mx-auto">
+        {/* <!-- todo wrapper --> */}
+        <div className="bg-white rounded shadow px-4 py-4" x-data="app()">
+          {isTodolistTitleFocus ? (
+            <form
+              onSubmit={(e) => {
+                onTodolistTitleUpdateSubmit(e);
+                setTodolistTitleFocus(false);
+              }}
+            >
+              <input
+                type="text"
+                placeholder={newTodolistTitle}
+                className=" rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
+                value={newTodolistTitle}
+                onChange={(e) => setNewTodolistTitle(e.target.value)}
+                ref={newTodolistTitleEl}
+              />
+              <div className="w-full flex justify-end mt-2">
+                <button type="button" onClick={() => setTodolistTitleFocus(false)}>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="ml-3"
+                  onClick={(e) => {
+                    onTodolistTitleUpdateSubmit(e);
+                    setTodolistTitleFocus(false);
+                  }}
+                >
+                  Update
+                </button>
+              </div>
+            </form>
+          ) : (
+            <button
+              ref={todolistTitleEl}
+              className="font-bold text-lg"
+              onDoubleClick={() => {
+                setTodolistTitleFocus(true);
+              }}
+            >
+              {title}
+            </button>
+          )}
+          <div className="flex items-center text-sm mt-2">
+            <button onClick={() => addTodoInputEl.current.focus()}>
+              <svg
+                className="w-3 h-3 mr-3 focus:outline-none"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                Done
-              </button>
-            )}
+                <path d="M12 4v16m8-8H4"></path>
+              </svg>
+            </button>
+            <span>Click to add todo</span>
+          </div>
+          <form onSubmit={(e) => onCreateTodoSubmit(e)}>
+            <input
+              type="text"
+              placeholder="Enter a todo here"
+              className=" rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
+              onChange={(e) => setNewTodo(e.target.value)}
+              value={newTodo}
+              ref={addTodoInputEl}
+            />
           </form>
-        ) : (
-          <h3 className="mb-3 mr-6 text-2xl">{title}</h3>
-        )}
-        <div>
-          <button className="mr-2" onClick={() => setTodolistFocus(true)}>
-            {!isTodolistFocus && `Edit`}
-          </button>
-          <button onClick={() => handleTodolistDeleteClick()}>Delete</button>
+
+          {/* <!-- todo list --> */}
+          <ul className="todo-list mt-4">{todoContent}</ul>
         </div>
       </div>
-      <form onSubmit={(e) => onCreateTodoSubmit(e)} className="mb-4">
-        <Input
-          full
-          border
-          type="text"
-          name="description"
-          value={newTodo}
-          placeholder="Enter new todo here"
-          onChange={(e) => setNewTodo(e.target.value)}
-        />
-      </form>
-      <ol>{todoContent}</ol>
     </div>
   );
 };

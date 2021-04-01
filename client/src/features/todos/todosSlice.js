@@ -4,7 +4,11 @@ import { SINGLE_TODO_URI, TODOS_URI } from "../../endpoints";
 import { fetchTodolists } from "../todolists/todolistsSlice";
 import { loginUser } from "../users/usersSlice";
 
-const todoAdapter = createEntityAdapter();
+const todoAdapter = createEntityAdapter({
+  selectId: (todo) => todo.id,
+  // sortComparer: (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
+  sortComparer: (a, b) => a.created_at.localeCompare(b.created_at),
+});
 
 const initialState = todoAdapter.getInitialState({
   status: "idle",

@@ -34,11 +34,12 @@ router.post("/", async (req, res) => {
     // if user does exist in db
     if (user) {
       const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword)
+      if (!validPassword) {
         return resStatusPayload(res, 202, {
           loggedIn: false,
           message: `Invalid password`,
         });
+      }
 
       if (validPassword) {
         const tokenObject = issueJwt(user);

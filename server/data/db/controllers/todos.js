@@ -71,7 +71,7 @@ const createOne = (description, createdAt, todolistId) => {
 };
 
 /**
- * Update a todo by the todo id
+ * Update a todo description
  *
  * @param {number} todoId Todo's ID
  * @param {string} description Todo description
@@ -102,10 +102,29 @@ const updateOne = (todoId, description, newTodolistId, updatedAt) => {
   }
 };
 
+/**
+ * Toggle a todo complete/incomplete
+ *
+ * @param {number} todoId Todo's ID
+ * @param {string} description Todo description
+ * @param {object} updatedAt Date todo was updated at
+ * @return {object} Knex object containing updated todo
+ */
+const completeOne = (todoId, description, newTodolistId, isComplete) => {
+  return knex("todos")
+    .where("id", todoId)
+    .first()
+    .update({
+      isComplete: !isComplete,
+    })
+    .returning("*");
+};
+
 export const todosRoutes = {
   getOne,
   getAll,
   deleteOne,
   createOne,
   updateOne,
+  completeOne,
 };

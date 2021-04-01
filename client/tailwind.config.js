@@ -1,6 +1,12 @@
+/* eslint-disable no-undef */
+const colors = require("tailwindcss/colors");
+
 module.exports = {
   purge: [],
   theme: {
+    colors: {
+      ...colors,
+    },
     screens: {
       sm: "640px",
       md: "768px",
@@ -18,9 +24,6 @@ module.exports = {
       4: "4px",
     },
     extend: {
-      colors: {
-        cyan: "#9cdbff",
-      },
       spacing: {
         72: "18rem",
         84: "21rem",
@@ -30,6 +33,5 @@ module.exports = {
     },
   },
   variants: { width: ["responsive", "hover", "focus"] },
-  // eslint-disable-next-line no-undef
   plugins: [require("@tailwindcss/forms")],
 };

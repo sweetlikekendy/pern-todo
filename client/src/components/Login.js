@@ -8,21 +8,17 @@ import { Button, CenterContainer, CustomLink, Input, FormContainer } from "../st
 import { unwrapResult } from "@reduxjs/toolkit";
 import { loginUser } from "../features/users/usersSlice";
 import { useSelector, useDispatch } from "react-redux";
+import LoginForm from "./LoginForm";
 
-const Login = ({
-  // isLoggedIn,
-  setEmail,
-  setFirstName,
-  setLastName,
-  setUserId,
-  setLoggedIn,
-  setJwt,
-  setFetching,
-}) => {
+const Login = () => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
+
+  const dispatch = useDispatch();
+
+  const canSave = [formEmail, formPassword].every(Boolean) && addRequestStatus === "idle";
 
   // Used for single user in redux store
   const isLoggedIn = useSelector((state) => {
@@ -42,10 +38,6 @@ const Login = ({
     }
   });
 
-  const dispatch = useDispatch();
-
-  const canSave = [formEmail, formPassword].every(Boolean) && addRequestStatus === "idle";
-
   const handleSubmit = async () => {
     if (canSave) {
       try {
@@ -58,6 +50,7 @@ const Login = ({
       } catch (error) {
         setAddRequestStatus("failed");
         console.error("Failed to log in", error);
+        console.log(error);
         setStatusMessage(error.message);
       } finally {
         setAddRequestStatus("idle");
