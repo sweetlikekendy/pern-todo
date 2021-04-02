@@ -102,6 +102,7 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
         } 
         transition-opacity
         hover:shadow-lg`}
+        title="Click to delete todolist"
         onClick={() => setDeleteConfirmation(true)}
       >
         <FiTrash2 className="text-coolGray-800" />
@@ -126,12 +127,13 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
                 ref={newTodolistTitleEl}
               />
               <div className="w-full flex justify-end mt-2">
-                <button type="button" onClick={() => setTodolistTitleFocus(false)}>
+                <button type="button" title="Cancel todolist edit" onClick={() => setTodolistTitleFocus(false)}>
                   Cancel
                 </button>
                 <button
                   type="submit"
                   className="ml-3"
+                  title="Confirm todolist edit"
                   onClick={(e) => {
                     onTodolistTitleUpdateSubmit(e);
                     setTodolistTitleFocus(false);
@@ -145,6 +147,7 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
             <button
               ref={todolistTitleEl}
               className="font-bold text-lg"
+              title="Double click to edit todolist title"
               onDoubleClick={() => {
                 setTodolistTitleFocus(true);
               }}

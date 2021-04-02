@@ -6,8 +6,7 @@ import { loginUser } from "../users/usersSlice";
 
 const todoAdapter = createEntityAdapter({
   selectId: (todo) => todo.id,
-  // sortComparer: (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
-  sortComparer: (a, b) => a.created_at.localeCompare(b.created_at),
+  sortComparer: (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
 });
 
 const initialState = todoAdapter.getInitialState({
@@ -39,29 +38,29 @@ export const addTodo = createAsyncThunk(
   }
 );
 
-export const updateTodo = createAsyncThunk(
-  "todos/updateTodo",
-  async ({ jwt, userId, todolistId, todoId, description }, rejectWithValue) => {
-    try {
-      const response = await axios.put(
-        SINGLE_TODO_URI(userId, todolistId, todoId),
-        { description },
-        {
-          headers: {
-            Authorization: jwt,
-          },
-        }
-      );
+export const updateTodo = createAsyncThunk("todos/updateTodo", async (updateTodoOptions, rejectWithValue) => {
+  const { jwt, userId, todolistId, todoId, description, isComplete, options } = updateTodoOptions;
+  const { updateTodoDescription, toggleTodoCompletion } = options;
 
-      const { data: updatedTodo } = response;
+  try {
+    const response = await axios.put(
+      SINGLE_TODO_URI(userId, todolistId, todoId),
+      { isComplete, description, options },
+      {
+        headers: {
+          Authorization: jwt,
+        },
+      }
+    );
 
-      return updatedTodo;
-    } catch (error) {
-      console.log(error);
-      return rejectWithValue(error);
-    }
+    const { data: updatedTodo } = response;
+
+    return updatedTodo;
+  } catch (error) {
+    console.log(error);
+    return rejectWithValue(error);
   }
-);
+});
 
 export const deleteTodo = createAsyncThunk(
   "todos/deleteTodo",

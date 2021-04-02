@@ -83,22 +83,47 @@ router.post("/:user_id/todolists/:todolist_id/todos", authorizeJwt, async (req, 
   });
 });
 
-// Update todo description for a todolist
+// Update a todo for a todolist
 router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, async (req, res) => {
+  console.log("params", req.params);
+  console.log("body", req.body);
   const { todolist_id, todo_id } = req.params;
-  const { description, newTodolistId } = req.body;
+  const { description, newTodolistId, isComplete, options } = req.body;
+  const { updateTodoDescription, toggleTodoCompletion } = options;
   const updatedAt = new Date();
 
-  if (todo_id) {
-    try {
-      const updatedTodo = await updateOne(todo_id, description, newTodolistId, updatedAt);
+  const requestOptions = {
+    ...req.params,
+    ...req.body,
+    updatedAt,
+  };
 
-      if (updatedTodo.length > 0) {
-        return resStatusPayload(res, 200, updatedTodo[0]);
+  if (todo_id) {
+    if (updateTodoDescription) {
+      try {
+        const updatedTodo = await updateOne(requestOptions);
+
+        if (updatedTodo.length > 0) {
+          return resStatusPayload(res, 200, updatedTodo[0]);
+        }
+      } catch (error) {
+        console.error(error);
+        resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
       }
-    } catch (error) {
-      console.error(error);
-      resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
+    }
+
+    if (toggleTodoCompletion) {
+      try {
+        const updatedTodo = await updateOne(requestOptions);
+
+        console.log("updatedTodo in route", updatedTodo);
+        if (updatedTodo.length > 0) {
+          return resStatusPayload(res, 200, updatedTodo[0]);
+        }
+      } catch (error) {
+        console.error(error);
+        resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
+      }
     }
   }
   return resStatusPayload(res, 500, {

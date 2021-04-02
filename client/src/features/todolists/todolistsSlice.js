@@ -9,11 +9,6 @@ import { loginUser } from "../users/usersSlice";
 const todolistsAdapter = createEntityAdapter({
   selectId: (todolist) => todolist.id,
   sortComparer: (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
-  // sortComparer: (a, b) => {
-  // console.log(a, b);
-  // return a.created_at.localeCompare(b.created_at);
-  // return a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0;
-  // },
 });
 
 const initialState = todolistsAdapter.getInitialState({

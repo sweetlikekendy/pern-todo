@@ -78,8 +78,19 @@ const createOne = (description, createdAt, todolistId) => {
  * @param {object} updatedAt Date todo was updated at
  * @return {object} Knex object containing updated todo
  */
-const updateOne = (todoId, description, newTodolistId, updatedAt) => {
-  if (!newTodolistId) {
+const updateOne = (options) => {
+  console.log("controller", options);
+  const {
+    todolist_id: todolistId,
+    todo_id: todoId,
+    description,
+    newTodolistId,
+    updatedAt,
+    isComplete,
+    options: { updateTodoDescription, toggleTodoCompletion },
+  } = options;
+
+  if (updateTodoDescription && !newTodolistId) {
     return knex("todos")
       .where("id", todoId)
       .first()
@@ -89,7 +100,7 @@ const updateOne = (todoId, description, newTodolistId, updatedAt) => {
       })
       .returning("*");
   }
-  if (newTodolistId) {
+  if (updateTodoDescription && newTodolistId) {
     return knex("todos")
       .where("id", todoId)
       .first()
@@ -100,24 +111,18 @@ const updateOne = (todoId, description, newTodolistId, updatedAt) => {
       })
       .returning("*");
   }
-};
 
-/**
- * Toggle a todo complete/incomplete
- *
- * @param {number} todoId Todo's ID
- * @param {string} description Todo description
- * @param {object} updatedAt Date todo was updated at
- * @return {object} Knex object containing updated todo
- */
-const completeOne = (todoId, description, newTodolistId, isComplete) => {
-  return knex("todos")
-    .where("id", todoId)
-    .first()
-    .update({
-      isComplete: !isComplete,
-    })
-    .returning("*");
+  if (toggleTodoCompletion) {
+    console.log("inside complete todo backend");
+    return knex("todos")
+      .where("id", todoId)
+      .first()
+      .update({
+        isComplete: !isComplete,
+        updated_at: updatedAt,
+      })
+      .returning("*");
+  }
 };
 
 export const todosRoutes = {
@@ -126,5 +131,4 @@ export const todosRoutes = {
   deleteOne,
   createOne,
   updateOne,
-  completeOne,
 };

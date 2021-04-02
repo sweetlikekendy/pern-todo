@@ -2,19 +2,18 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectTodoById, updateTodo, deleteTodo } from "../features/todos/todosSlice";
-import { Input } from "../styles";
 
 function TodoRedux({ todoId }) {
   const dispatch = useDispatch();
   const todo = useSelector((state) => selectTodoById(state, todoId));
-  const { dndId, description, todolist_id: todolistId } = todo;
+  const { dndId, description, todolist_id: todolistId, isComplete } = todo;
 
   const [isTodoFocus, setTodoFocus] = useState(false);
   const [newTodoDescription, setNewTodoDescription] = useState(description);
 
   const [isTodoHover, setTodoHover] = useState(false);
 
-  const todoEl = useRef(null);
+  const newTodoEl = useRef(null);
 
   // Get user_id & JWT for http requests
   const loggedInUserData = useSelector((state) => {
@@ -37,6 +36,10 @@ function TodoRedux({ todoId }) {
     userId,
     todolistId,
     todoId,
+    options: {
+      updateTodoDescription: false,
+      toggleTodoCompletion: false,
+    },
   };
 
   const handleTodoDeleteClick = async () => {
@@ -50,9 +53,17 @@ function TodoRedux({ todoId }) {
 
   const onTodoUpdateSubmit = async (e) => {
     e.preventDefault();
-    if (newTodoDescription !== description) {
+    if (canSave && newTodoDescription !== description) {
       try {
-        const resultAction = await dispatch(updateTodo({ ...todoRequestOptions, description: newTodoDescription }));
+        const todoDescriptionOptions = {
+          ...todoRequestOptions,
+          description: newTodoDescription,
+          options: {
+            ...todoRequestOptions.options,
+            updateTodoDescription: true,
+          },
+        };
+        const resultAction = await dispatch(updateTodo(todoDescriptionOptions));
         unwrapResult(resultAction);
       } catch (error) {
         console.error(error);
@@ -60,9 +71,28 @@ function TodoRedux({ todoId }) {
     }
   };
 
+  const handleCompletionChange = async (e) => {
+    try {
+      const todoCompletionOptions = {
+        ...todoRequestOptions,
+        isComplete: !e.target.checked,
+        options: {
+          ...todoRequestOptions.options,
+          toggleTodoCompletion: true,
+        },
+      };
+      const resultAction = await dispatch(updateTodo(todoCompletionOptions));
+      unwrapResult(resultAction);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <li
-      className="flex justify-between items-center mt-3"
+      className={`flex justify-between items-center mt-1 p-2 ${
+        isComplete ? `line-through bg-coolGray-200` : `no-underline`
+      }`}
       x-show="todo.title !== ''"
       onMouseEnter={() => setTodoHover(true)}
       onMouseLeave={() => setTodoHover(false)}
@@ -74,23 +104,30 @@ function TodoRedux({ todoId }) {
             setTodoFocus(false);
           }}
         >
-          {/* <label htmlFor={dndId}>
-              <Input type="text" value={newTodoDescription} onChange={(e) => setNewTodoDescription(e.target.value)} />
-            </label> */}
-          {/* 
-            {isTodoFocus && (
-              <button
-                className="mr-2"
-                type="button"
-                onClick={(e) => {
-                  onTodoUpdateSubmit(e);
-                  setTodoFocus(false);
-                 
-                }}
-              >
-                Done
-              </button>
-            )} */}
+          <input
+            type="text"
+            placeholder={newTodoDescription}
+            className=" rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
+            value={newTodoDescription}
+            onChange={(e) => setNewTodoDescription(e.target.value)}
+            ref={newTodoEl}
+          />
+          <div className="w-full flex justify-end mt-2">
+            <button type="button" title="Cancel todo edit" onClick={() => setTodoFocus(false)}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="ml-3"
+              title="Confirm todo edit"
+              onClick={(e) => {
+                onTodoUpdateSubmit(e);
+                setTodoFocus(false);
+              }}
+            >
+              Update
+            </button>
+          </div>
         </form>
       ) : (
         <React.Fragment>
@@ -98,12 +135,20 @@ function TodoRedux({ todoId }) {
             <input
               type="checkbox"
               className="rounded hover:border-coolGray-500 hover:cursor-pointer"
-              name=""
-              id=""
+              defaultChecked={isComplete}
+              name="complete"
+              id="complete"
               x-model="todo.isComplete"
+              onChange={(e) => handleCompletionChange(e)}
             />
 
-            <p className="capitalize ml-3 text-sm ">{description}</p>
+            <button
+              className="ml-3 text-sm "
+              title="Double click to edit title"
+              onDoubleClick={() => setTodoFocus(true)}
+            >
+              {description}
+            </button>
           </div>
 
           <button
@@ -112,7 +157,6 @@ function TodoRedux({ todoId }) {
           >
             <svg
               className=" w-4 h-4 text-coolGray-500 fill-current hover:text-coolGray-900"
-              // @click="deleteTodo(todo.id)"
               fill="none"
               strokeLinecap="round"
               strokeLinejoin="round"
