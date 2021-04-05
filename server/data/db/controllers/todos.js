@@ -50,6 +50,16 @@ const deleteOne = (todoId) => {
 };
 
 /**
+ * Delete multiple todos by the todo ID
+ *
+ * @param {array} todoIds Todo's ID
+ * @return {object} Knex object confirming delete
+ */
+const deleteMany = (todoIds) => {
+  return knex("todos").whereIn("id", todoIds).del().returning("*");
+};
+
+/**
  * Create a todo in a todolist by todolist ID
  *
  * @param {string} description Todo description
@@ -129,6 +139,7 @@ export const todosRoutes = {
   getOne,
   getAll,
   deleteOne,
+  deleteMany,
   createOne,
   updateOne,
 };

@@ -3,7 +3,7 @@ import { resStatusPayload, authorizeJwt } from "../../util";
 import { todosRoutes } from "../../data/db/controllers/todos";
 import { updateTodo } from "../../../client/src/features/todos/todosSlice";
 
-const { getOne, getAll, updateOne, createOne, deleteOne } = todosRoutes;
+const { getOne, getAll, updateOne, createOne, deleteOne, deleteMany } = todosRoutes;
 
 const router = express.Router();
 
@@ -87,8 +87,8 @@ router.post("/:user_id/todolists/:todolist_id/todos", authorizeJwt, async (req, 
 router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, async (req, res) => {
   console.log("params", req.params);
   console.log("body", req.body);
-  const { todolist_id, todo_id } = req.params;
-  const { description, newTodolistId, isComplete, options } = req.body;
+  const { todo_id } = req.params;
+  const { options } = req.body;
   const { updateTodoDescription, toggleTodoCompletion } = options;
   const updatedAt = new Date();
 
@@ -152,6 +152,35 @@ router.delete("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, a
   return resStatusPayload(res, 500, {
     isDeleted: false,
     message: "Invalid Todo ID",
+  });
+});
+
+// Delete all completed todo in a todolist
+router.delete("/:user_id/todolists/:todolist_id/delete-completed-todos", authorizeJwt, async (req, res) => {
+  const { todolist_id } = req.params;
+  const { completedTodoIds } = req.body;
+
+  console.log(completedTodoIds);
+
+  const isCompletedTodosEmpty = completedTodoIds.length > 0 ? false : true;
+
+  if (!isCompletedTodosEmpty) {
+    try {
+      const deleteCompletedTodos = await deleteMany(completedTodoIds);
+      if (deleteCompletedTodos.length > 0) {
+        console.log(deleteCompletedTodos);
+        return resStatusPayload(res, 200, deleteCompletedTodos);
+      }
+    } catch (error) {
+      return resStatusPayload(res, 400, {
+        isDeleted: false,
+        message: "BAD REQUEST",
+      });
+    }
+  }
+  return resStatusPayload(res, 500, {
+    isDeleted: false,
+    message: "Something is wrong with the server you're trying to connect to. Please wait and try again later.",
   });
 });
 

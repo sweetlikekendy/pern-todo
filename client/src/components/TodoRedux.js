@@ -91,7 +91,7 @@ function TodoRedux({ todoId }) {
   return (
     <li
       className={`flex justify-between items-center mt-1 p-2 ${
-        isComplete ? `line-through bg-coolGray-200` : `no-underline`
+        isComplete ? `line-through bg-coolGray-100` : `no-underline`
       }`}
       x-show="todo.title !== ''"
       onMouseEnter={() => setTodoHover(true)}
@@ -112,13 +112,13 @@ function TodoRedux({ todoId }) {
             onChange={(e) => setNewTodoDescription(e.target.value)}
             ref={newTodoEl}
           />
-          <div className="w-full flex justify-end mt-2">
-            <button type="button" title="Cancel todo edit" onClick={() => setTodoFocus(false)}>
+          <div className="w-full flex justify-end mt-2 ">
+            <button className="no-underline" type="button" title="Cancel todo edit" onClick={() => setTodoFocus(false)}>
               Cancel
             </button>
             <button
               type="submit"
-              className="ml-3"
+              className="ml-3 no-underline"
               title="Confirm todo edit"
               onClick={(e) => {
                 onTodoUpdateSubmit(e);

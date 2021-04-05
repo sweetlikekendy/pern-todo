@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import axios from "axios";
 import { SINGLE_TODO_URI, TODOS_URI } from "../../endpoints";
+import { COMPLETED_TODO_URI } from "../../endpoints/endpoints";
 import { fetchTodolists } from "../todolists/todolistsSlice";
 import { loginUser } from "../users/usersSlice";
 
@@ -72,9 +73,38 @@ export const deleteTodo = createAsyncThunk(
         },
       });
 
-      const { data: deletedTodolist } = response;
+      const { data: deletedTodo } = response;
 
-      return deletedTodolist;
+      return deletedTodo;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const deleteCompletedTodos = createAsyncThunk(
+  "todos/deleteCompletedTodos",
+  async ({ jwt, userId, todolistId, completedTodoIds }, rejectWithValue) => {
+    try {
+      const response = await axios.delete(
+        COMPLETED_TODO_URI(userId, todolistId),
+
+        {
+          headers: {
+            Authorization: jwt,
+          },
+          data: {
+            completedTodoIds,
+          },
+        }
+      );
+
+      const { data: deletedTodos } = response;
+
+      const returnIds = deletedTodos.map((todo) => todo.id);
+
+      return returnIds;
     } catch (error) {
       console.log(error);
       return rejectWithValue(error);
@@ -143,6 +173,17 @@ const todosSlice = createSlice({
       todoAdapter.removeOne(state, action.payload.id);
     },
     [deleteTodo.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
+    [deleteCompletedTodos.pending]: (state, action) => {
+      state.status = "loading";
+    },
+    [deleteCompletedTodos.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      todoAdapter.removeMany(state, action.payload);
+    },
+    [deleteCompletedTodos.rejected]: (state, action) => {
       state.status = "failed";
       state.error = action.payload;
     },

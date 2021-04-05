@@ -52,3 +52,16 @@ export const SINGLE_TODO_URI = (userId, todolistId, todoId) =>
   process.env.NODE_ENV === `production`
     ? `${ROOT_URI}`
     : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;
+
+/**
+ *  Batch delete completed todos
+ *
+ * @param {number} userId User's ID
+ * @param {number} todolistId Todolist's ID
+ * @param {array} completedTodoIds Completed Todo IDs
+ * @return {string} The URI/endpoint for a user's completed todos in a specific todolist.
+ */
+export const COMPLETED_TODO_URI = (userId, todolistId) =>
+  process.env.NODE_ENV === `production`
+    ? `${ROOT_URI}`
+    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/delete-completed-todos`;
