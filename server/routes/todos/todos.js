@@ -1,9 +1,7 @@
 import express from "express";
 import { resStatusPayload, authorizeJwt } from "../../util";
 import { todosRoutes } from "../../data/db/controllers/todos";
-import { updateTodo } from "../../../client/src/features/todos/todosSlice";
-
-const { getOne, getAll, updateOne, createOne, deleteOne, deleteMany } = todosRoutes;
+const { getOne, getAll, updateOne, updateMany, createOne, deleteOne, deleteMany } = todosRoutes;
 
 const router = express.Router();
 
@@ -32,9 +30,11 @@ router.get("/:user_id/todolists/:todolist_id/todos", authorizeJwt, async (req, r
 
           return resStatusPayload(res, 200, { todos: todosWithdndId, numOfTodos });
         }
-        return resStatusPayload(res, 404, { message: "Todos not found" });
       })
-      .catch((err) => console.error(err));
+      .catch((error) => {
+        console.error(error);
+        return resStatusPayload(res, 404, { message: error.message });
+      });
   }
   return resStatusPayload(res, 500, {
     message: "Invalid User ID or Invalid Todolist ID.",
@@ -51,9 +51,11 @@ router.get("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, asyn
         if (todo) {
           return resStatusPayload(res, 200, todo);
         }
-        return resStatusPayload(res, 404, { message: "Todo Not Found" });
       })
-      .catch((err) => console.error(err));
+      .catch((error) => {
+        console.error(error);
+        return resStatusPayload(res, 404, { message: error.message });
+      });
   }
   return resStatusPayload(res, 500, { message: "Invalid Todo ID" });
 });
@@ -67,14 +69,13 @@ router.post("/:user_id/todolists/:todolist_id/todos", authorizeJwt, async (req, 
   if (description && !isNaN(todolist_id)) {
     try {
       const newTodo = await createOne(description, createdAt, todolist_id);
-      console.log(newTodo);
 
       if (newTodo.length > 0) {
-        resStatusPayload(res, 201, newTodo[0]);
+        return resStatusPayload(res, 201, newTodo[0]);
       }
     } catch (error) {
       console.error(error);
-      resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
+      return resStatusPayload(res, 400, { isCreated: false, message: error.message });
     }
   }
   return resStatusPayload(res, 500, {
@@ -85,17 +86,15 @@ router.post("/:user_id/todolists/:todolist_id/todos", authorizeJwt, async (req, 
 
 // Update a todo for a todolist
 router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, async (req, res) => {
-  console.log("params", req.params);
-  console.log("body", req.body);
+  // console.log("params", req.params);
+  // console.log("body", req.body);
   const { todo_id } = req.params;
   const { options } = req.body;
   const { updateTodoDescription, toggleTodoCompletion } = options;
-  const updatedAt = new Date();
 
   const requestOptions = {
     ...req.params,
     ...req.body,
-    updatedAt,
   };
 
   if (todo_id) {
@@ -108,7 +107,7 @@ router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, asyn
         }
       } catch (error) {
         console.error(error);
-        resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
+        return resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
       }
     }
 
@@ -116,13 +115,13 @@ router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, asyn
       try {
         const updatedTodo = await updateOne(requestOptions);
 
-        console.log("updatedTodo in route", updatedTodo);
+        // console.log("updatedTodo in route", updatedTodo);
         if (updatedTodo.length > 0) {
           return resStatusPayload(res, 200, updatedTodo[0]);
         }
       } catch (error) {
         console.error(error);
-        resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
+        return resStatusPayload(res, 400, { isCreated: false, message: "BAD REQUEST" });
       }
     }
   }
@@ -158,23 +157,50 @@ router.delete("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, a
 // Delete all completed todo in a todolist
 router.delete("/:user_id/todolists/:todolist_id/delete-completed-todos", authorizeJwt, async (req, res) => {
   const { todolist_id } = req.params;
-  const { completedTodoIds } = req.body;
+  const { completeTodoIds } = req.body;
 
-  console.log(completedTodoIds);
+  // console.log(completeTodoIds);
 
-  const isCompletedTodosEmpty = completedTodoIds.length > 0 ? false : true;
+  const isCompletedTodosEmpty = completeTodoIds.length > 0 ? false : true;
 
   if (!isCompletedTodosEmpty) {
     try {
-      const deleteCompletedTodos = await deleteMany(completedTodoIds);
+      const deleteCompletedTodos = await deleteMany(completeTodoIds);
       if (deleteCompletedTodos.length > 0) {
-        console.log(deleteCompletedTodos);
         return resStatusPayload(res, 200, deleteCompletedTodos);
       }
     } catch (error) {
       return resStatusPayload(res, 400, {
         isDeleted: false,
-        message: "BAD REQUEST",
+        message: error.message,
+      });
+    }
+  }
+  return resStatusPayload(res, 500, {
+    isDeleted: false,
+    message: "Something is wrong with the server you're trying to connect to. Please wait and try again later.",
+  });
+});
+
+// Set multiple todos to complete
+router.patch("/:user_id/todolists/:todolist_id/batch-set-todos", authorizeJwt, async (req, res) => {
+  const { todolist_id } = req.params;
+  const { todoIds, setComplete } = req.body;
+
+  const isTodosToBeSetEmpty = todoIds.length > 0 ? false : true;
+
+  if (!isTodosToBeSetEmpty) {
+    try {
+      const updatedTodos = await updateMany(todoIds, setComplete);
+
+      if (updatedTodos.length > 0) {
+        return resStatusPayload(res, 200, updatedTodos);
+      }
+    } catch (error) {
+      // throw error;
+      return resStatusPayload(res, 400, {
+        isDeleted: false,
+        message: error.message,
       });
     }
   }

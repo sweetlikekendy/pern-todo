@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import axios from "axios";
+import { normalize, schema } from "normalizr";
 import { SINGLE_TODO_URI, TODOS_URI } from "../../endpoints";
-import { COMPLETED_TODO_URI } from "../../endpoints/endpoints";
+import { DELETE_COMPLETED_TODO_URI, SET_TODOS_TO_COMPLETE } from "../../endpoints/endpoints";
 import { fetchTodolists } from "../todolists/todolistsSlice";
 import { loginUser } from "../users/usersSlice";
 
@@ -33,7 +34,7 @@ export const addTodo = createAsyncThunk(
 
       return newTodo;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(error);
     }
   }
@@ -58,10 +59,39 @@ export const updateTodo = createAsyncThunk("todos/updateTodo", async (updateTodo
 
     return updatedTodo;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return rejectWithValue(error);
   }
 });
+
+export const setMultipleTodosCompletionState = createAsyncThunk(
+  "todos/setMultipleTodosCompletionState",
+  async (updateTodosOptions, rejectWithValue) => {
+    const { jwt, userId, todolistId, todoIds, setComplete } = updateTodosOptions;
+
+    try {
+      if (todoIds.length > 0) {
+        const response = await axios.patch(
+          SET_TODOS_TO_COMPLETE(userId, todolistId),
+          { todoIds, setComplete },
+          {
+            headers: {
+              Authorization: jwt,
+            },
+          }
+        );
+
+        const { data: updatedTodos } = response;
+
+        return updatedTodos;
+      }
+      return [];
+    } catch (error) {
+      console.error(error);
+      return rejectWithValue(error);
+    }
+  }
+);
 
 export const deleteTodo = createAsyncThunk(
   "todos/deleteTodo",
@@ -77,7 +107,7 @@ export const deleteTodo = createAsyncThunk(
 
       return deletedTodo;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(error);
     }
   }
@@ -85,28 +115,31 @@ export const deleteTodo = createAsyncThunk(
 
 export const deleteCompletedTodos = createAsyncThunk(
   "todos/deleteCompletedTodos",
-  async ({ jwt, userId, todolistId, completedTodoIds }, rejectWithValue) => {
+  async ({ jwt, userId, todolistId, completeTodoIds }, rejectWithValue) => {
     try {
-      const response = await axios.delete(
-        COMPLETED_TODO_URI(userId, todolistId),
+      if (completeTodoIds) {
+        const response = await axios.delete(
+          DELETE_COMPLETED_TODO_URI(userId, todolistId),
 
-        {
-          headers: {
-            Authorization: jwt,
-          },
-          data: {
-            completedTodoIds,
-          },
-        }
-      );
+          {
+            headers: {
+              Authorization: jwt,
+            },
+            data: {
+              completeTodoIds,
+            },
+          }
+        );
 
-      const { data: deletedTodos } = response;
+        const { data: deletedTodos } = response;
 
-      const returnIds = deletedTodos.map((todo) => todo.id);
+        const returnIds = deletedTodos.map((todo) => todo.id);
 
-      return returnIds;
+        return returnIds;
+      }
+      return [];
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(error);
     }
   }
@@ -121,27 +154,32 @@ const todosSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [fetchTodolists.pending]: (state, action) => {
+    [fetchTodolists.pending]: (state) => {
       state.status = "loading";
     },
     [fetchTodolists.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
+      console.log("fetchTodolists todoSlice", action);
       todoAdapter.upsertMany(state, action.payload.todos);
     },
     [loginUser.rejected]: (state, action) => {
       state.status = "failed";
       state.error = action.payload;
     },
-    [loginUser.pending]: (state, action) => {
+    [loginUser.pending]: (state) => {
       state.status = "loading";
     },
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
-      todoAdapter.upsertMany(state, action.payload.todos);
+      if (action.payload.todos) {
+        todoAdapter.upsertMany(state, action.payload.todos);
+      } else {
+        (state) => initialState;
+      }
     },
-    [addTodo.pending]: (state, action) => {
+    [addTodo.pending]: (state) => {
       state.status = "loading";
     },
     [addTodo.fulfilled]: todoAdapter.addOne,
@@ -149,7 +187,7 @@ const todosSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [updateTodo.pending]: (state, action) => {
+    [updateTodo.pending]: (state) => {
       state.status = "loading";
     },
     [updateTodo.fulfilled]: (state, action) => {
@@ -165,7 +203,18 @@ const todosSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [deleteTodo.pending]: (state, action) => {
+    [setMultipleTodosCompletionState.pending]: (state) => {
+      state.status = "loading";
+    },
+    [setMultipleTodosCompletionState.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      todoAdapter.upsertMany(state, action.payload);
+    },
+    [setMultipleTodosCompletionState.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
+    [deleteTodo.pending]: (state) => {
       state.status = "loading";
     },
     [deleteTodo.fulfilled]: (state, action) => {
@@ -176,7 +225,7 @@ const todosSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [deleteCompletedTodos.pending]: (state, action) => {
+    [deleteCompletedTodos.pending]: (state) => {
       state.status = "loading";
     },
     [deleteCompletedTodos.fulfilled]: (state, action) => {

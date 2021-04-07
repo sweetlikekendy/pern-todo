@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { deleteTodolist, selectTodolistById, updateTodolist } from "../features/todolists/todolistsSlice";
-import { addTodo, deleteCompletedTodos, selectTodoIds, selectTodosByTodolist } from "../features/todos/todosSlice";
+import {
+  addTodo,
+  deleteCompletedTodos,
+  selectTodoIds,
+  selectTodosByTodolist,
+  setMultipleTodosCompletionState,
+} from "../features/todos/todosSlice";
 import TodoRedux from "./TodoRedux";
 import { FiTrash2 } from "react-icons/fi";
 import { MdKeyboardArrowDown } from "react-icons/md";
@@ -58,7 +64,8 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
     });
   }
 
-  const completedTodoIds = completedTodoContent.map((todoEl) => parseInt(todoEl.key));
+  const incompleteTodoIds = incompleteTodoContent.map((todoEl) => parseInt(todoEl.key));
+  const completeTodoIds = completedTodoContent.map((todoEl) => parseInt(todoEl.key));
 
   const numOfCompletedTodos = completedTodoContent.length;
   const numOfTotalTodos = todosInCurrentTodolist.length;
@@ -94,14 +101,46 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
     }
   };
 
-  const handleDeleteAllCompletedTodos = async (e) => {
-    // e.preventDefault();
+  const handleSetAllTodosToComplete = async () => {
     try {
-      const deleteAllCompletedTodosAction = await dispatch(
-        deleteCompletedTodos({ jwt, userId, todolistId, completedTodoIds })
+      const setAllTodosToCompleteAction = await dispatch(
+        setMultipleTodosCompletionState({ jwt, userId, todolistId, todoIds: incompleteTodoIds, setComplete: true })
       );
+
+      unwrapResult(setAllTodosToCompleteAction);
     } catch (error) {
       console.error(error);
+      throw error;
+    }
+  };
+
+  const handleSetAllCompletedTodosToIncomplete = async () => {
+    try {
+      if (completeTodoIds.length > 0) {
+        const setAllCompleteTodosToIncompleteAction = await dispatch(
+          setMultipleTodosCompletionState({ jwt, userId, todolistId, todoIds: completeTodoIds, setComplete: false })
+        );
+        unwrapResult(setAllCompleteTodosToIncompleteAction);
+      }
+      return;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const handleDeleteAllCompletedTodos = async () => {
+    try {
+      if (completeTodoIds.length > 0) {
+        const deleteAllCompletedTodosAction = await dispatch(
+          deleteCompletedTodos({ jwt, userId, todolistId, completeTodoIds })
+        );
+        unwrapResult(deleteAllCompletedTodosAction);
+      }
+      return;
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   };
 
@@ -254,6 +293,23 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
                 </React.Fragment>
               )}
             </div>
+          </div>
+          <div className="flex">
+            <button title="Set all todos as complete" onClick={() => handleSetAllTodosToComplete()}>
+              Set all todos as complete
+            </button>
+            <button
+              title="Set all completed todos as incomplete"
+              onClick={() => handleSetAllCompletedTodosToIncomplete()}
+            >
+              Set all completed todos as incomplete
+            </button>
+            <button title="Clear all completed todos" onClick={() => handleDeleteAllCompletedTodos()}>
+              Clear all completed todos
+            </button>
+            <button title="Delete todolist" onClick={() => setDeleteConfirmation(true)}>
+              Delete todolist
+            </button>
           </div>
           {/* {completedOverIncompleteTodoContent} */}
         </div>

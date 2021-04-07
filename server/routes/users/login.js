@@ -43,7 +43,6 @@ router.post("/", async (req, res) => {
 
       if (validPassword) {
         const tokenObject = issueJwt(user);
-        const redirect = `/`;
 
         delete user.password;
         return resStatusPayload(res, 200, {

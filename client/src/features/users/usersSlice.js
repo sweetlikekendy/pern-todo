@@ -10,67 +10,51 @@ const initialState = usersAdapter.getInitialState({
   error: null,
 });
 
-export const loginUser = createAsyncThunk("users/loginUser", async ({ email, password }) => {
+export const todoSchema = new schema.Entity("todos", {}, { idAttribute: `id` });
+export const todolistSchema = new schema.Entity("todolists", { todos: [todoSchema] }, { idAttribute: `id` });
+export const user = new schema.Entity(`users`, { todolists: [todolistSchema] }, { idAttribute: "id" });
+
+export const loginUser = createAsyncThunk("users/loginUser", async ({ email, password }, rejectWithValue) => {
   try {
     const loginResponse = await axios.post(LOGIN_URI, {
       email,
       password,
     });
 
-    const { data } = loginResponse;
+    const { data: userData } = loginResponse;
 
-    console.log(data);
-    const { id, token, loggedIn } = data;
+    const { id, token, loggedIn } = userData;
 
-    if (loggedIn) {
-      const todolistsResponse = await axios.get(TODOLISTS_URI(id), {
-        headers: {
-          Authorization: token,
-        },
-      });
+    // if (userData.todolists) {
+    const todolistsResponse = await axios.get(TODOLISTS_URI(id), {
+      headers: {
+        Authorization: token,
+      },
+    });
 
-      const { data: todolistData } = todolistsResponse;
-      // console.log(todolistData);
+    let { data: todolistData } = todolistsResponse;
+    console.log(todolistData);
 
-      const allUserData = { ...data, todolists: [...todolistData] };
-
-      // console.log(allUserData);
-
-      const todoSchema = new schema.Entity("todos", {}, { idAttribute: `id` });
-      const todolistSchema = new schema.Entity("todolists", { todos: [todoSchema] }, { idAttribute: `id` });
-      const user = new schema.Entity(`users`, { todolists: [todolistSchema] }, { idAttribute: "id" });
-
-      const normalizedData = normalize(allUserData, user);
-      // console.log(normalizedData);
-      const { entities } = normalizedData;
-      return entities;
+    if (todolistData == null) {
+      todolistData = {};
     }
-    console.log(data);
-    return data;
+    // if (todolistData.length > 0) {
+    const allUserData = { ...userData, todolists: [...todolistData] };
+
+    console.log(allUserData);
+
+    const normalizedData = normalize(allUserData, user);
+    console.log(normalizedData);
+    const { entities } = normalizedData;
+    return entities;
+    // }
+    // return data;
+    // }
   } catch (error) {
     console.error(error);
-    return error;
+    return rejectWithValue(error);
   }
 });
-
-// export const addNewUser = createAsyncThunk(
-//   "posts/addNewUser",
-//   async ({ firstName, lastName, email, password }, rejectWithValue) => {
-//     try {
-//       const response = await axios.post(REGISTER_URI, { firstName, lastName, email, password });
-//       const { data } = response;
-//       const { isCreated, message, duplicateEmail } = data;
-//       // const response = await client.post("/fakeApi/posts", { post: initialPost });
-//       if (isCreated) {
-//         console.log(response);
-//         return data;
-//       }
-//     } catch (error) {
-//       console.log(error);
-//       return rejectWithValue(error);
-//     }
-//   }
-// );
 
 const usersSlice = createSlice({
   name: "users",
@@ -87,29 +71,15 @@ const usersSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [loginUser.pending]: (state, action) => {
+    [loginUser.pending]: (state) => {
       state.status = "loading";
     },
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
       console.log(action);
       // Add any fetched posts to the array
-      if (action.payload.message) {
-        usersAdapter.upsertOne(state, action.payload);
-      } else {
-        usersAdapter.upsertMany(state, action.payload.users);
-      }
+      usersAdapter.upsertMany(state, action.payload.users);
     },
-    // [fetchUsers.fulfilled]: usersAdapter.setAll,
-
-    // [addNewUser.pending]: (state, action) => {
-    //   state.status = "loading";
-    // },
-    // [addNewUser.fulfilled]: usersAdapter.addOne,
-    // [addNewUser.rejected]: (state, action) => {
-    //   state.status = "failed";
-    //   state.error = action.payload;
-    // },
   },
 });
 

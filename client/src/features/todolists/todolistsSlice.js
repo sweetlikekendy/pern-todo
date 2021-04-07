@@ -24,17 +24,13 @@ export const fetchTodolists = createAsyncThunk("todolists/fetchTodolists", async
       },
     });
 
-    // console.log(response);
     const { data: todolistData } = response;
-    // console.log(todolistData);
 
     const todoSchema = new schema.Entity("todos", {}, { idAttribute: `id` });
     const todolistSchema = new schema.Entity("todolists", { todos: [todoSchema] }, { idAttribute: `id` });
     const todolistArraySchema = [todolistSchema];
 
     const normalizedData = normalize(todolistData, todolistArraySchema);
-    // const normalizedData = normalize(todolistData, todolistCompleteArray);
-    console.log(normalizedData);
     const { entities } = normalizedData;
 
     return entities;
@@ -62,7 +58,7 @@ export const addTodolist = createAsyncThunk(
 
       return newTodolist;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(error);
     }
   }
@@ -86,7 +82,7 @@ export const updateTodolist = createAsyncThunk(
 
       return updatedTodolist;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(error);
     }
   }
@@ -107,7 +103,7 @@ export const deleteTodolist = createAsyncThunk(
 
       return deletedTodolist;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(error);
     }
   }
@@ -122,31 +118,33 @@ const todolistsSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [fetchTodolists.pending]: (state, action) => {
+    [fetchTodolists.pending]: (state) => {
       state.status = "loading";
     },
     [fetchTodolists.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
+      console.log("todolistsSlice", action);
       todolistsAdapter.upsertMany(state, action.payload.todolists);
     },
     [loginUser.rejected]: (state, action) => {
       state.status = "failed";
       state.error = action.payload;
     },
-    [loginUser.pending]: (state, action) => {
+    [loginUser.pending]: (state) => {
       state.status = "loading";
     },
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
+
       if (action.payload.todolists) {
         todolistsAdapter.upsertMany(state, action.payload.todolists);
       } else {
-        todolistsAdapter.upsertOne(state, action.payload);
+        (state) => initialState;
       }
     },
-    [addTodolist.pending]: (state, action) => {
+    [addTodolist.pending]: (state) => {
       state.status = "loading";
     },
     [addTodolist.fulfilled]: todolistsAdapter.addOne,
@@ -154,7 +152,7 @@ const todolistsSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [updateTodolist.pending]: (state, action) => {
+    [updateTodolist.pending]: (state) => {
       state.status = "loading";
     },
     [updateTodolist.fulfilled]: (state, action) => {
@@ -170,7 +168,7 @@ const todolistsSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
-    [deleteTodolist.pending]: (state, action) => {
+    [deleteTodolist.pending]: (state) => {
       state.status = "loading";
     },
     [deleteTodolist.fulfilled]: (state, action) => {

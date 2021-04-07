@@ -21,13 +21,13 @@ const getOne = (todoId) => {
 const getAll = (userId, todolistId) => {
   return knex
     .select(
-      "first_name",
-      "last_name",
+      // "first_name",
+      // "last_name",
       "todos.todolist_id",
       "todos.id",
       "todos.created_at",
       "todos.updated_at",
-      "title",
+      // "title",
       "description",
       "isComplete"
     )
@@ -89,16 +89,16 @@ const createOne = (description, createdAt, todolistId) => {
  * @return {object} Knex object containing updated todo
  */
 const updateOne = (options) => {
-  console.log("controller", options);
   const {
     todolist_id: todolistId,
     todo_id: todoId,
     description,
     newTodolistId,
-    updatedAt,
     isComplete,
     options: { updateTodoDescription, toggleTodoCompletion },
   } = options;
+
+  const updatedAt = new Date();
 
   if (updateTodoDescription && !newTodolistId) {
     return knex("todos")
@@ -123,7 +123,6 @@ const updateOne = (options) => {
   }
 
   if (toggleTodoCompletion) {
-    console.log("inside complete todo backend");
     return knex("todos")
       .where("id", todoId)
       .first()
@@ -135,6 +134,30 @@ const updateOne = (options) => {
   }
 };
 
+// abstract transactional batch update
+const updateMany = async (collection, isComplete) => {
+  const updatedAt = new Date();
+
+  const trx = await knex.transaction();
+
+  try {
+    const queries = collection.map(async (todoId) =>
+      trx("todos").where("id", todoId).update({ isComplete, updated_at: updatedAt }).returning("*")
+    );
+
+    const results = await Promise.all(queries);
+
+    const arrayOfObjectsResults = results.map((result) => result[0]);
+
+    trx.commit();
+    return arrayOfObjectsResults;
+  } catch (error) {
+    console.error(error);
+    trx.rollback();
+    throw error;
+  }
+};
+
 export const todosRoutes = {
   getOne,
   getAll,
@@ -142,4 +165,5 @@ export const todosRoutes = {
   deleteMany,
   createOne,
   updateOne,
+  updateMany,
 };

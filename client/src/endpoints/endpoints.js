@@ -61,7 +61,20 @@ export const SINGLE_TODO_URI = (userId, todolistId, todoId) =>
  * @param {array} completedTodoIds Completed Todo IDs
  * @return {string} The URI/endpoint for a user's completed todos in a specific todolist.
  */
-export const COMPLETED_TODO_URI = (userId, todolistId) =>
+export const DELETE_COMPLETED_TODO_URI = (userId, todolistId) =>
   process.env.NODE_ENV === `production`
     ? `${ROOT_URI}`
     : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/delete-completed-todos`;
+
+/**
+ *  Batch update todos to completed
+ *
+ * @param {number} userId User's ID
+ * @param {number} todolistId Todolist's ID
+ * @param {array} completedTodoIds Completed Todo IDs
+ * @return {string} The URI/endpoint for a user's completed todos in a specific todolist.
+ */
+export const SET_TODOS_TO_COMPLETE = (userId, todolistId) =>
+  process.env.NODE_ENV === `production`
+    ? `${ROOT_URI}`
+    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/batch-set-todos`;
