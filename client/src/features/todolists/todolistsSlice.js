@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import axios from "axios";
 import { normalize, schema } from "normalizr";
-import { deleteTodo } from "../../components/Todo";
 import { SINGLE_TODOLIST_URI, TODOLISTS_URI } from "../../endpoints";
 import { loginUser } from "../users/usersSlice";
 // import normalize from "json-api-normalizer";
@@ -42,7 +41,7 @@ export const fetchTodolists = createAsyncThunk("todolists/fetchTodolists", async
 
 export const addTodolist = createAsyncThunk(
   "todolists/addTodolist",
-  async ({ userId, title, jwt }, rejectWithValue) => {
+  async ({ userId, title, jwt }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
         TODOLISTS_URI(userId),
@@ -66,7 +65,7 @@ export const addTodolist = createAsyncThunk(
 
 export const updateTodolist = createAsyncThunk(
   "todolists/updateTodolist",
-  async ({ userId, todolistId, jwt, title }, rejectWithValue) => {
+  async ({ userId, todolistId, jwt, title }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
         SINGLE_TODOLIST_URI(userId, todolistId),
@@ -90,7 +89,7 @@ export const updateTodolist = createAsyncThunk(
 
 export const deleteTodolist = createAsyncThunk(
   "todolists/deleteTodolist",
-  async ({ userId, todolistId, jwt }, rejectWithValue) => {
+  async ({ userId, todolistId, jwt }, { rejectWithValue }) => {
     try {
       // const deletedTodolist = await deleteTodolist(jwt, userId, todolistId);
       const response = await axios.delete(SINGLE_TODOLIST_URI(userId, todolistId), {
@@ -136,10 +135,12 @@ const todolistsSlice = createSlice({
     },
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      // Add any fetched posts to the array
 
-      if (action.payload.todolists) {
-        todolistsAdapter.upsertMany(state, action.payload.todolists);
+      if (action.payload) {
+        // Add any fetched posts to the array
+        if (action.payload.todolists) {
+          todolistsAdapter.upsertMany(state, action.payload.todolists);
+        }
       } else {
         (state) => initialState;
       }

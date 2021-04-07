@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, Redirect } from "@reach/router";
-import axios from "axios";
 import { Button, CenterContainer, CustomLink, Input, FormContainer } from "../styles";
 // import { LOGIN_URI } from "../endpoints";
 
@@ -50,7 +49,6 @@ const Login = () => {
       } catch (error) {
         setAddRequestStatus("failed");
         console.error("Failed to log in", error);
-        console.log(error);
         setStatusMessage(error.message);
       } finally {
         setAddRequestStatus("idle");

@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import axios from "axios";
-import { normalize, schema } from "normalizr";
 import { SINGLE_TODO_URI, TODOS_URI } from "../../endpoints";
 import { DELETE_COMPLETED_TODO_URI, SET_TODOS_TO_COMPLETE } from "../../endpoints/endpoints";
 import { fetchTodolists } from "../todolists/todolistsSlice";
@@ -18,7 +17,7 @@ const initialState = todoAdapter.getInitialState({
 
 export const addTodo = createAsyncThunk(
   "todos/addTodo",
-  async ({ userId, todolistId, jwt, description }, rejectWithValue) => {
+  async ({ userId, todolistId, jwt, description }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
         TODOS_URI(userId, todolistId),
@@ -40,9 +39,8 @@ export const addTodo = createAsyncThunk(
   }
 );
 
-export const updateTodo = createAsyncThunk("todos/updateTodo", async (updateTodoOptions, rejectWithValue) => {
+export const updateTodo = createAsyncThunk("todos/updateTodo", async (updateTodoOptions, { rejectWithValue }) => {
   const { jwt, userId, todolistId, todoId, description, isComplete, options } = updateTodoOptions;
-  const { updateTodoDescription, toggleTodoCompletion } = options;
 
   try {
     const response = await axios.put(
@@ -66,7 +64,7 @@ export const updateTodo = createAsyncThunk("todos/updateTodo", async (updateTodo
 
 export const setMultipleTodosCompletionState = createAsyncThunk(
   "todos/setMultipleTodosCompletionState",
-  async (updateTodosOptions, rejectWithValue) => {
+  async (updateTodosOptions, { rejectWithValue }) => {
     const { jwt, userId, todolistId, todoIds, setComplete } = updateTodosOptions;
 
     try {
@@ -95,7 +93,7 @@ export const setMultipleTodosCompletionState = createAsyncThunk(
 
 export const deleteTodo = createAsyncThunk(
   "todos/deleteTodo",
-  async ({ jwt, userId, todolistId, todoId }, rejectWithValue) => {
+  async ({ jwt, userId, todolistId, todoId }, { rejectWithValue }) => {
     try {
       const response = await axios.delete(SINGLE_TODO_URI(userId, todolistId, todoId), {
         headers: {
@@ -115,7 +113,7 @@ export const deleteTodo = createAsyncThunk(
 
 export const deleteCompletedTodos = createAsyncThunk(
   "todos/deleteCompletedTodos",
-  async ({ jwt, userId, todolistId, completeTodoIds }, rejectWithValue) => {
+  async ({ jwt, userId, todolistId, completeTodoIds }, { rejectWithValue }) => {
     try {
       if (completeTodoIds) {
         const response = await axios.delete(
@@ -172,9 +170,12 @@ const todosSlice = createSlice({
     },
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      // Add any fetched posts to the array
-      if (action.payload.todos) {
-        todoAdapter.upsertMany(state, action.payload.todos);
+
+      if (action.payload) {
+        // Add any fetched posts to the array
+        if (action.payload.todos) {
+          todoAdapter.upsertMany(state, action.payload.todos);
+        }
       } else {
         (state) => initialState;
       }

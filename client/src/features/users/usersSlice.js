@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, createEntityAdapter } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ALL_USERS, LOGIN_URI, TODOLISTS_URI } from "../../endpoints";
+import { LOGIN_URI, TODOLISTS_URI } from "../../endpoints";
 import { normalize, schema } from "normalizr";
 
 const usersAdapter = createEntityAdapter();
@@ -14,7 +14,7 @@ export const todoSchema = new schema.Entity("todos", {}, { idAttribute: `id` });
 export const todolistSchema = new schema.Entity("todolists", { todos: [todoSchema] }, { idAttribute: `id` });
 export const user = new schema.Entity(`users`, { todolists: [todolistSchema] }, { idAttribute: "id" });
 
-export const loginUser = createAsyncThunk("users/loginUser", async ({ email, password }, rejectWithValue) => {
+export const loginUser = createAsyncThunk("users/loginUser", async ({ email, password }, { rejectWithValue }) => {
   try {
     const loginResponse = await axios.post(LOGIN_URI, {
       email,
@@ -22,31 +22,34 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
     });
 
     const { data: userData } = loginResponse;
-
+    console.log(userData);
     const { id, token, loggedIn } = userData;
 
-    // if (userData.todolists) {
-    const todolistsResponse = await axios.get(TODOLISTS_URI(id), {
-      headers: {
-        Authorization: token,
-      },
-    });
+    if (loggedIn) {
+      // if (userData.todolists) {
+      const todolistsResponse = await axios.get(TODOLISTS_URI(id), {
+        headers: {
+          Authorization: token,
+        },
+      });
 
-    let { data: todolistData } = todolistsResponse;
-    console.log(todolistData);
+      let { data: todolistData } = todolistsResponse;
+      console.log(todolistData);
 
-    if (todolistData == null) {
-      todolistData = {};
+      if (todolistData == null) {
+        todolistData = {};
+      }
+      // if (todolistData.length > 0) {
+      const allUserData = { ...userData, todolists: [...todolistData] };
+
+      console.log(allUserData);
+
+      const normalizedData = normalize(allUserData, user);
+      console.log(normalizedData);
+      const { entities } = normalizedData;
+      return entities;
     }
-    // if (todolistData.length > 0) {
-    const allUserData = { ...userData, todolists: [...todolistData] };
-
-    console.log(allUserData);
-
-    const normalizedData = normalize(allUserData, user);
-    console.log(normalizedData);
-    const { entities } = normalizedData;
-    return entities;
+    return rejectWithValue(userData.message);
     // }
     // return data;
     // }
@@ -78,7 +81,11 @@ const usersSlice = createSlice({
       state.status = "succeeded";
       console.log(action);
       // Add any fetched posts to the array
-      usersAdapter.upsertMany(state, action.payload.users);
+      if (!action.payload.users) {
+        (state) => initialState;
+      } else {
+        usersAdapter.upsertMany(state, action.payload.users);
+      }
     },
   },
 });
