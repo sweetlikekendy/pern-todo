@@ -16,7 +16,7 @@ const TodolistListRedux = () => {
 
   return (
     <div className="max-w-6xl mx-auto ">
-      <div className="px-12 py-8 flex justify-center flex-wrap">{todolistContent}</div>
+      <div className="px-4 py-2 md:px-8 md:py-6 xl:px-12 xl:py-8 flex justify-center flex-wrap">{todolistContent}</div>
     </div>
   );
 };

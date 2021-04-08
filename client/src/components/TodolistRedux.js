@@ -10,6 +10,8 @@ import {
   setMultipleTodosCompletionState,
 } from "../features/todos/todosSlice";
 import TodoRedux from "./TodoRedux";
+import { AiOutlineClear } from "react-icons/ai";
+import { BiCheckboxChecked, BiCheckbox } from "react-icons/bi";
 import { FiTrash2 } from "react-icons/fi";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import DeleteTodolistConfirmationModal from "./DeleteTodolistConfirmationModal";
@@ -170,32 +172,20 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
 
   return (
     <div
-      className="relative"
+      className="relative w-full md:w-max"
       {...rest}
-      onMouseEnter={() => setTodolistHover(true)}
-      onMouseLeave={() => setTodolistHover(false)}
+      // onMouseEnter={() => setTodolistHover(true)}
+      // onMouseLeave={() => setTodolistHover(false)}
     >
       {isConfirmationDelete && (
         <DeleteTodolistConfirmationModal todolistId={todolistId} setModalState={setDeleteConfirmation} />
       )}
-
-      <button
-        className={`absolute top-0 right-0 z-10 bg-coolGray-100 p-2 rounded-full shadow-md ${
-          isTodolistHover ? `opacity-1` : `opacity-0`
-        } 
-        transition-opacity
-        hover:shadow-lg`}
-        title="Click to delete todolist"
-        onClick={() => setDeleteConfirmation(true)}
-      >
-        <FiTrash2 className="text-coolGray-800" />
-      </button>
-
       <div className="container p-4 max-w-md mx-auto">
         {/* <!-- todo wrapper --> */}
-        <div className="bg-white rounded shadow px-4 py-4" x-data="app()">
+        <div className="bg-white rounded shadow" x-data="app()">
           {isTodolistTitleFocus ? (
             <form
+              className="p-4"
               onSubmit={(e) => {
                 onTodolistTitleUpdateSubmit(e);
                 setTodolistTitleFocus(false);
@@ -229,7 +219,7 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
           ) : (
             <button
               ref={todolistTitleEl}
-              className="font-bold text-lg"
+              className="font-bold text-lg p-4"
               title="Double click to edit todolist title"
               onDoubleClick={() => {
                 setTodolistTitleFocus(true);
@@ -238,7 +228,7 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
               {title}
             </button>
           )}
-          <div className="flex items-center text-sm mt-2">
+          <div className="flex items-center text-sm mt-2 px-4 py-1">
             <button onClick={() => addTodoInputEl.current.focus()}>
               <svg
                 className="w-3 h-3 mr-3 focus:outline-none"
@@ -254,7 +244,7 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
             </button>
             <span>Click to add todo</span>
           </div>
-          <form onSubmit={(e) => onCreateTodoSubmit(e)}>
+          <form className="px-4" onSubmit={(e) => onCreateTodoSubmit(e)}>
             <input
               type="text"
               placeholder="Enter a todo here"
@@ -266,8 +256,8 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
           </form>
 
           {/* <!-- todo list --> */}
-          <div className={`mt-4 ${!isCompletedTodosEmpty ? `divide-y-2` : ``}`}>
-            <ul className="p-1">{incompleteTodoContent}</ul>
+          <div className={`mt-4 px-4 ${!isCompletedTodosEmpty ? `divide-y-2` : ``}`}>
+            {incompleteTodoContent.length > 0 && <ul className="p-1">{incompleteTodoContent}</ul>}
             <div className="pt-4 px-1 pb-1">
               {!isTodolistEmpty && numOfCompletedTodos !== 0 && (
                 <React.Fragment>
@@ -281,12 +271,6 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
                     <React.Fragment>
                       <div className="p-1">
                         <ul>{completedTodoContent}</ul>
-                        <button
-                          className="text-white mt-4 text-right bg-red-400 px-2 py-1 rounded"
-                          onClick={() => handleDeleteAllCompletedTodos()}
-                        >
-                          Clear all completed
-                        </button>
                       </div>
                     </React.Fragment>
                   )}
@@ -294,21 +278,36 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
               )}
             </div>
           </div>
-          <div className="flex">
-            <button title="Set all todos as complete" onClick={() => handleSetAllTodosToComplete()}>
-              Set all todos as complete
+          <div className="flex justify-evenly px-2 py-2 text-sm text-blueGray-400 bg-blueGray-100">
+            <button
+              className="transition-colors hover:text-blueGray-600"
+              title="Set all as complete"
+              onClick={() => handleSetAllTodosToComplete()}
+            >
+              <BiCheckboxChecked className="h-7 w-7" />
             </button>
             <button
-              title="Set all completed todos as incomplete"
+              className="transition-colors hover:text-blueGray-600"
+              title="Set all as incomplete"
               onClick={() => handleSetAllCompletedTodosToIncomplete()}
             >
-              Set all completed todos as incomplete
+              <BiCheckbox className="h-7 w-7" />
             </button>
-            <button title="Clear all completed todos" onClick={() => handleDeleteAllCompletedTodos()}>
-              Clear all completed todos
+            <button
+              className="transition-colors hover:text-blueGray-600"
+              title="Clear completed todos"
+              onClick={() => handleDeleteAllCompletedTodos()}
+            >
+              <AiOutlineClear className="h-6 w-6" />
+              {/* Clear completed todos */}
             </button>
-            <button title="Delete todolist" onClick={() => setDeleteConfirmation(true)}>
-              Delete todolist
+            <button
+              className="transition-colors hover:text-blueGray-600"
+              title="Delete todolist"
+              onClick={() => setDeleteConfirmation(true)}
+            >
+              <FiTrash2 className="h-5 w-5" />
+              {/* Delete todolist */}
             </button>
           </div>
           {/* {completedOverIncompleteTodoContent} */}

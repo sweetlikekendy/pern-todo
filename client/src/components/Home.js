@@ -153,7 +153,7 @@ const Home = () => {
         </JustifyCenterHfullContainer>
       ) : (
         <CenterContainer>
-          <FormContainer>
+          <FormContainer className="p-4">
             <p className="my-4">Login status: {loginStatus}</p>
             <p className="mb-4">{loginError && `Error: ${loginError}`}</p>
             {statusMessage && <p className="mb-4">{statusMessage} </p>}

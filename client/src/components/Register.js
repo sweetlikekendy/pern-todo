@@ -13,6 +13,7 @@ const Register = ({ isLoggedIn }) => {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const [isCreatedSuccessfully, setCreateUserState] = useState(false);
 
   const canSave = [formFirstName, formLastName, formEmail, formPassword].every(Boolean);
 
@@ -22,28 +23,6 @@ const Register = ({ isLoggedIn }) => {
     setFormEmail("");
     setFormPassword("");
   };
-  // const handleSubmit = async () => {
-  //   if (canSave) {
-  //     try {
-  //       setAddRequestStatus("pending");
-  //       const resultAction = await dispatch(
-  //         addNewUser({ firstName: formFirstName, lastName: formLastName, email: formEmail, password: formPassword })
-  //       );
-  //       unwrapResult(resultAction);
-  //       setFormFirstName("");
-  //       setFormLastName("");
-  //       setFormEmail("");
-  //       setFormPassword("");
-  //       // setStatusMessage(resultAction);
-  //     } catch (err) {
-  //       console.error("Failed to save the post: ", err);
-  //       setAddRequestStatus("failed");
-  //       // setStatusMessage(err);
-  //     } finally {
-  //       setAddRequestStatus("idle");
-  //     }
-  //   }
-  // };
 
   const handleSubmit = async () => {
     try {
@@ -53,76 +32,80 @@ const Register = ({ isLoggedIn }) => {
         email: formEmail,
         password: formPassword,
       });
+
       const { data } = response;
       const { isCreated, message } = data;
+
       if (isCreated) {
         clearInputs();
+        setCreateUserState(true);
       }
 
       setStatusMessage(message);
     } catch (error) {
       console.err(error);
+      throw error;
     }
   };
+
+  if (isLoggedIn) return <Redirect to="/" noThrow />;
+  if (isCreatedSuccessfully) return <Redirect to="/register-success" noThrow />;
+
   return (
-    <CenterContainer>
-      {isLoggedIn ? (
-        <Redirect to="/" noThrow />
-      ) : (
-        <FormContainer>
-          {statusMessage && <p className="mb-4">{statusMessage} </p>}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-          >
-            <Input
-              full
-              border
-              marginBottom
-              type="text"
-              name="firstName"
-              placeholder="First Name"
-              value={formFirstName}
-              onChange={(e) => setFormFirstName(e.target.value)}
-            />
-            <Input
-              full
-              border
-              marginBottom
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              value={formLastName}
-              onChange={(e) => setFormLastName(e.target.value)}
-            />
-            <Input
-              full
-              border
-              marginBottom
-              type="text"
-              name="email"
-              placeholder="Email"
-              value={formEmail}
-              onChange={(e) => setFormEmail(e.target.value)}
-            />
-            <Input
-              full
-              border
-              marginBottom
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formPassword}
-              onChange={(e) => setFormPassword(e.target.value)}
-            />
-            <Button full isPrimary disabled={!canSave}>
-              Register
-            </Button>
-          </form>
-        </FormContainer>
-      )}
+    <CenterContainer className="p-4">
+      <FormContainer>
+        {statusMessage && <p className="mb-4">{statusMessage} </p>}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
+          <Input
+            full
+            border
+            marginBottom
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={formFirstName}
+            onChange={(e) => setFormFirstName(e.target.value)}
+          />
+          <Input
+            full
+            border
+            marginBottom
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={formLastName}
+            onChange={(e) => setFormLastName(e.target.value)}
+          />
+          <Input
+            full
+            border
+            marginBottom
+            type="text"
+            name="email"
+            placeholder="Email"
+            value={formEmail}
+            onChange={(e) => setFormEmail(e.target.value)}
+          />
+          <Input
+            full
+            border
+            marginBottom
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formPassword}
+            onChange={(e) => setFormPassword(e.target.value)}
+          />
+          <Button full isPrimary disabled={!canSave}>
+            Register
+          </Button>
+        </form>
+      </FormContainer>
     </CenterContainer>
   );
 };
