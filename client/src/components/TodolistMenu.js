@@ -52,9 +52,6 @@ export default function TodolistMenu({ todolistId }) {
     });
   }
 
-  console.log("complete todo ids", completeTodoIds);
-  console.log("incomplete todo ids", incompleteTodoIds);
-
   const handleSetAllTodosToComplete = async () => {
     try {
       const setAllTodosToCompleteAction = await dispatch(
@@ -98,12 +95,6 @@ export default function TodolistMenu({ todolistId }) {
     }
   };
 
-  const MenuButton = ({ children, title, ...rest }) => (
-    <button className="transition-color hover:text-blueGray-600" title={title} {...rest}>
-      {children}
-    </button>
-  );
-
   return (
     <div className="flex justify-evenly px-2 py-2 text-sm text-blueGray-400 bg-blueGray-100">
       {isConfirmationDelete && (
@@ -127,4 +118,14 @@ export default function TodolistMenu({ todolistId }) {
 
 TodolistMenu.propTypes = {
   todolistId: PropTypes.number,
+};
+
+export const MenuButton = ({ children, ...rest }) => (
+  <button className="transition-color hover:text-blueGray-600" {...rest}>
+    {children}
+  </button>
+);
+
+MenuButton.propTypes = {
+  children: PropTypes.node,
 };
