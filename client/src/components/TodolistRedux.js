@@ -1,32 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { deleteTodolist, selectTodolistById, updateTodolist } from "../features/todolists/todolistsSlice";
-import {
-  addTodo,
-  deleteCompletedTodos,
-  selectTodoIds,
-  selectTodosByTodolist,
-  setMultipleTodosCompletionState,
-} from "../features/todos/todosSlice";
+import { selectTodolistById, updateTodolist } from "../features/todolists/todolistsSlice";
+import { addTodo, selectTodosByTodolist } from "../features/todos/todosSlice";
 import TodoRedux from "./TodoRedux";
-import { AiOutlineClear } from "react-icons/ai";
-import { BiCheckboxChecked, BiCheckbox } from "react-icons/bi";
-import { FiTrash2 } from "react-icons/fi";
 import { MdKeyboardArrowDown } from "react-icons/md";
-import DeleteTodolistConfirmationModal from "./DeleteTodolistConfirmationModal";
+import TodolistMenu from "./TodolistMenu";
 
 const TodolistRedux = ({ todolistId, ...rest }) => {
   const dispatch = useDispatch();
   const todolist = useSelector((state) => selectTodolistById(state, todolistId));
-  const [isTodolistHover, setTodolistHover] = useState(false);
-  const [isConfirmationDelete, setDeleteConfirmation] = useState(false);
   const [isShowCompletedTodos, setShowCompletedTodos] = useState(false);
 
   const addTodoInputEl = useRef(null);
   const todolistTitleEl = useRef(null);
   const newTodolistTitleEl = useRef(null);
-  // const todoIds = useSelector(selectTodoIds);
 
   const todosInCurrentTodolist = useSelector((state) => selectTodosByTodolist(state, todolistId));
 
@@ -66,26 +55,11 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
     });
   }
 
-  const incompleteTodoIds = incompleteTodoContent.map((todoEl) => parseInt(todoEl.key));
-  const completeTodoIds = completedTodoContent.map((todoEl) => parseInt(todoEl.key));
-
   const numOfCompletedTodos = completedTodoContent.length;
   const numOfTotalTodos = todosInCurrentTodolist.length;
 
-  const CompletedOverIncompleteTodos = ({ children }) => (
-    <div className="mt-4 text-coolGray-400 text-right">
-      <span className="text-coolGray-500">{children}</span> Completed
-    </div>
-  );
-
   const isTodolistEmpty = numOfTotalTodos === 0 ? true : false;
   const isCompletedTodosEmpty = numOfCompletedTodos === 0 ? true : false;
-
-  const completedOverIncompleteTodoContent = !isTodolistEmpty && (
-    <CompletedOverIncompleteTodos>
-      {numOfCompletedTodos} / {numOfTotalTodos}
-    </CompletedOverIncompleteTodos>
-  );
 
   const canSave = [newTodo].every(Boolean) && addRequestStatus === "idle";
 
@@ -100,49 +74,6 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
       } catch (error) {
         console.error(error);
       }
-    }
-  };
-
-  const handleSetAllTodosToComplete = async () => {
-    try {
-      const setAllTodosToCompleteAction = await dispatch(
-        setMultipleTodosCompletionState({ jwt, userId, todolistId, todoIds: incompleteTodoIds, setComplete: true })
-      );
-
-      unwrapResult(setAllTodosToCompleteAction);
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
-
-  const handleSetAllCompletedTodosToIncomplete = async () => {
-    try {
-      if (completeTodoIds.length > 0) {
-        const setAllCompleteTodosToIncompleteAction = await dispatch(
-          setMultipleTodosCompletionState({ jwt, userId, todolistId, todoIds: completeTodoIds, setComplete: false })
-        );
-        unwrapResult(setAllCompleteTodosToIncompleteAction);
-      }
-      return;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
-
-  const handleDeleteAllCompletedTodos = async () => {
-    try {
-      if (completeTodoIds.length > 0) {
-        const deleteAllCompletedTodosAction = await dispatch(
-          deleteCompletedTodos({ jwt, userId, todolistId, completeTodoIds })
-        );
-        unwrapResult(deleteAllCompletedTodosAction);
-      }
-      return;
-    } catch (error) {
-      console.error(error);
-      throw error;
     }
   };
 
@@ -177,9 +108,6 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
       // onMouseEnter={() => setTodolistHover(true)}
       // onMouseLeave={() => setTodolistHover(false)}
     >
-      {isConfirmationDelete && (
-        <DeleteTodolistConfirmationModal todolistId={todolistId} setModalState={setDeleteConfirmation} />
-      )}
       <div className="container p-4 max-w-md mx-auto">
         {/* <!-- todo wrapper --> */}
         <div className="bg-white rounded shadow" x-data="app()">
@@ -278,39 +206,7 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
               )}
             </div>
           </div>
-          <div className="flex justify-evenly px-2 py-2 text-sm text-blueGray-400 bg-blueGray-100">
-            <button
-              className="transition-colors hover:text-blueGray-600"
-              title="Set all as complete"
-              onClick={() => handleSetAllTodosToComplete()}
-            >
-              <BiCheckboxChecked className="h-7 w-7" />
-            </button>
-            <button
-              className="transition-colors hover:text-blueGray-600"
-              title="Set all as incomplete"
-              onClick={() => handleSetAllCompletedTodosToIncomplete()}
-            >
-              <BiCheckbox className="h-7 w-7" />
-            </button>
-            <button
-              className="transition-colors hover:text-blueGray-600"
-              title="Clear completed todos"
-              onClick={() => handleDeleteAllCompletedTodos()}
-            >
-              <AiOutlineClear className="h-6 w-6" />
-              {/* Clear completed todos */}
-            </button>
-            <button
-              className="transition-colors hover:text-blueGray-600"
-              title="Delete todolist"
-              onClick={() => setDeleteConfirmation(true)}
-            >
-              <FiTrash2 className="h-5 w-5" />
-              {/* Delete todolist */}
-            </button>
-          </div>
-          {/* {completedOverIncompleteTodoContent} */}
+          <TodolistMenu todolistId={todolistId} />
         </div>
       </div>
     </div>
@@ -318,3 +214,7 @@ const TodolistRedux = ({ todolistId, ...rest }) => {
 };
 
 export default TodolistRedux;
+
+TodolistRedux.propTypes = {
+  todolistId: PropTypes.number,
+};
