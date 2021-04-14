@@ -2,6 +2,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectTodoById, updateTodo, deleteTodo } from "../features/todos/todosSlice";
+import { selectAllUsers } from "../features/users/usersSlice";
 
 function TodoRedux({ todoId }) {
   const dispatch = useDispatch();
@@ -16,18 +17,10 @@ function TodoRedux({ todoId }) {
   const newTodoEl = useRef(null);
 
   // Get user_id & JWT for http requests
-  const loggedInUserData = useSelector((state) => {
-    if (state.users.ids.length > 0) {
-      const { users } = state;
-      const { ids: userIds, entities: userEntities } = users;
-      const { id, token } = userEntities[userIds[0]];
+  const users = useSelector((state) => selectAllUsers(state));
+  const loggedInUser = users[0];
 
-      return { id, token };
-    }
-    return { id: ``, token: `` };
-  });
-
-  const { id: userId, token: jwt } = loggedInUserData;
+  const { id: userId, token: jwt } = loggedInUser;
 
   const canSave = [newTodoDescription].every(Boolean);
 

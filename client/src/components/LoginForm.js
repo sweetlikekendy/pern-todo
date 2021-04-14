@@ -1,43 +1,49 @@
+import React, { useEffect, useRef, useState } from "react";
 import { unwrapResult } from "@reduxjs/toolkit";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../features/users/usersSlice";
 import { Button, CustomLink, FormContainer, Input } from "../styles";
 
 export default function LoginForm() {
+  const dispatch = useDispatch();
+  const _isMounted = useRef(true);
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
-  const [statusMessage, setStatusMessage] = useState("");
+  const loginError = useSelector((state) => state.users.error);
 
-  const [addRequestStatus, setAddRequestStatus] = useState("idle");
+  const [loginStatus, setLoginStatus] = useState("idle");
 
-  const dispatch = useDispatch();
+  const canSave = [formEmail, formPassword].every(Boolean) && loginStatus === "idle";
 
-  const canSave = [formEmail, formPassword].every(Boolean) && addRequestStatus === "idle";
+  useEffect(() => {
+    return () => {
+      _isMounted.current = false;
+      setFormPassword("");
+      setFormEmail("");
+      setLoginStatus("idle");
+    };
+  }, []);
 
   const handleSubmit = async () => {
-    if (canSave) {
+    if (canSave && _isMounted.current) {
       try {
-        setAddRequestStatus("pending");
+        setLoginStatus("pending");
         const resultAction = await dispatch(loginUser({ email: formEmail, password: formPassword }));
-
         unwrapResult(resultAction);
-        setFormEmail("");
-        setFormPassword("");
       } catch (error) {
-        setAddRequestStatus("failed");
+        setLoginStatus("failed");
         console.error("Failed to log in", error);
         console.log(error);
-        setStatusMessage(error.message);
-      } finally {
-        setAddRequestStatus("idle");
+        setLoginStatus("idle");
       }
     }
   };
 
   return (
     <FormContainer>
-      {statusMessage && <p className="mb-4">{statusMessage} </p>}
+      {/* <p className="mb-4">Login Form State: {loginStatus}</p> */}
+      {loginError && <p className="mb-4">Error: {loginError}</p>}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
