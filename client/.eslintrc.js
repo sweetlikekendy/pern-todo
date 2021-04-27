@@ -9,6 +9,8 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:prettier/recommended",
+    "plugin:testing-library/dom",
+    "plugin:testing-library/react",
   ],
   globals: {
     Atomics: "readonly",
@@ -28,5 +30,9 @@ module.exports = {
     "react/prop-types": "warn", // Checks if props have a defined prop type
     "no-unused-vars": "warn", // Checks if there are unused variables
     "prettier/prettier": "warn",
+    "testing-library/await-async-query": "error",
+    "testing-library/no-await-sync-query": "error",
+    "testing-library/no-debug": "warn",
+    "testing-library/no-dom-import": "off",
   },
 };
