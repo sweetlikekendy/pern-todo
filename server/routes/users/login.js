@@ -13,13 +13,13 @@ router.post("/", async (req, res) => {
   const { email, password } = req.body;
   const { error } = validateLogin(req.body); // validate user login credentials from req.body
 
-  // if there is an error with user login credentials
+  // error with user login credentials
   if (error) {
     const errorMessage = error.details[0].message;
     resStatusPayload(res, 202, { loggedIn: false, message: errorMessage });
   }
 
-  // if there are no errors
+  // no error with login credentials
   if (!error) {
     const user = await getOneByEmail(email);
 
@@ -34,22 +34,26 @@ router.post("/", async (req, res) => {
     // if user does exist in db
     if (user) {
       const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword)
+      if (!validPassword) {
         return resStatusPayload(res, 202, {
           loggedIn: false,
           message: `Invalid password`,
         });
+      }
 
       if (validPassword) {
         const tokenObject = issueJwt(user);
-        const redirect = `/`;
+
+        delete user.password;
         return resStatusPayload(res, 200, {
           loggedIn: true,
-          user,
+          ...user,
           token: tokenObject.token,
           expiresIn: tokenObject.expiresIn,
-          redirect,
-          message: "Logging In",
+          // success: {
+          //   redirect,
+          //   message: `Successfully loggin in ${user.first_name}`,
+          // },
         });
       }
     }

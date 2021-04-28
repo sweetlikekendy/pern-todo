@@ -36,6 +36,7 @@ exports.seed = function (knex) {
         });
         return Promise.all(todoPromises);
       })
+      .catch((error) => console.error(error))
   );
 };
 
@@ -45,7 +46,7 @@ const createTodolist = (knex, todolist, firstName) => {
     .where("first_name", firstName)
     .first()
     .then((userRecord) => {
-      //  - Insert the product with the merchant 'id' as the foreign key
+      //  - Insert the todolist with the user 'id' as the foreign key
       return knex("todolists").insert({
         title: todolist.title,
         created_at: todolist.created_at,
@@ -61,12 +62,13 @@ const createTodo = (knex, todo, title) => {
     .where("title", title)
     .first()
     .then((todolistRecord) => {
-      //  - Insert the product with the merchant 'id' as the foreign key
+      //  - Insert the todo with the todolist 'id' as the foreign key
       return knex("todos").insert({
         description: todo.description,
         created_at: todo.created_at,
         updated_at: todo.updated_at,
         todolist_id: todolistRecord.id,
+        isComplete: todo.isComplete,
       });
     })
     .catch((err) => console.error(err));

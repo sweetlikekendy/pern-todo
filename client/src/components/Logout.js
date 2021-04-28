@@ -1,39 +1,25 @@
-import React, { useEffect } from "react";
-import PropTypes from "prop-types";
+import React from "react";
+import { Redirect } from "@reach/router";
+import { useDispatch, useSelector } from "react-redux";
 
-const Logout = ({
-  isLoggedIn,
-  setEmail,
-  setFirstName,
-  setLastName,
-  setLoggedIn,
-  setUserId,
-  setJwt,
-  setNumOfTodolists,
-  // setNumOfTodos,
-  setTodolists,
-  // setTodos,
-}) => {
-  const logout = () => {
-    setLoggedIn(false);
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setJwt("");
-    setUserId("");
-    setNumOfTodolists(0);
-    // setNumOfTodos(0);
-    setTodolists([]);
-    // setTodos("");
-  };
+const Logout = () => {
+  const dispatch = useDispatch();
+  // TODO confirm the logout with a modal
+  // Get JWT for http requests
+  const loggedInUserData = useSelector((state) => {
+    // if there's a user, that means user has logged in
+    if (state.users.ids.length > 0) {
+      const { users } = state;
+      const { ids: userIds, entities: userEntities } = users;
+      const { loggedIn } = userEntities[userIds[0]];
 
-  useEffect(() => {
-    logout();
-  }, [isLoggedIn]);
+      return { loggedIn };
+    }
+    return { loggedIn: false };
+  });
 
-  return (
-    <div>{isLoggedIn ? <p>Logging Out</p> : <p>You're not logged in</p>}</div>
-  );
+  const { loggedIn: isLoggedIn } = loggedInUserData;
+  return <div>{isLoggedIn ? <p>You&apos;re already logged in!</p> : <Redirect to="/" noThrow />}</div>;
 };
 
 Logout.propTypes = {};

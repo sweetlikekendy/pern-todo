@@ -17,7 +17,6 @@ router.get("/", (_req, res) => {
       });
       return resStatusPayload(res, 200, {
         users: usersNoPass,
-        numOfUsers: usersNoPass.length,
       });
     })
     .catch((err) => console.error(err));

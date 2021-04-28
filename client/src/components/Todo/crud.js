@@ -1,5 +1,4 @@
 import axios from "axios";
-import { navigate } from "@reach/router";
 import { TODOS_URI, SINGLE_TODO_URI } from "../../endpoints";
 
 /**
@@ -12,7 +11,7 @@ import { TODOS_URI, SINGLE_TODO_URI } from "../../endpoints";
  * @param {method} setTodo The react hook to set the new todo
  * @return {object} The response of the axios post request
  */
-export const addTodo = (jwt, userId, todolistId, todo, setTodo) => {
+export const addTodo = (jwt, userId, todolistId, todo) => {
   axios
     .post(
       TODOS_URI(userId, todolistId),
@@ -25,10 +24,8 @@ export const addTodo = (jwt, userId, todolistId, todo, setTodo) => {
     )
     .then((response) => {
       console.log(response);
-      setTodo("");
-      navigate("/");
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };
 
 /**
@@ -41,7 +38,6 @@ export const addTodo = (jwt, userId, todolistId, todo, setTodo) => {
  * @return {object} The response of the axios delete request
  */
 export const deleteTodo = (jwt, userId, todolistId, todoId) => {
-  console.log(todoId);
   return axios
     .delete(SINGLE_TODO_URI(userId, todolistId, todoId), {
       headers: {
@@ -51,7 +47,7 @@ export const deleteTodo = (jwt, userId, todolistId, todoId) => {
     .then((response) => {
       console.log(response);
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };
 
 /**
@@ -61,19 +57,9 @@ export const deleteTodo = (jwt, userId, todolistId, todoId) => {
  * @param {number} userId User's ID
  * @param {number} todolistId Todolist's ID
  * @param {string} todo New todo
- * @param {method} setTodo The react hook to set the new todo
- * @param {method} setShowInput The react hook to show/hide input field for title
  * @return {object} The response of the axios put request
  */
-export const editTodo = (
-  jwt,
-  userId,
-  todolistId,
-  todoId,
-  todo,
-  setTodo,
-  setShowInput
-) => {
+export const editTodo = (jwt, userId, todolistId, todoId, todo) => {
   return axios
     .put(
       SINGLE_TODO_URI(userId, todolistId, todoId),
@@ -85,9 +71,7 @@ export const editTodo = (
       }
     )
     .then((response) => {
-      setTodo("");
-      setShowInput(false);
       console.log(response);
     })
-    .catch((error) => console.error(error));
+    .catch((error) => console.error(error.response.request));
 };

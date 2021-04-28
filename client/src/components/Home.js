@@ -1,205 +1,97 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { Link } from "@reach/router";
-import axios from "axios";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { CenterContainer, Container, Input, JustifyCenterHfullContainer, JustifyCenterContainer } from "../styles";
+4;
+import { addTodolist, selectTodolistIds } from "../features/todolists/todolistsSlice";
+import TodolistListRedux from "./TodolistListRedux";
+import LoginForm from "./LoginForm";
 
-import { Todolist, addTodolist } from "./Todolist";
-import { TODOLISTS_URI, TODOS_URI } from "../endpoints";
-
-const Home = ({
-  numOfTodolists,
-  firstName,
-  userId,
-  isLoggedIn,
-  jwt,
-  todolists,
-  setTodolists,
-  setNumOfTodolists,
-  fetching,
-  setFetching,
-  reordering,
-  setReordering,
-}) => {
+const Home = () => {
   const [newTodolist, setNewTodolist] = useState("");
+  const [addTodolistStatus, setAddTodolistStatus] = useState("idle");
 
-  const fetchData = async () => {
-    console.log(todolists.length);
-    // if (todolists.length === 0) {
-    //   console.log("inside todolists.length === 0");
-    //   await axios
-    //     .get(TODOLISTS_URI(userId), {
-    //       headers: {
-    //         Authorization: jwt,
-    //       },
-    //     })
-    //     .then(async (response) => {
-    //       const { data } = response;
-    //       const { todolists } = data;
-    //       const promises = [];
+  const dispatch = useDispatch();
 
-    //       for (let i = 0; i < todolists.length; i++) {
-    //         promises.push(
-    //           axios.get(TODOS_URI(userId, todolists[i].id), {
-    //             headers: {
-    //               Authorization: jwt,
-    //             },
-    //           })
-    //         );
-    //       }
+  const todolistIds = useSelector(selectTodolistIds);
 
-    //       return await Promise.all(promises)
-    //         .then(async (results) => {
-    //           const todolistsWithTodos = [];
-    //           await results.map(({ data }, i) => {
-    //             const { todos, numOfTodos } = data;
-    //             // if there are no todos, save the todos as a property as an empty array in a new object
-    //             if (numOfTodos === 0) {
-    //               const todolistNoTodos = {
-    //                 todolist: todolists[i],
-    //                 todos: [],
-    //                 numOfTodos,
-    //               };
-    //               todolistsWithTodos.push(todolistNoTodos);
-    //             } else {
-    //               // if there are todos, save the todos as a property as an array in a new object
-    //               const todolistWithTodos = {
-    //                 todolist: todolists[i],
-    //                 todos,
-    //                 numOfTodos,
-    //               };
-    //               todolistsWithTodos.push(todolistWithTodos);
-    //             }
-    //           });
-    //           setTodolists(todolistsWithTodos);
-    //           setNumOfTodolists(todolists.length);
-    //         })
-    //         .catch((error) => console.error(error));
-    //     })
-    //     .catch((error) => console.error(error));
-    // } else {
-    //   console.log("inside else");
-    //   window.localStorage.setItem("todolists", JSON.stringify(todolists));
-    // }
-    await axios
-      .get(TODOLISTS_URI(userId), {
-        headers: {
-          Authorization: jwt,
-        },
-      })
-      .then(async (response) => {
-        const { data } = response;
-        const { todolists } = data;
-        const promises = [];
+  // User Data used for conditional formatting and http requests
+  const loggedInUserData = useSelector((state) => {
+    const todolistsData =
+      state.todolists.ids.length > 0 ? { todolists: state.todolists.entities, ids: state.todolists.ids } : {};
 
-        for (let i = 0; i < todolists.length; i++) {
-          promises.push(
-            axios.get(TODOS_URI(userId, todolists[i].id), {
-              headers: {
-                Authorization: jwt,
-              },
-            })
-          );
-        }
+    // if there's a user, that means user has logged in
+    if (state.users.ids.length > 0) {
+      const { users } = state;
+      const { ids: userIds, entities: userEntities } = users;
+      const { first_name, id, loggedIn, token } = userEntities[userIds[0]];
 
-        return await Promise.all(promises)
-          .then(async (results) => {
-            const todolistsWithTodos = [];
-            await results.map(({ data }, i) => {
-              const { todos, numOfTodos } = data;
-              // if there are no todos, save the todos as a property as an empty array in a new object
-              if (numOfTodos === 0) {
-                const todolistNoTodos = {
-                  todolist: todolists[i],
-                  todos: [],
-                  numOfTodos,
-                };
-                todolistsWithTodos.push(todolistNoTodos);
-              } else {
-                // if there are todos, save the todos as a property as an array in a new object
-                const todolistWithTodos = {
-                  todolist: todolists[i],
-                  todos,
-                  numOfTodos,
-                };
-                todolistsWithTodos.push(todolistWithTodos);
-              }
-            });
-            setTodolists(todolistsWithTodos);
-            setNumOfTodolists(todolists.length);
-          })
-          .catch((error) => console.error(error));
-      })
-      .catch((error) => console.error(error));
+      return { first_name, id, loggedIn, token, todolistsData };
+    }
+    return { first_name: ``, id: null, loggedIn: false, token: ``, todolistsData };
+  });
+
+  const { id: userId, loggedIn: isLoggedIn, first_name: firstName, token: jwt } = loggedInUserData;
+
+  let numOfTodolists = 0;
+
+  if (todolistIds.length > 0) {
+    numOfTodolists = todolistIds.length;
+  }
+
+  const canSave = [newTodolist].every(Boolean) && addTodolistStatus === "idle";
+
+  const onCreateTodolistSubmit = async (e) => {
+    e.preventDefault();
+    if (canSave) {
+      try {
+        setAddTodolistStatus("pending");
+        const resultAction = await dispatch(addTodolist({ userId, title: newTodolist, jwt }));
+        unwrapResult(resultAction);
+        setNewTodolist("");
+      } catch (err) {
+        setAddTodolistStatus("failed");
+        console.error("Failed to save the post: ", err);
+      } finally {
+        setAddTodolistStatus("idle");
+      }
+    }
   };
 
-  useEffect(() => {
-    if (fetching) {
-      fetchData();
-      setFetching(false);
-    }
-  }, [fetching, reordering]);
-
-  return isLoggedIn ? (
-    <div>
-      <div>
-        <h2>Hello, {firstName}</h2>
-        <p>
-          You have {numOfTodolists}
-          {numOfTodolists === 1 ? (
-            <span> todolist</span>
-          ) : (
-            <span> todolists</span>
-          )}
-        </p>
-        <label>
-          <input
-            type="text"
-            name="title"
-            value={newTodolist}
-            placeholder="Enter todolist title here"
-            onChange={(e) => setNewTodolist(e.target.value)}
-          />
-        </label>
-        <button
-          onClick={() => {
-            if (newTodolist) {
-              setFetching(true);
-              addTodolist(jwt, userId, newTodolist, setNewTodolist);
-            }
-          }}
-        >
-          Add new todolist
-        </button>
-      </div>
-      <div>
-        <ul>
-          {todolists.map(({ todolist, todos }, i) => (
-            <Todolist
-              index={i}
-              setTodolists={setTodolists}
-              todolists={todolists}
-              todolist={todolist}
-              todos={todos}
-              jwt={jwt}
-              userId={userId}
-              todolistId={todolist.id}
-              todolistTitle={todolist.title}
-              setFetching={setFetching}
-              key={todolist.id}
-              reordering={reordering}
-              setReordering={setReordering}
-            />
-          ))}
-        </ul>
-      </div>
-    </div>
-  ) : (
-    <div>
-      Not logged in. Click <Link to="/login">here</Link> to login
-    </div>
+  return (
+    <Container>
+      {isLoggedIn ? (
+        <JustifyCenterHfullContainer>
+          <JustifyCenterContainer>
+            <div className="my-8" style={{ minWidth: "30%" }}>
+              <h2 className="text-2xl mb-1 md:text-3xl lg:text-4xl">Hello, {firstName}</h2>
+              <p className="mb-4">
+                You have {numOfTodolists}
+                {numOfTodolists === 1 ? <span> todolist</span> : <span> todolists</span>}
+              </p>
+              {/* <p className="mb-4">Todolist status: {addTodolistStatus}</p> */}
+              <form onSubmit={(e) => onCreateTodolistSubmit(e)}>
+                <Input
+                  full
+                  border
+                  type="text"
+                  name="title"
+                  value={newTodolist}
+                  placeholder="Enter todolist title here"
+                  onChange={(e) => setNewTodolist(e.target.value)}
+                />
+              </form>
+            </div>
+          </JustifyCenterContainer>
+          <TodolistListRedux />
+        </JustifyCenterHfullContainer>
+      ) : (
+        <CenterContainer>
+          <LoginForm />
+        </CenterContainer>
+      )}
+    </Container>
   );
 };
-
-Home.propTypes = {};
 
 export default Home;

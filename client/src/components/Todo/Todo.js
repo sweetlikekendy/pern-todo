@@ -1,116 +1,78 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { deleteTodo, editTodo } from "./";
+// import React, { useState } from "react";
+// import PropTypes from "prop-types";
+// import { Draggable } from "react-beautiful-dnd";
 
-const Todo = ({
-  index,
-  jwt,
-  todos,
-  userId,
-  todolists,
-  todolistId,
-  todolistIndex,
-  todoId,
-  description,
-  setFetching,
-  moveTodoElementUp,
-  moveTodoElementDown,
-  reordering,
-  setReordering,
-  reorderData,
-}) => {
-  const [newTodo, setNewTodo] = useState(description);
-  const [showInput, setShowInput] = useState(false);
-  const buttonStyle = { padding: "8px", margin: "8px" };
+// import { deleteTodo, editTodo } from "./";
+// import { Button, Input, JustifyCenterContainer, TodoContainer } from "../../styles";
 
-  const showEditTodo = () => {
-    setShowInput(true);
-  };
+// // const Container = styled.div`
+// //   display: flex;
+// //   padding: 1rem;
+// //   /* border: 2px solid lightgray; */
+// //   /* border-top: 2px solid lightgrey; */
+// //   /* border-bottom: 2px solid lightgrey; */
+// //   border-radius: 2px;
+// //   margin-bottom: 8px;
+// //   background-color: ${(props) => (props.isDragging ? "lightgreen" : "white")};
+// // `;
 
-  // useEffect(() => {
-  //   if (reordering) {
-  //     reorderData(todos);
-  //     setReordering(false);
-  //   }
-  // }, [reordering]);
+// const Todo = ({ index, userId, todolistId, todo, jwt, setFetching }) => {
+//   const { id: todoId, dndId, description } = todo;
+//   const [newTodo, setNewTodo] = useState(description);
 
-  return (
-    <li>
-      <button
-        style={buttonStyle}
-        onClick={() => {
-          setReordering(true);
-          moveTodoElementUp(todolists, todolistIndex, todos, index);
-        }}
-      >
-        Up
-      </button>
-      <button
-        style={buttonStyle}
-        onClick={() => {
-          setReordering(true);
-          moveTodoElementDown(todolists, todolistIndex, todos, index);
-        }}
-      >
-        Down
-      </button>
-      <button
-        style={buttonStyle}
-        onClick={() => {
-          setFetching(true);
-          deleteTodo(jwt, userId, todolistId, todoId);
-        }}
-      >
-        X
-      </button>
-      {description}
-      {showInput ? (
-        <label>
-          <input
-            type="text"
-            name="todo"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-          />
-        </label>
-      ) : (
-        ""
-      )}
-      {showInput ? (
-        <button
-          style={buttonStyle}
-          onClick={() => {
-            if (newTodo) {
-              setFetching(true);
-              editTodo(
-                jwt,
-                userId,
-                todolistId,
-                todoId,
-                newTodo,
-                setNewTodo,
-                setShowInput
-              );
-            }
-          }}
-        >
-          Submit
-        </button>
-      ) : (
-        <button
-          style={buttonStyle}
-          onClick={() => {
-            setFetching(true);
-            showEditTodo(todolistId);
-          }}
-        >
-          Edit Title
-        </button>
-      )}{" "}
-    </li>
-  );
-};
+//   const editTodoOnKeyPress = (event) => {
+//     const { key } = event;
 
-Todo.propTypes = {};
+//     if (key === "Enter") {
+//       editTodo(jwt, userId, todolistId, todoId, newTodo);
+//       setFetching(true);
+//     }
+//   };
 
-export default Todo;
+//   return (
+//     <Draggable draggableId={dndId} index={index}>
+//       {(provided, snapshot) => (
+//         <TodoContainer
+//           {...provided.draggableProps}
+//           {...provided.dragHandleProps}
+//           ref={provided.innerRef}
+//           isDragging={snapshot.isDragging}
+//         >
+//           <Button
+//             isClose
+//             onClick={() => {
+//               deleteTodo(jwt, userId, todolistId, todoId);
+//               setFetching(true);
+//             }}
+//           >
+//             X
+//           </Button>
+//           {/* <p>{todo.content}</p> */}
+//           <label htmlFor={dndId}>
+//             <Input
+//               id={dndId}
+//               type="text"
+//               name="todo"
+//               value={newTodo}
+//               // updateInputValue={setNewTodo}
+//               // onEnterPress={editTodoOnKeyPress}
+//               onChange={(e) => setNewTodo(e.target.value)}
+//               onKeyPress={(e) => editTodoOnKeyPress(e)}
+//               isTodoInput
+//               userId={userId}
+//               todolistId={todolistId}
+//               jwt={jwt}
+//               todoId={todoId}
+//               content={todo.content}
+//               setFetching={setFetching}
+//             />
+//           </label>
+//         </TodoContainer>
+//       )}
+//     </Draggable>
+//   );
+// };
+
+// Todo.propTypes = {};
+
+// export default Todo;
