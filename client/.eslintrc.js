@@ -23,7 +23,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: "module",
   },
-  plugins: ["react", "react-hooks", "prettier"],
+  plugins: ["react", "react-hooks", "prettier", "testing-library", "jest-dom"],
   rules: {
     "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
     "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
