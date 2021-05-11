@@ -1,13 +1,13 @@
 /* eslint-disable no-undef */
 // TODO Add later
-const productionUri = `some production uri`;
+const productionUri = `https://still-beyond-11172.herokuapp.com`;
 export const ROOT_URI = process.env.NODE_ENV === `production` ? productionUri : `http://localhost:5000`;
 
 // Login URI
-export const LOGIN_URI = process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/login`;
+export const LOGIN_URI = `${ROOT_URI}/api/login`;
 
 // all users
-export const ALL_USERS = process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/users`;
+export const ALL_USERS = `${ROOT_URI}/api/users`;
 
 /**
  * Todolists URI
@@ -15,8 +15,7 @@ export const ALL_USERS = process.env.NODE_ENV === `production` ? `${ROOT_URI}` :
  * @param {number} userId User's ID
  * @return {string} The URI/endpoint for a user's todolist(s).
  */
-export const TODOLISTS_URI = (userId) =>
-  process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/users/${userId}/todolists`;
+export const TODOLISTS_URI = (userId) => `${ROOT_URI}/api/users/${userId}/todolists`;
 
 /**
  * Single todolist URI
@@ -25,8 +24,7 @@ export const TODOLISTS_URI = (userId) =>
  * @param {number} todolistId Todolist's ID
  * @return {string} The URI/endpoint for a user's specific todolist.
  */
-export const SINGLE_TODOLIST_URI = (userId, todolistId) =>
-  process.env.NODE_ENV === `production` ? `${ROOT_URI}` : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}`;
+export const SINGLE_TODOLIST_URI = (userId, todolistId) => `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}`;
 
 /**
  * Todos URI
@@ -35,10 +33,7 @@ export const SINGLE_TODOLIST_URI = (userId, todolistId) =>
  * @param {number} todolistId Todolist's ID
  * @return {string} The URI/endpoint for a user's todos in a specific todolist.
  */
-export const TODOS_URI = (userId, todolistId) =>
-  process.env.NODE_ENV === `production`
-    ? `${ROOT_URI}`
-    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/todos`;
+export const TODOS_URI = (userId, todolistId) => `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/todos`;
 
 /**
  * Single todo URI
@@ -49,9 +44,7 @@ export const TODOS_URI = (userId, todolistId) =>
  * @return {string} The URI/endpoint for a user's specific todos in a specific todolist.
  */
 export const SINGLE_TODO_URI = (userId, todolistId, todoId) =>
-  process.env.NODE_ENV === `production`
-    ? `${ROOT_URI}`
-    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;
+  `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/todos/${todoId}`;
 
 /**
  *  Batch delete completed todos
@@ -62,9 +55,7 @@ export const SINGLE_TODO_URI = (userId, todolistId, todoId) =>
  * @return {string} The URI/endpoint for a user's completed todos in a specific todolist.
  */
 export const DELETE_COMPLETED_TODO_URI = (userId, todolistId) =>
-  process.env.NODE_ENV === `production`
-    ? `${ROOT_URI}`
-    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/delete-completed-todos`;
+  `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/delete-completed-todos`;
 
 /**
  *  Batch update todos to completed
@@ -75,6 +66,4 @@ export const DELETE_COMPLETED_TODO_URI = (userId, todolistId) =>
  * @return {string} The URI/endpoint for a user's completed todos in a specific todolist.
  */
 export const SET_TODOS_TO_COMPLETE = (userId, todolistId) =>
-  process.env.NODE_ENV === `production`
-    ? `${ROOT_URI}`
-    : `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/batch-set-todos`;
+  `${ROOT_URI}/api/users/${userId}/todolists/${todolistId}/batch-set-todos`;
