@@ -9,7 +9,7 @@
     "server": "yarn --cwd ./server start",
     "client": "yarn --cwd ./client start",
     "develop": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
-    "heroku-postbuild": "yarn install && cd client && yarn install && cd .. && cd server && yarn install && npm install joi"
+    "heroku-postbuild": "yarn install && yarn --cwd ./server install && yarn --cwd ./client install && npm install --prefix server joi"
   },
   "repository": {
     "type": "git",
