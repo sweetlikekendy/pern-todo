@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "yarn --cwd ./server start",
     "client": "yarn --cwd ./client start",
-    "develop": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "develop": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "heroku-postbuild": "yarn install && cd client && yarn install --production=true && cd .. && cd server && yarn install --production=true"
   },
   "repository": {
     "type": "git",
