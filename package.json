@@ -9,7 +9,7 @@
     "server": "yarn --cwd ./server start",
     "client": "yarn --cwd ./client start",
     "develop": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
-    "heroku-postbuild": "yarn install && yarn --cwd ./server install && yarn --cwd ./client install --prod=true && yarn --cwd ./client build && npm install --prefix server joi jsonwebtoken"
+    "heroku-postbuild": "yarn install && yarn --cwd ./server install --prod && yarn --cwd ./client install --prod && yarn --cwd ./client build && npm install --prefix server joi jsonwebtoken"
   },
   "repository": {
     "type": "git",
