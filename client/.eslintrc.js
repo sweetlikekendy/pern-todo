@@ -9,7 +9,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:prettier/recommended",
-    "plugin:testing-library/dom",
+    "plugin:jest-dom/recommended",
     "plugin:testing-library/react",
   ],
   globals: {
@@ -34,5 +34,9 @@ module.exports = {
     "testing-library/no-await-sync-query": "error",
     "testing-library/no-debug": "warn",
     "testing-library/no-dom-import": "off",
+    "jest-dom/prefer-checked": "error",
+    "jest-dom/prefer-enabled-disabled": "error",
+    "jest-dom/prefer-required": "error",
+    "jest-dom/prefer-to-have-attribute": "error",
   },
 };
