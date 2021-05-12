@@ -66,7 +66,7 @@ export default function LoginForm() {
           full
           border
           marginBottom
-          type="text"
+          type="password"
           name="password"
           placeholder="Password"
           value={formPassword}
