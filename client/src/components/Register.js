@@ -6,7 +6,9 @@ import { Button, CenterContainer, FormContainer, Input } from "../styles";
 
 // todo change production uri
 const REGISTER_URI =
-  process.env.NODE_ENV === "production" ? process.env.DATABASE_URL : "http://localhost:5000/api/register";
+  process.env.NODE_ENV === `production`
+    ? `${process.env.REACT_APP_API_URL}/api/register`
+    : `http://localhost:5000/api/register`;
 
 const Register = ({ isLoggedIn }) => {
   const [formFirstName, setFormFirstName] = useState("");
