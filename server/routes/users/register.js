@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 import { resStatusPayload, validateRegistration } from "../../util";
 import { usersRoutes } from "../../data/db/controllers/users";
-const { createOne, getOneById } = usersRoutes;
+const { createOne } = usersRoutes;
 
 const router = express.Router();
 dotenv.config({ path: `../../../.env` });
@@ -58,37 +58,6 @@ router.post("/", async (req, res) => {
       console.error("there was an error creating a new user w/ password \n", err);
       return resStatusPayload(res, 500, "Could not create user w/ password");
     }
-    //   return await bcrypt
-    //     .hash(password, parseInt(process.env.HASH_SALT))
-    //     .then((hashedPassword) =>
-    //       createOne(firstName, lastName, email, hashedPassword, createdAt)
-    //         .then((user) => {
-    //           // if a user is created, knex will return an id
-    //           if (!isNaN(user)) {
-    //             const { id, first_name: firstName, last_name: lastName, email, created_at: createdAt } = user;
-    //             console.log(user);
-    //             return resStatusPayload(res, 201, {
-    //               isCreated: true,
-    //               message: "Successfully created a user",
-    //               id,
-    //               firstName,
-    //               lastName,
-    //               email,
-    //               createdAt,
-    //             });
-    //           }
-
-    //           // if there is a duplicate
-    //           if (user.duplicateEmail) {
-    //             return resStatusPayload(res, 202, {
-    //               isCreated: false,
-    //               message: user.message,
-    //             });
-    //           }
-    //         })
-    //         .catch((err) => console.error(err))
-    //     )
-    //     .catch((err) => console.error(err));
   }
 });
 

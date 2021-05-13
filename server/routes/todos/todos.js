@@ -86,8 +86,6 @@ router.post("/:user_id/todolists/:todolist_id/todos", authorizeJwt, async (req, 
 
 // Update a todo for a todolist
 router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, async (req, res) => {
-  // console.log("params", req.params);
-  // console.log("body", req.body);
   const { todo_id } = req.params;
   const { options } = req.body;
   const { updateTodoDescription, toggleTodoCompletion } = options;
@@ -115,7 +113,6 @@ router.put("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, asyn
       try {
         const updatedTodo = await updateOne(requestOptions);
 
-        // console.log("updatedTodo in route", updatedTodo);
         if (updatedTodo.length > 0) {
           return resStatusPayload(res, 200, updatedTodo[0]);
         }
@@ -158,8 +155,6 @@ router.delete("/:user_id/todolists/:todolist_id/todos/:todo_id", authorizeJwt, a
 router.delete("/:user_id/todolists/:todolist_id/delete-completed-todos", authorizeJwt, async (req, res) => {
   const { todolist_id } = req.params;
   const { completeTodoIds } = req.body;
-
-  // console.log(completeTodoIds);
 
   const isCompletedTodosEmpty = completeTodoIds.length > 0 ? false : true;
 

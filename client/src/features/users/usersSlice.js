@@ -22,7 +22,6 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
     });
 
     const { data: userData } = loginResponse;
-    console.log(userData);
     const { id, token, loggedIn } = userData;
 
     if (loggedIn) {
@@ -34,7 +33,6 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
       });
 
       let { data: todolistData } = todolistsResponse;
-      console.log(todolistData);
 
       if (todolistData == null) {
         todolistData = {};
@@ -42,17 +40,11 @@ export const loginUser = createAsyncThunk("users/loginUser", async ({ email, pas
       // if (todolistData.length > 0) {
       const allUserData = { ...userData, todolists: [...todolistData] };
 
-      console.log(allUserData);
-
       const normalizedData = normalize(allUserData, user);
-      console.log(normalizedData);
       const { entities } = normalizedData;
       return entities;
     }
     return rejectWithValue(userData.message);
-    // }
-    // return data;
-    // }
   } catch (error) {
     console.error(error);
     return rejectWithValue(error);
@@ -79,7 +71,6 @@ const usersSlice = createSlice({
     },
     [loginUser.fulfilled]: (state, action) => {
       state.status = "succeeded";
-      console.log(action);
       // Add any fetched posts to the array
       if (!action.payload.users) {
         (state) => initialState;

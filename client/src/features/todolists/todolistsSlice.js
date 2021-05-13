@@ -123,7 +123,6 @@ const todolistsSlice = createSlice({
     [fetchTodolists.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
-      console.log("todolistsSlice", action);
       todolistsAdapter.upsertMany(state, action.payload.todolists);
     },
     [loginUser.rejected]: (state, action) => {

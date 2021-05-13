@@ -158,7 +158,6 @@ const todosSlice = createSlice({
     [fetchTodolists.fulfilled]: (state, action) => {
       state.status = "succeeded";
       // Add any fetched posts to the array
-      console.log("fetchTodolists todoSlice", action);
       todoAdapter.upsertMany(state, action.payload.todos);
     },
     [loginUser.rejected]: (state, action) => {
