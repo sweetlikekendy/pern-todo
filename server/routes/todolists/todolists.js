@@ -3,7 +3,7 @@ import { resStatusPayload, authorizeJwt } from "../../util";
 import { todolistsRoutes } from "../../data/db/controllers/todolists";
 import { todosRoutes } from "../../data/db/controllers/todos";
 import { usersRoutes } from "../../data/db/controllers/users";
-import { updateTodolist } from "../../../client/src/features/todolists/todolistsSlice";
+
 const { getOne, getAll, updateOne, createOne, deleteOne } = todolistsRoutes;
 const { getAll: getAllTodos } = todosRoutes;
 const { getOneById: getOneUserById } = usersRoutes;
