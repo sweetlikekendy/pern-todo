@@ -32,3 +32,5 @@ cd server && npm install
 
 4. Open [https://localhost:3000](https://localhost:3000) in your browser.
 5. Register for a new account or use one of the pre-existing accounts made in `/server/data/users.js`.
+
+[Live Demo](https://client-todo-9410.heroku.app)
