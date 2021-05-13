@@ -5,7 +5,8 @@ import { Redirect } from "@reach/router";
 import { Button, CenterContainer, FormContainer, Input } from "../styles";
 
 // todo change production uri
-const REGISTER_URI = process.env.NODE_ENV === "development" ? "http://localhost:5000/api/register" : "something else";
+const REGISTER_URI =
+  process.env.NODE_ENV === "production" ? process.env.DATABASE_URL : "http://localhost:5000/api/register";
 
 const Register = ({ isLoggedIn }) => {
   const [formFirstName, setFormFirstName] = useState("");
