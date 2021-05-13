@@ -26,5 +26,6 @@ module.exports = {
       directory: __dirname + "/data/migrations",
     },
     seeds: { directory: __dirname + "/data/seeds" },
+    ssl: true,
   },
 };
