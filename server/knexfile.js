@@ -21,14 +21,16 @@ module.exports = {
 
   production: {
     client: "pg",
-    connection: process.env.DATABASE_URL,
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
     migrations: {
       directory: __dirname + "/data/migrations",
     },
     seeds: { directory: __dirname + "/data/seeds" },
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
   },
 };
