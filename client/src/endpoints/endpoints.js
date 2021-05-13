@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 // TODO Add later
-const productionUri = `https://still-beyond-11172.herokuapp.com`;
+const productionUri = process.env.REACT_APP_API_URL;
 export const ROOT_URI = process.env.NODE_ENV === `production` ? productionUri : `http://localhost:5000`;
 
 // Login URI
