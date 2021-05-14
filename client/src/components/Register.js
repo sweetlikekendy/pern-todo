@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { Redirect } from "@reach/router";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button, CenterContainer, FormContainer, Input } from "../styles";
 
 // todo change production uri
@@ -17,6 +18,7 @@ const Register = ({ isLoggedIn }) => {
   const [formPassword, setFormPassword] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [isCreatedSuccessfully, setCreateUserState] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const canSave = [formFirstName, formLastName, formEmail, formPassword].every(Boolean);
 
@@ -28,6 +30,7 @@ const Register = ({ isLoggedIn }) => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const response = await axios.post(REGISTER_URI, {
         firstName: formFirstName,
@@ -49,6 +52,7 @@ const Register = ({ isLoggedIn }) => {
       console.err(error);
       throw error;
     }
+    setLoading(false);
   };
 
   if (isLoggedIn) return <Redirect to="/" noThrow />;
@@ -104,9 +108,16 @@ const Register = ({ isLoggedIn }) => {
             value={formPassword}
             onChange={(e) => setFormPassword(e.target.value)}
           />
-          <Button full isPrimary disabled={!canSave}>
-            Register
-          </Button>
+          {isLoading ? (
+            <Button isPrimary marginBottom full disabled>
+              <AiOutlineLoading3Quarters className="animate-spin h-4 w-4 mr-4" />
+              Making an account...
+            </Button>
+          ) : (
+            <Button full isPrimary disabled={!canSave}>
+              Register
+            </Button>
+          )}
         </form>
       </FormContainer>
     </CenterContainer>

@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../features/users/usersSlice";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Button, CustomLink, FormContainer, Input } from "../styles";
+import "twin.macro";
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -10,38 +12,34 @@ export default function LoginForm() {
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const loginError = useSelector((state) => state.users.error);
+  const [isLoading, setLoading] = useState(false);
 
-  const [loginStatus, setLoginStatus] = useState("idle");
-
-  const canSave = [formEmail, formPassword].every(Boolean) && loginStatus === "idle";
+  const canSave = [formEmail, formPassword].every(Boolean);
 
   useEffect(() => {
     return () => {
       _isMounted.current = false;
       setFormPassword("");
       setFormEmail("");
-      setLoginStatus("idle");
     };
   }, []);
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (canSave && _isMounted.current) {
       try {
-        setLoginStatus("pending");
         const resultAction = await dispatch(loginUser({ email: formEmail, password: formPassword }));
         unwrapResult(resultAction);
       } catch (error) {
-        setLoginStatus("failed");
         console.error("Failed to log in", error);
         console.log(error);
-        setLoginStatus("idle");
       }
     }
+    setLoading(false);
   };
 
   return (
     <FormContainer>
-      {/* <p className="mb-4">Login Form State: {loginStatus}</p> */}
       {loginError && <p className="mb-4">Error: {loginError}</p>}
 
       <form
@@ -74,9 +72,16 @@ export default function LoginForm() {
             setFormPassword(e.target.value);
           }}
         />
-        <Button isPrimary marginBottom full disabled={!canSave}>
-          Log In
-        </Button>
+        {isLoading ? (
+          <Button isPrimary marginBottom full disabled>
+            <AiOutlineLoading3Quarters className="animate-spin h-4 w-4 mr-4" />
+            Logging In...
+          </Button>
+        ) : (
+          <Button isPrimary marginBottom full disabled={!canSave}>
+            Log In
+          </Button>
+        )}
       </form>
       <p className="mb-4 text-center">Don&apos;t have an account?</p>
       <CustomLink text="Register" linkTo="/register" isSecondary>
