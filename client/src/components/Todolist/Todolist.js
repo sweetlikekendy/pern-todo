@@ -10,7 +10,6 @@ import { Button, Input, List, TodolistContainer } from "../../styles";
 
 const Todolist = ({ index, jwt, todolist, todos, setFetching }) => {
   const [newTodo, setNewTodo] = useState("");
-  // console.log(todolist);
   const [newTodolist, setNewTodolist] = useState(todolist.title);
 
   const { id: todolistId, user_id } = todolist;

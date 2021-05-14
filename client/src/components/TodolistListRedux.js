@@ -11,7 +11,7 @@ const TodolistListRedux = () => {
   if (todolistIds.length > 0) {
     todolistIds.map((todolistId) => todolistContent.push(<TodolistRedux key={todolistId} todolistId={todolistId} />));
   } else {
-    todolistContent = <div>There are no todolists</div>;
+    todolistContent = <div>There are no to-do lists</div>;
   }
 
   return (

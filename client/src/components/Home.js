@@ -67,7 +67,7 @@ const Home = () => {
               <h2 className="text-2xl mb-1 md:text-3xl lg:text-4xl">Hello, {firstName}</h2>
               <p className="mb-4">
                 You have {numOfTodolists}
-                {numOfTodolists === 1 ? <span> todolist</span> : <span> todolists</span>}
+                {numOfTodolists === 1 ? <span> to-do list</span> : <span> to-do lists</span>}
               </p>
               {/* <p className="mb-4">Todolist status: {addTodolistStatus}</p> */}
               <form onSubmit={(e) => onCreateTodolistSubmit(e)}>
@@ -77,7 +77,7 @@ const Home = () => {
                   type="text"
                   name="title"
                   value={newTodolist}
-                  placeholder="Enter todolist title here"
+                  placeholder="Enter to-do list title here"
                   onChange={(e) => setNewTodolist(e.target.value)}
                 />
               </form>

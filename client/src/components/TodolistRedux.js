@@ -75,12 +75,12 @@ export default function TodolistRedux({ todolistId, ...rest }) {
             <button className="mr-1" onClick={() => addTodoInputEl.current.focus()}>
               <AiOutlinePlus className="h-4 w-4" />
             </button>
-            <span>Click to add todo</span>
+            <span>Click to add to-do</span>
           </div>
           <form className="px-4" onSubmit={(e) => onCreateTodoSubmit(e)}>
             <input
               type="text"
-              placeholder="Enter a todo here"
+              placeholder="Enter a to-do here"
               className=" rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
               onChange={(e) => setNewTodo(e.target.value)}
               value={newTodo}
