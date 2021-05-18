@@ -28,7 +28,7 @@ cd server && npm install
 
 3. Run the `"develop"` script in the root directory.
 
-`yarn develop` or `npm develop`
+`yarn develop` or `npm run develop`
 
 4. Open [https://localhost:3000](https://localhost:3000) in your browser.
 5. Register for a new account or use one of the pre-existing accounts made in `/server/data/users.js`.
