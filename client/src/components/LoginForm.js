@@ -3,7 +3,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../features/users/usersSlice";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { Button, CustomLink, FormContainer, Input } from "../styles";
+import { Button, CustomLink, FormContainer, Input, Label } from "../styles";
 import "twin.macro";
 
 export default function LoginForm() {
@@ -48,30 +48,28 @@ export default function LoginForm() {
           handleSubmit();
         }}
       >
-        <Input
-          full
-          border
-          marginBottom
-          type="text"
-          name="email"
-          placeholder="Email"
-          value={formEmail}
-          onChange={(e) => {
-            setFormEmail(e.target.value);
-          }}
-        />
-        <Input
-          full
-          border
-          marginBottom
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formPassword}
-          onChange={(e) => {
-            setFormPassword(e.target.value);
-          }}
-        />
+        <div className="mb-4">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            full
+            border
+            type="text"
+            name="email"
+            value={formEmail}
+            onChange={(e) => setFormEmail(e.target.value)}
+          />
+        </div>
+        <div className="mb-4">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            full
+            border
+            type="password"
+            name="password"
+            value={formPassword}
+            onChange={(e) => setFormPassword(e.target.value)}
+          />
+        </div>
         {isLoading ? (
           <Button isPrimary marginBottom full disabled>
             <AiOutlineLoading3Quarters className="animate-spin h-4 w-4 mr-4" />

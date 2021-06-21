@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { Redirect } from "@reach/router";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { Button, CenterContainer, FormContainer, Input } from "../styles";
+import { Button, CenterContainer, FormContainer, Input, Label } from "../styles";
 
 // todo change production uri
 const REGISTER_URI =
@@ -59,7 +59,7 @@ const Register = ({ isLoggedIn }) => {
   if (isCreatedSuccessfully) return <Redirect to="/register-success" noThrow />;
 
   return (
-    <CenterContainer className="p-4">
+    <CenterContainer>
       <FormContainer>
         {statusMessage && <p className="mb-4">{statusMessage} </p>}
         <form
@@ -68,48 +68,53 @@ const Register = ({ isLoggedIn }) => {
             handleSubmit();
           }}
         >
-          <Input
-            full
-            border
-            marginBottom
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formFirstName}
-            onChange={(e) => setFormFirstName(e.target.value)}
-          />
-          <Input
-            full
-            border
-            marginBottom
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formLastName}
-            onChange={(e) => setFormLastName(e.target.value)}
-          />
-          <Input
-            full
-            border
-            marginBottom
-            type="text"
-            name="email"
-            placeholder="Email"
-            value={formEmail}
-            onChange={(e) => setFormEmail(e.target.value)}
-          />
-          <Input
-            full
-            border
-            marginBottom
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formPassword}
-            onChange={(e) => setFormPassword(e.target.value)}
-          />
+          <div className="mb-4">
+            <Label htmlFor="firstName">First Name</Label>
+            <Input
+              full
+              border
+              type="text"
+              name="firstName"
+              value={formFirstName}
+              onChange={(e) => setFormFirstName(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-4">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              full
+              border
+              type="text"
+              name="lastName"
+              value={formLastName}
+              onChange={(e) => setFormLastName(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              full
+              border
+              type="text"
+              name="email"
+              value={formEmail}
+              onChange={(e) => setFormEmail(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              full
+              border
+              type="password"
+              name="password"
+              value={formPassword}
+              onChange={(e) => setFormPassword(e.target.value)}
+            />
+          </div>
           {isLoading ? (
-            <Button isPrimary marginBottom full disabled>
+            <Button isPrimary full disabled>
               <AiOutlineLoading3Quarters className="animate-spin h-4 w-4 mr-4" />
               Making an account...
             </Button>
