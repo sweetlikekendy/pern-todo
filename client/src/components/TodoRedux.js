@@ -86,7 +86,6 @@ function TodoRedux({ todoId }) {
       className={`flex justify-between items-center mt-1 p-2 ${
         isComplete ? `line-through bg-coolGray-100` : `no-underline`
       }`}
-      x-show="todo.title !== ''"
       onMouseEnter={() => setTodoHover(true)}
       onMouseLeave={() => setTodoHover(false)}
     >
@@ -131,7 +130,6 @@ function TodoRedux({ todoId }) {
               defaultChecked={isComplete}
               name="complete"
               id="complete"
-              x-model="todo.isComplete"
               onChange={(e) => handleCompletionChange(e)}
             />
 

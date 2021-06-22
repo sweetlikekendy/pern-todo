@@ -52,7 +52,7 @@ export default function TodolistRedux({ todolistId, ...rest }) {
     <div className="relative w-full md:w-max" {...rest}>
       <div className="container p-4 max-w-md mx-auto">
         {/* todo wrapper */}
-        <div className="bg-white rounded shadow" x-data="app()">
+        <div className="bg-white rounded shadow" >
           {isTodolistTitleFocus ? (
             <NewTodolistForm
               todolistId={todolistId}
@@ -111,7 +111,7 @@ export function NewTodolistForm({ todolistId, isTodolistTitleFocus, setTodolistT
   const users = useSelector((state) => selectAllUsers(state));
   const loggedInUser = users[0];
 
-  const { token: jwt, user_id: userId } = loggedInUser;
+  const { token: jwt, id: userId } = loggedInUser;
 
   const onTodolistTitleUpdateSubmit = async (e) => {
     e.preventDefault();
