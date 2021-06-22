@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { Redirect } from "@reach/router";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { Button, CenterContainer, FormContainer, Input, Label } from "../styles";
+import { Button, CenterContainer, CustomLink, FormContainer, Input, Label } from "../styles";
 
 // todo change production uri
 const REGISTER_URI =
@@ -124,6 +124,9 @@ const Register = ({ isLoggedIn }) => {
             </Button>
           )}
         </form>
+        <hr className="my-4 text-gray-900"/>
+      <p className="mb-4 text-center ">Already registered?</p>
+      <CustomLink text="Login" linkTo="/login" isSecondary />
       </FormContainer>
     </CenterContainer>
   );

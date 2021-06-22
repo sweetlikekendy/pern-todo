@@ -81,7 +81,8 @@ export default function LoginForm() {
           </Button>
         )}
       </form>
-      <p className="mb-4 text-center">Don&apos;t have an account?</p>
+      <hr className="my-4 text-gray-900"/>
+      <p className="mb-4 text-center ">Don&apos;t have an account?</p>
       <CustomLink text="Register" linkTo="/register" isSecondary>
         Register
       </CustomLink>

@@ -30,7 +30,7 @@ const CustomLink = ({ text, linkTo, isNav, isNavPrimaryButton, isPrimary, isSeco
   if (isSecondary) {
     return (
       <Link
-        className="bg-coolGray-200  px-4 py-2 text-green-600 text-center mb-4 rounded-md "
+        className="inline-block w-full bg-coolGray-200  px-4 py-2 text-green-600 text-center mb-4 rounded-md "
         to={`${linkTo}`}
         {...rest}
       >
