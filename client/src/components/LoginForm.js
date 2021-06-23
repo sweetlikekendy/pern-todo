@@ -42,7 +42,6 @@ export default function LoginForm() {
   return (
     <FormContainer>
       {loginError && <p className="mb-4 text-red-500">Error: {loginError}</p>}
-
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -84,9 +83,11 @@ export default function LoginForm() {
       </form>
       <hr className="my-4 text-gray-900" />
       <p className="mb-4 text-center ">Don&apos;t have an account?</p>
-      <CustomLink text="Register" linkTo="/register" isSecondary>
-        Register
-      </CustomLink>
+      {isLoading ? (
+        <CustomLink text="Register" isSecondary disabled />
+      ) : (
+        <CustomLink text="Register" linkTo="/register" isSecondary />
+      )}
     </FormContainer>
   );
 }

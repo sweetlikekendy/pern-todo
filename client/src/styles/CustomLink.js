@@ -1,7 +1,17 @@
 import React from "react";
 import { Link } from "@reach/router";
 
-const CustomLink = ({ text, linkTo, isNav, isNavPrimaryButton, isPrimary, isSecondary, isTertiary, ...rest }) => {
+const CustomLink = ({
+  disabled,
+  text,
+  linkTo,
+  isNav,
+  isNavPrimaryButton,
+  isPrimary,
+  isSecondary,
+  isTertiary,
+  ...rest
+}) => {
   if (isNav) {
     return (
       <Link className={`text-green-500 hover:text-green-700 ${rest.className}`} to={`${linkTo}`}>
@@ -28,9 +38,16 @@ const CustomLink = ({ text, linkTo, isNav, isNavPrimaryButton, isPrimary, isSeco
     );
   }
   if (isSecondary) {
+    if (disabled) {
+      return (
+        <div className="inline-block w-full bg-coolGray-200  px-4 py-2 text-green-600 text-center mb-4 rounded-md cursor-not-allowed">
+          {text}
+        </div>
+      );
+    }
     return (
       <Link
-        className="inline-block w-full bg-coolGray-200  px-4 py-2 text-green-600 text-center mb-4 rounded-md "
+        className="inline-block w-full bg-coolGray-200  px-4 py-2 text-green-600 text-center mb-4 rounded-md"
         to={`${linkTo}`}
         {...rest}
       >

@@ -139,7 +139,11 @@ const Register = ({ isLoggedIn }) => {
         </form>
         <hr className="my-4 text-gray-900" />
         <p className="mb-4 text-center ">Already registered?</p>
-        <CustomLink text="Login" linkTo="/login" isSecondary />
+        {isLoading ? (
+          <CustomLink text="Login" isSecondary disabled />
+        ) : (
+          <CustomLink text="Login" linkTo="/login" isSecondary />
+        )}
       </FormContainer>
     </CenterContainer>
   );
