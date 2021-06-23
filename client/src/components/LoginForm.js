@@ -40,7 +40,7 @@ export default function LoginForm() {
 
   return (
     <FormContainer>
-      {loginError && <p className="mb-4">Error: {loginError}</p>}
+      {loginError && <p className="mb-4 text-red-500">Error: {loginError}</p>}
 
       <form
         onSubmit={(e) => {
@@ -81,7 +81,7 @@ export default function LoginForm() {
           </Button>
         )}
       </form>
-      <hr className="my-4 text-gray-900"/>
+      <hr className="my-4 text-gray-900" />
       <p className="mb-4 text-center ">Don&apos;t have an account?</p>
       <CustomLink text="Register" linkTo="/register" isSecondary>
         Register

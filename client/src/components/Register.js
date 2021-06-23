@@ -61,7 +61,7 @@ const Register = ({ isLoggedIn }) => {
   return (
     <CenterContainer>
       <FormContainer>
-        {statusMessage && <p className="mb-4">{statusMessage} </p>}
+        {statusMessage && <p className="mb-4 text-red-500">{statusMessage} </p>}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -124,9 +124,9 @@ const Register = ({ isLoggedIn }) => {
             </Button>
           )}
         </form>
-        <hr className="my-4 text-gray-900"/>
-      <p className="mb-4 text-center ">Already registered?</p>
-      <CustomLink text="Login" linkTo="/login" isSecondary />
+        <hr className="my-4 text-gray-900" />
+        <p className="mb-4 text-center ">Already registered?</p>
+        <CustomLink text="Login" linkTo="/login" isSecondary />
       </FormContainer>
     </CenterContainer>
   );
