@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { Redirect } from "@reach/router";
@@ -19,8 +19,18 @@ const Register = ({ isLoggedIn }) => {
   const [statusMessage, setStatusMessage] = useState("");
   const [isCreatedSuccessfully, setCreateUserState] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const _isMounted = useRef(true);
 
   const canSave = [formFirstName, formLastName, formEmail, formPassword].every(Boolean);
+
+  useEffect(() => {
+    return () => {
+      _isMounted.current = false;
+      setFormPassword("");
+      setFormEmail("");
+      setLoading(false);
+    };
+  }, []);
 
   const clearInputs = () => {
     setFormFirstName("");
@@ -31,28 +41,31 @@ const Register = ({ isLoggedIn }) => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    try {
-      const response = await axios.post(REGISTER_URI, {
-        firstName: formFirstName,
-        lastName: formLastName,
-        email: formEmail,
-        password: formPassword,
-      });
+    if (_isMounted.current) {
+      try {
+        const response = await axios.post(REGISTER_URI, {
+          firstName: formFirstName,
+          lastName: formLastName,
+          email: formEmail,
+          password: formPassword,
+        });
 
-      const { data } = response;
-      const { isCreated, message } = data;
+        const { data } = response;
+        const { isCreated, message } = data;
 
-      if (isCreated) {
-        clearInputs();
-        setCreateUserState(true);
+        if (isCreated) {
+          clearInputs();
+          setCreateUserState(true);
+        }
+
+        setStatusMessage(message);
+        setLoading(false);
+      } catch (error) {
+        console.err(error);
+        setLoading(false);
+        throw error;
       }
-
-      setStatusMessage(message);
-    } catch (error) {
-      console.err(error);
-      throw error;
     }
-    setLoading(false);
   };
 
   if (isLoggedIn) return <Redirect to="/" noThrow />;

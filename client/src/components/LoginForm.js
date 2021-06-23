@@ -21,6 +21,7 @@ export default function LoginForm() {
       _isMounted.current = false;
       setFormPassword("");
       setFormEmail("");
+      setLoading(false);
     };
   }, []);
 
@@ -33,9 +34,9 @@ export default function LoginForm() {
       } catch (error) {
         console.error("Failed to log in", error);
         console.log(error);
+        setLoading(false);
       }
     }
-    setLoading(false);
   };
 
   return (

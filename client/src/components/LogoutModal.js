@@ -1,23 +1,19 @@
 import { unwrapResult } from "@reduxjs/toolkit";
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/users/usersSlice";
 import "twin.macro";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export default function LogoutModal({ setModalState }) {
   const dispatch = useDispatch();
-  const [isLoading, setLoading] = useState(false);
 
   const handleLogoutClick = async () => {
-    setLoading(true);
     try {
       const resultAction = await dispatch(logout());
       unwrapResult(resultAction);
     } catch (error) {
       console.error(error);
     }
-    setLoading(false);
   };
 
   const LogoutButton = ({ children }) => (
