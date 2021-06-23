@@ -3,7 +3,6 @@ import axios from "axios";
 import { normalize, schema } from "normalizr";
 import { SINGLE_TODOLIST_URI, TODOLISTS_URI } from "../../endpoints";
 import { loginUser } from "../users/usersSlice";
-// import normalize from "json-api-normalizer";
 
 const todolistsAdapter = createEntityAdapter({
   selectId: (todolist) => todolist.id,
