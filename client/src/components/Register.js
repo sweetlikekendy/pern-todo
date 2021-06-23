@@ -146,10 +146,7 @@ const Register = ({ isLoggedIn }) => {
 };
 
 Register.propTypes = {
-  firstName: PropTypes.string,
-  lastName: PropTypes.string,
-  email: PropTypes.string,
-  password: PropTypes.string,
+  isLoggedIn: PropTypes.bool,
 };
 
 export default Register;

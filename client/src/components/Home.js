@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { CenterContainer, Container, Input, JustifyCenterHfullContainer, JustifyCenterContainer } from "../styles";
-4;
 import { addTodolist, selectTodolistIds } from "../features/todolists/todolistsSlice";
 import TodolistListRedux from "./TodolistListRedux";
 import LoginForm from "./LoginForm";
@@ -63,7 +62,10 @@ const Home = () => {
       {isLoggedIn ? (
         <JustifyCenterHfullContainer>
           <JustifyCenterContainer>
-            <div className="my-8" style={{ minWidth: "30%" }}>
+            <div
+              className="my-8 py-4 px-8 min-w-full sm:min-w-1/2"
+              //  style={{ minWidth: "30%" }}
+            >
               <h2 className="text-2xl mb-1 md:text-3xl lg:text-4xl">Hello, {firstName}</h2>
               <p className="mb-4">
                 You have {numOfTodolists}

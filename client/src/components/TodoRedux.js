@@ -99,7 +99,7 @@ function TodoRedux({ todoId }) {
           <input
             type="text"
             placeholder={newTodoDescription}
-            className=" rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
+            className="rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
             value={newTodoDescription}
             onChange={(e) => setNewTodoDescription(e.target.value)}
             ref={newTodoEl}
@@ -134,7 +134,7 @@ function TodoRedux({ todoId }) {
             />
 
             <button
-              className="ml-3 text-sm "
+              className="break-all ml-3 text-sm "
               title="Double click to edit title"
               onDoubleClick={() => setTodoFocus(true)}
             >

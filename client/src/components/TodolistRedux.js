@@ -52,7 +52,7 @@ export default function TodolistRedux({ todolistId, ...rest }) {
     <div className="relative w-full md:w-max" {...rest}>
       <div className="container p-4 max-w-md mx-auto">
         {/* todo wrapper */}
-        <div className="bg-white rounded shadow" >
+        <div className="bg-white rounded shadow">
           {isTodolistTitleFocus ? (
             <NewTodolistForm
               todolistId={todolistId}
@@ -62,7 +62,7 @@ export default function TodolistRedux({ todolistId, ...rest }) {
           ) : (
             <button
               ref={todolistTitleEl}
-              className="font-bold text-lg p-4"
+              className="break-all font-bold text-lg p-4"
               title="Double click to edit todolist title"
               onDoubleClick={() => {
                 setTodolistTitleFocus(true);
@@ -144,7 +144,7 @@ export function NewTodolistForm({ todolistId, isTodolistTitleFocus, setTodolistT
       <input
         type="text"
         placeholder={newTodolistTitle}
-        className=" rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
+        className="rounded shadow-sm px-4 py-2 border border-gray-200 w-full mt-4"
         value={newTodolistTitle}
         onChange={(e) => setNewTodolistTitle(e.target.value)}
         ref={newTodolistTitleEl}
