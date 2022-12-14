@@ -19,7 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.1",
     "joi": "^17.4.0",
     "joi-password-complexity": "^4.1.0",
